@@ -13,8 +13,8 @@ export async function POST(request) {
     await connectDB();
     const user = await User.findById(session.sub).lean();
 
-    if (!user || !["youtuber", "advertiser", "admin"].includes(user.role)) {
-      return NextResponse.json({ error: "YouTuber or advertiser access required." }, { status: 403 });
+    if (!user || !["creator", "admin"].includes(user.role)) {
+      return NextResponse.json({ error: "Creator access required." }, { status: 403 });
     }
 
     if (user.role !== "admin" && user.subscription?.status !== "active") {
