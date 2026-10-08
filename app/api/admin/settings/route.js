@@ -48,7 +48,7 @@ export async function PATCH(request) {
 
   const ussdNumber = String(body.ussdNumber || "").trim();
   const paymentNetwork = String(body.paymentNetwork || "MTN / Airtel Money").trim();
-  if (ussdNumber.length > 40 || !/^[+*#0-9\\s()-]*$/.test(ussdNumber)) {
+  if (ussdNumber.length > 40 || !/^[+*#0-9\s()-]*$/.test(ussdNumber)) {
     return NextResponse.json({ error: "Enter a valid USSD or mobile-money payment number." }, { status: 400 });
   }
   if (paymentNetwork.length > 80) {
