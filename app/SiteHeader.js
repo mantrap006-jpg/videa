@@ -26,25 +26,31 @@ export default function SiteHeader({ user }) {
       <a href="/" className="brand"><span>V</span>IDEA</a>
       {!isAdminRoute && (
         <Navigation>
-          <a href="/videos"><Video {...iconProps} /> Videos</a>
-          {user ? (
+          {user?.role === "admin" ? (
             <>
-              <a href="/dashboard"><LayoutDashboard {...iconProps} /> Dashboard</a>
-              <a href="/wallet"><Wallet {...iconProps} /> Wallet</a>
-              <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
-              <span className="nav-points"><Coins {...iconProps} /> {user.points}</span>
-              {user.role === "creator" && (
-                <a className="nav-admin" href="/creator"><Megaphone {...iconProps} /> Creator</a>
-              )}
-              {user.role === "admin" && (
-                <a className="nav-admin" href="/admin"><ShieldCheck {...iconProps} /> Admin</a>
-              )}
+              <a className="nav-admin" href="/admin"><ShieldCheck {...iconProps} /> Admin control center</a>
               <a className="nav-logout" href="/api/auth/logout"><LogOut {...iconProps} /> Log out</a>
             </>
           ) : (
             <>
-              <a className="nav-login" href="/login"><LogIn {...iconProps} /> Log in</a>
-              <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Create account</a>
+              <a href="/videos"><Video {...iconProps} /> Videos</a>
+              {user ? (
+                <>
+                  <a href="/dashboard"><LayoutDashboard {...iconProps} /> Dashboard</a>
+                  <a href="/wallet"><Wallet {...iconProps} /> Wallet</a>
+                  <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
+                  <span className="nav-points"><Coins {...iconProps} /> {user.points}</span>
+                  {user.role === "creator" && (
+                    <a className="nav-admin" href="/creator"><Megaphone {...iconProps} /> Creator</a>
+                  )}
+                  <a className="nav-logout" href="/api/auth/logout"><LogOut {...iconProps} /> Log out</a>
+                </>
+              ) : (
+                <>
+                  <a className="nav-login" href="/login"><LogIn {...iconProps} /> Log in</a>
+                  <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Create account</a>
+                </>
+              )}
             </>
           )}
         </Navigation>
