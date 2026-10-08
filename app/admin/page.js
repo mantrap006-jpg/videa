@@ -1,48 +1,40 @@
-"use client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import jwt from "jsonwebtoken";
+import User from "@/models/User";
+import SubscriptionPayment from "@/models/SubscriptionPayment";
+import Withdrawal from "@/models/Withdrawal";
+import { connectDB } from "@/lib/mongodb";
+import AdminFinance from "./AdminFinance";
 
-import { useState } from "react";
+export const dynamic = "force-dynamic";
 
-export default function Admin() {
-  const [form, setForm] = useState({
-    title: "",
-    youtubeUrl: "",
-    description: "",
-    rewardPoints: 10,
-    minimumWatchPercent: 80
-  });
-  const [message, setMessage] = useState("");
+export default async function AdminPage() {
+  const token = (await cookies()).get("videa_token")?.value;
+  if (!token || !process.env.JWT_SECRET) redirect("/admin/login");
+  let session;
+  try { session = jwt.verify(token, process.env.JWT_SECRET); } catch { redirect("/admin/login"); }
+  if (!session?.sub) redirect("/admin/login");
 
-  async function add(e) {
-    e.preventDefault();
-    setMessage("");
+  await connectDB();
+  const admin = await User.findById(session.sub).select("role").lean();
+  if (!admin || admin.role !== "admin") redirect("/admin/login");
 
-    try {
-      const res = await fetch("/api/admin/videos", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
-      });
-      const data = await res.json();
-      setMessage(res.ok ? "Video added successfully." : (data.error || "Could not add video."));
-    } catch {
-      setMessage("Network error. Please try again.");
-    }
-  }
-
-  return (
-    <section className="form admin-form">
-      <div className="eyebrow">ADMINISTRATION</div>
-      <h2>Add a video</h2>
-      <p className="muted">This area is for authorized Videa administrators.</p>
-      <form onSubmit={add} className="card">
-        <label>Title<input required value={form.title} onChange={e => setForm({...form, title:e.target.value})} /></label>
-        <label>YouTube URL<input required value={form.youtubeUrl} onChange={e => setForm({...form, youtubeUrl:e.target.value})} /></label>
-        <label>Description<textarea value={form.description} onChange={e => setForm({...form, description:e.target.value})} /></label>
-        <label>Reward points<input type="number" min="0" value={form.rewardPoints} onChange={e => setForm({...form, rewardPoints:Number(e.target.value)})} /></label>
-        <label>Minimum watch percentage<input type="number" min="1" max="100" value={form.minimumWatchPercent} onChange={e => setForm({...form, minimumWatchPercent:Number(e.target.value)})} /></label>
-        <button className="button">Add video</button>
-        {message && <p className={message.includes("successfully") ? "success" : "error"}>{message}</p>}
-      </form>
-    </section>
-  );
+  const [paymentDocs, withdrawalDocs] = await Promise.all([
+    SubscriptionPayment.find({}).sort({ createdAt: -1 }).limit(100).populate("user", "name email").lean(),
+    Withdrawal.find({}).sort({ createdAt: -1 }).limit(100).populate("user", "name email").lean()
+  ]);
+  const initialPayments = paymentDocs.map(item => ({
+    id: item._id.toString(), userName: item.user?.name || "Unknown user", userEmail: item.user?.email || "",
+    amountRwf: item.amountRwf, phone: item.phone, transactionReference: item.transactionReference,
+    status: item.status, adminNote: item.adminNote || "", createdAt: item.createdAt?.toISOString() || null,
+    verifiedAt: item.verifiedAt?.toISOString() || null
+  }));
+  const initialWithdrawals = withdrawalDocs.map(item => ({
+    id: item._id.toString(), userName: item.user?.name || "Unknown user", userEmail: item.user?.email || "",
+    points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network,
+    status: item.status, adminNote: item.adminNote || "", createdAt: item.createdAt?.toISOString() || null,
+    reviewedAt: item.reviewedAt?.toISOString() || null
+  }));
+  return <AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} />;
 }
