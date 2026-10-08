@@ -644,3 +644,11 @@ select:focus{border-color:#7567ff;box-shadow:0 0 0 3px rgba(109,93,252,.12);}
 .subscription-plan-option strong{font-size:13px}
 .subscription-plan-option b{display:inline-block;margin-top:3px;color:#a89fff}
 .subscription-selected-plan{margin:14px 0}
+
+
+.admin-settings-form{display:grid;gap:16px;max-width:620px}
+.admin-settings-form label{display:grid;gap:8px;color:#cbd4e8;font-size:13px;font-weight:600}
+.admin-settings-form input{width:100%;min-width:0;padding:12px 13px;border:1px solid #35415f;border-radius:10px;background:#0b1020;color:#f5f7ff;font:inherit}
+.admin-settings-form input:focus{outline:2px solid #667eea;outline-offset:1px}
+.admin-settings-form .button{justify-self:start;display:inline-flex;align-items:center;gap:8px}
+.wallet-payment-number{margin:16px 0 20px}
