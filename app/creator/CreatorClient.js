@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Coins, Megaphone, Play, Sparkles, UploadCloud } from "lucide-react";
 
 export default function CreatorClient() {
-  const [form, setForm] = useState({ title: "", youtubeUrl: "", description: "", rewardPoints: 10, minimumWatchPercent: 80 });
+  const [form, setForm] = useState({ title: "", youtubeUrl: "", description: "", durationSeconds: 600, pointsPerMinute: 1, minimumWatchPercent: 80 });
   const [message, setMessage] = useState("");
 
   async function add(e) {
@@ -46,14 +46,16 @@ export default function CreatorClient() {
           <label>Title<input required value={form.title} onChange={e => setForm({...form, title:e.target.value})} /></label>
           <label>YouTube URL<input required value={form.youtubeUrl} onChange={e => setForm({...form, youtubeUrl:e.target.value})} /></label>
           <label>Description<textarea value={form.description} onChange={e => setForm({...form, description:e.target.value})} /></label>
-          <label>Viewer reward points<input type="number" min="1" value={form.rewardPoints} onChange={e => setForm({...form, rewardPoints:Number(e.target.value)})} /></label>
+          <label>Video duration (minutes)<input type="number" min="0.1" step="0.1" value={(form.durationSeconds / 60).toFixed(1)} onChange={e => setForm({...form, durationSeconds:Math.max(1, Number(e.target.value) * 60)})} /></label>
+          <label>Viewer points per minute<input type="number" min="0.1" step="0.1" value={form.pointsPerMinute} onChange={e => setForm({...form, pointsPerMinute:Math.max(0.1, Number(e.target.value))})} /></label>
+          <p className="muted reward-preview">Estimated full-video reward: <strong>{Math.floor((form.durationSeconds / 60) * form.pointsPerMinute)} points</strong></p>
           <label>Minimum watch percentage<input type="number" min="1" max="100" value={form.minimumWatchPercent} onChange={e => setForm({...form, minimumWatchPercent:Number(e.target.value)})} /></label>
           <button className="button" type="submit"><Play size={17} /> Submit video</button>
           {message && <p className={message.includes("successfully") ? "success" : "error"}>{message}</p>}
         </form>
 
         <div className="creator-benefits">
-          <div className="card"><Coins size={20} /><h3>Choose your reward</h3><p className="muted">Set how many points an eligible viewer receives for completing the required watch level.</p></div>
+          <div className="card"><Coins size={20} /><h3>Choose your reward</h3><p className="muted">Set a points-per-minute rate. Videa calculates the reward from the video duration.</p></div>
           <div className="card"><Megaphone size={20} /><h3>Promote your content</h3><p className="muted">Give viewers a clear reason to discover your videos through the Videa library.</p></div>
           <div className="card"><Sparkles size={20} /><h3>Subscription model</h3><p className="muted">Creator access will be tied to an active subscription and payment status.</p></div>
         </div>
