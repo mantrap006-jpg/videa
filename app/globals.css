@@ -126,3 +126,8 @@ td, th { padding: 12px; text-align: left; border-bottom: 1px solid #293451; }
 .nav-points { padding:7px 10px; border-radius:9px; background:rgba(104,224,176,.08); color:#68e0b0; font-size:12px; font-weight:800; }
 .nav-admin { color:#9d91ff; font-weight:800; }
 @media (max-width:800px) { .nav-user,.nav-points { display:none; } }
+
+.topbar nav a,.topbar nav .nav-user,.topbar nav .nav-points { display:inline-flex; align-items:center; gap:7px; }
+.nav-logout { color:#ff8f9a !important; font-weight:800; }
+.nav-logout:hover { color:#fff !important; background:rgba(255,100,120,.12); }
+.nav-admin { display:inline-flex; align-items:center; gap:7px; }
