@@ -46,7 +46,7 @@ export default function AdminFinance({ initialPayments, initialWithdrawals, init
 
   return (
     <section className="admin-page">
-      <div className="admin-head"><div><div className="eyebrow">VIDEA OPERATIONS</div><h1>Payment center</h1><p>Verify wallet deposits, Creator subscriptions, and user withdrawals.</p></div><a className="button secondary" href="/wallet"><Wallet size={16}/> User wallet preview</a></div>
+      <div className="admin-head"><div><div className="eyebrow">VIDEA OPERATIONS</div><h1>Payment center</h1><p>Verify wallet deposits, Creator subscriptions, and user withdrawals.</p></div></div>
       <div className="admin-stats">
         <div className="card"><span>Pending deposits</span><strong>{pendingDeposits}</strong></div>
         <div className="card"><span>Pending subscriptions</span><strong>{pendingPayments}</strong></div>
