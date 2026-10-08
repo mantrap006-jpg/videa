@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function SubscriptionForm({ price }) {
   const [phone, setPhone] = useState("");
-  const [transactionReference, setTransactionReference] = useState("");
+  const [senderName, setSenderName] = useState("");
   const [status, setStatus] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -19,7 +19,7 @@ export default function SubscriptionForm({ price }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone: phone.trim(),
-          transactionReference: transactionReference.trim(),
+          senderName: senderName.trim(),
           amountRwf: price
         })
       });
@@ -28,7 +28,7 @@ export default function SubscriptionForm({ price }) {
 
       setStatus({ type: "success", message: "Payment submitted successfully.", detail: "An administrator will verify the transaction before activating your Creator subscription." });
       setPhone("");
-      setTransactionReference("");
+      setSenderName("");
     } catch (error) {
       setStatus({ type: "error", message: error.message || "Submission failed", detail: "Please check your details and try again." });
     } finally {
@@ -41,7 +41,7 @@ export default function SubscriptionForm({ price }) {
       <div className="form-section-heading">
         <div className="step-label">STEP 2 · SUBMIT</div>
         <h3>Send your payment for verification</h3>
-        <p>Use the same phone number that made the payment.</p>
+        <p>Enter the name shown as the sender on the mobile-money confirmation message.</p>
       </div>
 
       <form onSubmit={submit}>
