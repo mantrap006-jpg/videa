@@ -9,6 +9,7 @@ import {
   UserCircle,
   Coins,
   ShieldCheck,
+  Megaphone,
   LogOut,
   LogIn,
   UserPlus
@@ -24,8 +25,8 @@ async function getNavigationUser() {
     const session = jwt.verify(token, process.env.JWT_SECRET);
     if (!session?.sub) return null;
     await connectDB();
-    const user = await User.findById(session.sub).select("name role points").lean();
-    return user ? { name: user.name, role: user.role, points: user.points || 0 } : null;
+    const user = await User.findById(session.sub).select("name role points subscription").lean();
+    return user ? { name: user.name, role: user.role, points: user.points || 0, subscription: user.subscription } : null;
   } catch {
     return null;
   }
@@ -51,9 +52,9 @@ export default async function RootLayout({ children }) {
                 <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
                 <span className="nav-points"><Coins {...iconProps} /> {user.points}</span>
 
-                {user.role === "admin" && (
-                  <a className="nav-admin" href="/admin">
-                    <ShieldCheck {...iconProps} /> Admin
+                {(user.role === "youtuber" || user.role === "advertiser") && (
+                  <a className="nav-admin" href="/creator">
+                    <Megaphone {...iconProps} /> Creator
                   </a>
                 )}
 
