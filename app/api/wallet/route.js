@@ -27,7 +27,7 @@ export async function GET(request) {
     wallet: { name: user.name, points: user.points || 0, balanceRwf: (user.points || 0) * POINTS_TO_RWF, pointValueRwf: POINTS_TO_RWF, minimumWithdrawalPoints: MIN_WITHDRAWAL_POINTS },
     earnings: earnings.map(item => ({ id: item._id.toString(), title: item.videoId?.title || "Video reward", points: item.points, createdAt: item.createdAt })),
     withdrawals: withdrawals.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt })),
-    deposits: deposits.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt }))
+    deposits: deposits.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, senderName: item.senderName || "", transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt }))
   });
 }
 
