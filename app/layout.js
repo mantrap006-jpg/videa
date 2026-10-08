@@ -3,19 +3,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
-import Navigation from "./Navigation";
-import {
-  Video,
-  LayoutDashboard,
-  UserCircle,
-  Coins,
-  Wallet,
-  Megaphone,
-  LogOut,
-  LogIn,
-  UserPlus,
-  ShieldCheck
-} from "lucide-react";
+import SiteHeader from "./SiteHeader";
 
 export const metadata = {
   title: "Videa — Watch & Earn",
@@ -42,52 +30,13 @@ async function getNavigationUser() {
   }
 }
 
-const iconProps = { size: 17, strokeWidth: 2 };
-
 export default async function RootLayout({ children }) {
   const user = await getNavigationUser();
 
   return (
     <html lang="en">
       <body>
-        <header className="topbar">
-          <a href="/" className="brand"><span>V</span>IDEA</a>
-
-          <Navigation>
-            <a href="/videos"><Video {...iconProps} /> Videos</a>
-
-            {user ? (
-              <>
-                <a href="/dashboard"><LayoutDashboard {...iconProps} /> Dashboard</a>
-                <a href="/wallet"><Wallet {...iconProps} /> Wallet</a>
-                <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
-                <span className="nav-points"><Coins {...iconProps} /> {user.points}</span>
-
-                {user.role === "creator" && (
-                  <a className="nav-admin" href="/creator">
-                    <Megaphone {...iconProps} /> Creator
-                  </a>
-                )}
-
-                {user.role === "admin" && (
-                  <a className="nav-admin" href="/admin">
-                    <ShieldCheck {...iconProps} /> Admin
-                  </a>
-                )}
-
-                <a className="nav-logout" href="/api/auth/logout">
-                  <LogOut {...iconProps} /> Log out
-                </a>
-              </>
-            ) : (
-              <>
-                <a className="nav-login" href="/login"><LogIn {...iconProps} /> Log in</a>
-                <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Create account</a>
-              </>
-            )}
-          </Navigation>
-        </header>
-
+        <SiteHeader user={user} />
         <main>{children}</main>
         <footer className="footer">© 2026 Videa. Watch responsibly. Earn transparently.</footer>
       </body>
