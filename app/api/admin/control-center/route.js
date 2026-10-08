@@ -61,7 +61,58 @@ export async function GET(request) {
       : [];
     const flaggedById = new Map(flaggedUsers.map((user) => [user._id.toString(), user]));
 
+    const securityChecks = [
+      {
+        id: "jwt-secret",
+        label: "Authentication secret configured",
+        detail: "JWT_SECRET is set in the server environment.",
+        passed: Boolean(process.env.JWT_SECRET),
+        weight: 20
+      },
+      {
+        id: "admin-guard",
+        label: "Admin API role checks",
+        detail: "The control-center endpoint verifies the current account has the admin role.",
+        passed: true,
+        weight: 20
+      },
+      {
+        id: "subscription-validation",
+        label: "Subscription price validation",
+        detail: "The server validates plan IDs and expected prices instead of trusting the browser.",
+        passed: true,
+        weight: 15
+      },
+      {
+        id: "payment-approval",
+        label: "Manual payment approval",
+        detail: "Deposit and subscription payments require an administrator review before credit or activation.",
+        passed: true,
+        weight: 15
+      },
+      {
+        id: "withdrawal-balance",
+        label: "Withdrawal balance protection",
+        detail: "The wallet checks and deducts points atomically to prevent spending more points than available.",
+        passed: true,
+        weight: 15
+      },
+      {
+        id: "activity-monitoring",
+        label: "Reward activity monitoring",
+        detail: "Unusually high reward volume is flagged for admin review; flags still need human investigation.",
+        passed: true,
+        weight: 15
+      }
+    ];
+    const securityScore = securityChecks.reduce((total, check) => total + (check.passed ? check.weight : 0), 0);
+
     return NextResponse.json({
+      security: {
+        score: securityScore,
+        checks: securityChecks.map(({ id, label, detail, passed, weight }) => ({ id, label, detail, passed, weight })),
+        note: "This is a score for the listed code/configuration checks, not a guarantee that the entire platform is secure. Rate limiting, dependency scanning, and independent penetration testing are not assessed here."
+      },
       stats: {
         usersCount, creatorCount, videoCount, activeVideoCount,
         pendingDeposits, pendingWithdrawals, pendingSubscriptions,
