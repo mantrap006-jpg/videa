@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { getActiveUserFromRequest } from "@/lib/auth";
 import User from "@/models/User";
@@ -16,13 +17,13 @@ export async function POST(request) {
   const amountRwf = Number(body.amountRwf);
   const phone = String(body.phone || "").trim();
   const network = String(body.network || "").trim();
-  const transactionReference = String(body.transactionReference || "").trim();
+  const senderName = String(body.senderName || "").trim();
 
   if (!Number.isSafeInteger(amountRwf) || amountRwf < 100 || amountRwf > 10000000) {
     return NextResponse.json({ error: "Deposit amount must be between 100 and 10,000,000 RWF." }, { status: 400 });
   }
-  if (!phone || phone.length < 8 || phone.length > 20 || !network || network.length > 40 || !transactionReference || transactionReference.length > 120) {
-    return NextResponse.json({ error: "Enter your payment phone, network, and transaction reference." }, { status: 400 });
+  if (!phone || phone.length < 8 || phone.length > 20 || !network || network.length > 40 || !senderName || senderName.length > 120) {
+    return NextResponse.json({ error: "Enter your payment phone, network, and the sender name shown on the payment." }, { status: 400 });
   }
 
   await connectDB();
@@ -32,14 +33,14 @@ export async function POST(request) {
   try {
     const deposit = await Deposit.create({
       user: session.sub, amountRwf, points: amountRwf, phone, network,
-      transactionReference, status: "pending"
+      senderName, transactionReference: `legacy-${randomUUID()}`, status: "pending"
     });
     return NextResponse.json({
       deposit: { id: deposit._id.toString(), amountRwf, points: deposit.points, status: deposit.status }
     }, { status: 201 });
   } catch (error) {
     if (error?.code === 11000) {
-      return NextResponse.json({ error: "This transaction reference has already been submitted." }, { status: 409 });
+      return NextResponse.json({ error: "Could not create a unique deposit request. Please try again." }, { status: 409 });
     }
     return NextResponse.json({ error: "Could not submit deposit request." }, { status: 500 });
   }
