@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import Video from "@/models/Video";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
-import { getUserFromRequest } from "@/lib/auth";
+import { getActiveUserFromRequest } from "@/lib/auth";
 import { extractYouTubeId, getYouTubeDurationSeconds } from "@/lib/youtube";
 
 export async function POST(request) {
   try {
-    const session = getUserFromRequest(request);
+    const session = await getActiveUserFromRequest(request);
     if (!session?.sub) return NextResponse.json({ error: "Please log in." }, { status: 401 });
 
     await connectDB();
