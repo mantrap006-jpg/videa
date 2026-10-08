@@ -559,3 +559,9 @@ select:focus{border-color:#7567ff;box-shadow:0 0 0 3px rgba(109,93,252,.12);}
 .admin-payment-actions .button:disabled{opacity:.5;cursor:wait}
 @media(max-width:850px){.wallet-columns{grid-template-columns:1fr}.wallet-history{min-width:0}}
 @media(max-width:600px){.wallet-page{padding-top:12px}.wallet-hero{align-items:flex-start;flex-direction:column}.wallet-hero h1{font-size:43px;letter-spacing:-2px}.wallet-balance-grid{grid-template-columns:1fr}.wallet-balance-card{padding:19px}.wallet-withdraw-form,.wallet-history{padding:18px}.admin-tabs{display:grid;grid-template-columns:1fr}.admin-tabs button{justify-content:flex-start}.admin-payment-actions{flex-wrap:wrap}.admin-payment-actions .button{min-width:125px}}
+
+
+.wallet-deposit-form{margin:0 0 18px}
+.wallet-deposit-fields{display:grid;grid-template-columns:1fr 1fr;column-gap:16px;row-gap:2px}
+.wallet-deposit-fields label{min-width:0}
+@media(max-width:600px){.wallet-deposit-fields{grid-template-columns:1fr}}
