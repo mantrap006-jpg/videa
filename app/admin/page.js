@@ -29,7 +29,7 @@ export default async function AdminPage() {
   ]);
   const initialPayments = paymentDocs.map(item => ({
     id: item._id.toString(), userName: item.user?.name || "Unknown user", userEmail: item.user?.email || "",
-    amountRwf: item.amountRwf, phone: item.phone, senderName: item.senderName || "", transactionReference: item.transactionReference,
+    amountRwf: item.amountRwf, plan: item.plan || "creator", phone: item.phone, senderName: item.senderName || "", transactionReference: item.transactionReference,
     status: item.status, adminNote: item.adminNote || "", createdAt: item.createdAt?.toISOString() || null,
     verifiedAt: item.verifiedAt?.toISOString() || null
   }));
