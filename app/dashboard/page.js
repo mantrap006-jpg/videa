@@ -1,18 +1,16 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import Earning from "@/models/Earning";
 import { connectDB } from "@/lib/mongodb";
-import { getUserFromRequest } from "@/lib/auth";
-import { headers } from "next/headers";
 
 async function getUser() {
-  const headerStore = await headers();
-  const token = headerStore.get("x-videa-token");
+  const token = (await cookies()).get("videa_token")?.value;
 
-  if (!token) return null;
+  if (!token || !process.env.JWT_SECRET) return null;
 
   try {
-    const jwt = await import("jsonwebtoken");
     return jwt.verify(token, process.env.JWT_SECRET);
   } catch {
     return null;
