@@ -131,7 +131,34 @@ export default function AdminControlCenter() {
           </div>
 
           {tab === "overview" && (
-            <div className="control-overview-grid">
+            <>
+              <article className="card security-score-card">
+                <div className="security-score-top">
+                  <div>
+                    <div className="eyebrow">PLATFORM SECURITY</div>
+                    <h2>Security score</h2>
+                    <p>Based on the security checks currently assessed by Videa.</p>
+                  </div>
+                  <div className="security-score-number" aria-label={`Security score ${data.security?.score ?? 0} percent`}>
+                    <strong>{data.security?.score ?? 0}%</strong>
+                    <span>checked</span>
+                  </div>
+                </div>
+                <div className="security-score-track" role="progressbar" aria-valuenow={data.security?.score ?? 0} aria-valuemin="0" aria-valuemax="100" aria-label="Security score">
+                  <span style={{ width: (data.security?.score ?? 0) + "%" }} />
+                </div>
+                <div className="security-check-list">
+                  {(data.security?.checks || []).map((check) => (
+                    <div className="security-check-row" key={check.id}>
+                      {check.passed ? <CheckCircle2 size={17} /> : <AlertTriangle size={17} />}
+                      <div><strong>{check.label}</strong><small>{check.detail}</small></div>
+                      <span className={check.passed ? "security-check-passed" : "security-check-failed"}>{check.passed ? "Pass" : "Needs attention"} · {check.weight}%</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="control-hint">{data.security?.note || "This score covers only the listed checks and is not a guarantee of complete security."}</p>
+              </article>
+              <div className="control-overview-grid">
               <article className="card control-overview-card">
                 <div className="control-card-title"><div><h2>Needs attention</h2><p>Requests waiting for an administrator</p></div><Eye size={20}/></div>
                 <div className="control-queue-row"><span>Wallet deposits</span><strong>{number(data.stats.pendingDeposits)}</strong></div>
@@ -149,7 +176,8 @@ export default function AdminControlCenter() {
                 )) : <p className="control-hint">No high-volume reward flags currently meet the review threshold.</p>}
                 <button type="button" className="control-text-button" onClick={() => setTab("reviews")}>Review flagged activity →</button>
               </article>
-            </div>
+              </div>
+            </>
           )}
 
           {tab === "users" && (
