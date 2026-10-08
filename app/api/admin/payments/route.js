@@ -2,12 +2,12 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import SubscriptionPayment from "@/models/SubscriptionPayment";
-import { getUserFromRequest } from "@/lib/auth";
+import { getActiveUserFromRequest } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function PATCH(request) {
-  const session = getUserFromRequest(request);
+  const session = await getActiveUserFromRequest(request);
   if (!session?.sub) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   await connectDB();
