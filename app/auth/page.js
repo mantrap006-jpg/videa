@@ -41,7 +41,7 @@ export default function AuthPage() {
       }
 
       const role = data.user?.role || form.role;
-      router.push(role === "youtuber" || role === "advertiser" ? "/creator" : "/dashboard");
+      router.push(role === "creator" ? "/creator" : "/dashboard");
       router.refresh();
     } catch {
       setMessage("Something went wrong. Please try again.");
@@ -60,7 +60,7 @@ export default function AuthPage() {
           <h2>{signup ? "Create your Videa account." : "Welcome back to Videa."}</h2>
           <p>
             {signup
-              ? "Choose how you want to use Videa: watch and earn, promote YouTube content, or run advertising campaigns."
+              ? "Choose how you want to use Videa: watch and earn, promote your videos or campaigns."
               : "Log in to keep watching videos, earning points, and managing your Videa account."}
           </p>
 
@@ -126,8 +126,8 @@ export default function AuthPage() {
                 Account type
                 <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
                   <option value="viewer">Viewer — watch & earn</option>
-                  <option value="youtuber">YouTuber — upload & promote videos</option>
-                  <option value="advertiser">Advertiser — promote campaigns</option>
+                  <option value="youtuber">Creator — upload & promote videos</option>
+                  <option value="advertiser">Creator — upload & promote videos</option>
                 </select>
               </label>
             )}
