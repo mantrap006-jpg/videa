@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   UserCircle,
   Coins,
-  ShieldCheck,
   Megaphone,
   LogOut,
   LogIn,
@@ -52,7 +51,7 @@ export default async function RootLayout({ children }) {
                 <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
                 <span className="nav-points"><Coins {...iconProps} /> {user.points}</span>
 
-                {(user.role === "youtuber" || user.role === "advertiser") && (
+                {user.role === "creator" && (
                   <a className="nav-admin" href="/creator">
                     <Megaphone {...iconProps} /> Creator
                   </a>
