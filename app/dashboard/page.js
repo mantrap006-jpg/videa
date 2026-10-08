@@ -21,6 +21,8 @@ export default async function Dashboard() {
   await connectDB();
   const user = await User.findById(session.sub).lean();
 
+  if (user?.role === "creator") redirect("/creator");
+
   const [earnings, watchedCount, totalEarned] = await Promise.all([
     Earning.find({ userId: session.sub }).sort({ createdAt: -1 }).limit(20).populate("videoId", "title").lean(),
     WatchProgress.countDocuments({ userId: session.sub, watchedPercent: { $gt: 0 } }),
