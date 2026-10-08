@@ -11,6 +11,7 @@ export default function WalletClient() {
   const [depositAmount, setDepositAmount] = useState("1000");
   const [depositPhone, setDepositPhone] = useState("");
   const [depositNetwork, setDepositNetwork] = useState("MTN MoMo");
+  const [paymentSettings, setPaymentSettings] = useState({ ussdNumber: "", paymentNetwork: "MTN / Airtel Money" });
   const [senderName, setSenderName] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -25,6 +26,8 @@ export default function WalletClient() {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Could not load wallet.");
       setData(result);
+      const settingsResponse = await fetch("/api/payment-settings", { cache: "no-store" });
+      if (settingsResponse.ok) setPaymentSettings(await settingsResponse.json());
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -81,6 +84,11 @@ export default function WalletClient() {
       <form className="card wallet-withdraw-form wallet-deposit-form" onSubmit={deposit}>
         <div className="eyebrow"><ArrowUpFromLine size={15}/> DEPOSIT</div><h2>Deposit to your wallet</h2>
         <p className="muted">Pay using mobile money, then submit the sender name shown on your payment receipt. An admin will verify the payment before points are added.</p>
+        <div className="payment-number wallet-payment-number">
+          <span>Pay Videa using {paymentSettings.paymentNetwork || "mobile money"}</span>
+          <strong>{paymentSettings.ussdNumber || "Payment number not configured"}</strong>
+          <small>Send your deposit first, then submit the same amount below.</small>
+        </div>
         <div className="wallet-deposit-fields">
           <label>Deposit amount (RWF)<input type="number" min="100" max="10000000" step="1" required value={depositAmount} onChange={e=>setDepositAmount(e.target.value)} /></label>
           <label>Mobile money network<select value={depositNetwork} onChange={e=>setDepositNetwork(e.target.value)}><option>MTN MoMo</option><option>Airtel Money</option><option>Other</option></select></label>
