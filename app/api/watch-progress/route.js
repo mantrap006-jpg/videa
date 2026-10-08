@@ -12,12 +12,17 @@ export async function POST(request) {
     const session = getUserFromRequest(request);
     if (!session?.sub) return NextResponse.json({ error: "Please log in to earn points." }, { status: 401 });
 
+    await connectDB();
+    const account = await User.findById(session.sub).select("status").lean();
+    if (!account || account.status === "suspended") {
+      return NextResponse.json({ error: "This account cannot earn rewards." }, { status: 403 });
+    }
+
     const body = await request.json();
     const { videoId, watchedPercent } = body;
     if (!mongoose.isValidObjectId(videoId)) return NextResponse.json({ error: "Invalid video." }, { status: 400 });
 
     const percent = Math.min(100, Math.max(0, Number(watchedPercent) || 0));
-    await connectDB();
     const video = await Video.findOne({ _id: videoId, active: true }).lean();
     if (!video) return NextResponse.json({ error: "Video not found." }, { status: 404 });
 
