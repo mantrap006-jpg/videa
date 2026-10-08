@@ -3,7 +3,7 @@ import Video from "@/models/Video";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 import { getUserFromRequest } from "@/lib/auth";
-import { extractYoutubeId } from "@/lib/youtube";
+import { extractYouTubeId } from "@/lib/youtube";
 
 export async function POST(request) {
   try {
@@ -33,7 +33,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Title and YouTube URL are required." }, { status: 400 });
     }
 
-    const youtubeId = extractYoutubeId(youtubeUrl);
+    const youtubeId = extractYouTubeId(youtubeUrl);
 
     if (!youtubeId) {
       return NextResponse.json({ error: "Please provide a valid YouTube URL." }, { status: 400 });
