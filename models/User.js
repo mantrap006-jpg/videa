@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema(
     points: { type: Number, default: 0, min: 0 },
     status: { type: String, enum: ["active", "suspended"], default: "active", index: true },
     subscription: {
-      plan: { type: String, enum: ["free", "creator"], default: "free" },
+      plan: { type: String, enum: ["free", "creator", "monthly", "quarterly", "annual"], default: "free" },
       status: { type: String, enum: ["inactive", "active", "past_due", "cancelled"], default: "inactive" },
       expiresAt: { type: Date, default: null }
     }
