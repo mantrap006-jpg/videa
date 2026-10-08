@@ -42,7 +42,7 @@ export default async function SubscriptionPage() {
           <div className="eyebrow"><Sparkles size={15} /> CREATOR SUBSCRIPTION</div>
           <h1>Turn your videos into a bigger audience.</h1>
           <p className="subscription-lead">
-            Unlock Creator access for 30 days. Pay by mobile money, submit your transaction reference,
+            Choose a Creator access period. Pay by mobile money and submit the sender name shown on your receipt,
             and our admin team will verify the payment before activation.
           </p>
           <div className="subscription-trust">
@@ -137,7 +137,7 @@ export default async function SubscriptionPage() {
         </div>
         <div className="subscription-mini-card">
           <Zap size={20} />
-          <div><strong>Simple renewal</strong><span>Submit a new payment whenever your 30-day access needs renewal.</span></div>
+          <div><strong>Simple renewal</strong><span>Submit a new payment whenever your selected access period needs renewal.</span></div>
         </div>
       </div>
     </section>
