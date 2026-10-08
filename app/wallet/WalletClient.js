@@ -105,11 +105,63 @@ export default function WalletClient() {
         </form>
         <div className="card wallet-history">
           <div className="wallet-section-title"><div><div className="eyebrow">DEPOSIT HISTORY</div><h2>Deposits</h2></div><Clock3 size={20}/></div>
-          {!data?.deposits?.length ? <p className="muted">No deposit requests yet.</p> : data.deposits.map(item=><div className="wallet-history-row" key={item.id}><div><strong>{item.amountRwf.toLocaleString()} RWF · +{item.points.toLocaleString()} pts</strong><span>{item.network} · {item.phone}</span><small>Ref: {item.transactionReference}</small><small>{new Date(item.createdAt).toLocaleString()}</small>{item.adminNote && <small>{item.adminNote}</small></div><span className={"admin-status "+item.status}>{item.status}</span></div>)}
-          <div className="wallet-section-title"><div><div className="eyebrow">PAYOUT HISTORY</div><h2>Withdrawals</h2></div><Clock3 size={20}/></div>
-          {!data?.withdrawals?.length ? <p className="muted">No withdrawal requests yet.</p> : data.withdrawals.map(item=><div className="wallet-history-row" key={item.id}><div><strong>{item.amountRwf.toLocaleString()} RWF</strong><span>{item.network} · {item.phone}</span><small>{new Date(item.createdAt).toLocaleString()}</small>{item.adminNote && <small>{item.adminNote}</small>}</div><span className={"admin-status "+item.status}>{item.status}</span></div>)}
-          <div className="wallet-section-title wallet-earnings-title"><div><div className="eyebrow">REWARD ACTIVITY</div><h2>Recent earnings</h2></div></div>
-          {!data?.earnings?.length ? <p className="muted">Watch eligible videos to earn your first points.</p> : data.earnings.map(item=><div className="wallet-history-row" key={item.id}><div><strong>{item.title}</strong><span>{new Date(item.createdAt).toLocaleString()}</span></div><b className="wallet-earned-points">+{item.points} pts</b></div>)}
+          {!data?.deposits?.length ? (
+            <p className="muted">No deposit requests yet.</p>
+          ) : (
+            data.deposits.map((item) => (
+              <div className="wallet-history-row" key={item.id}>
+                <div>
+                  <strong>{item.amountRwf.toLocaleString()} RWF · +{item.points.toLocaleString()} pts</strong>
+                  <span>{item.network} · {item.phone}</span>
+                  <small>Ref: {item.transactionReference}</small>
+                  <small>{new Date(item.createdAt).toLocaleString()}</small>
+                  {item.adminNote && <small>{item.adminNote}</small>}
+                </div>
+                <span className={"admin-status " + item.status}>{item.status}</span>
+              </div>
+            ))
+          )}
+          <div className="wallet-section-title">
+            <div>
+              <div className="eyebrow">PAYOUT HISTORY</div>
+              <h2>Withdrawals</h2>
+            </div>
+            <Clock3 size={20} />
+          </div>
+          {!data?.withdrawals?.length ? (
+            <p className="muted">No withdrawal requests yet.</p>
+          ) : (
+            data.withdrawals.map((item) => (
+              <div className="wallet-history-row" key={item.id}>
+                <div>
+                  <strong>{item.amountRwf.toLocaleString()} RWF</strong>
+                  <span>{item.network} · {item.phone}</span>
+                  <small>{new Date(item.createdAt).toLocaleString()}</small>
+                  {item.adminNote && <small>{item.adminNote}</small>}
+                </div>
+                <span className={"admin-status " + item.status}>{item.status}</span>
+              </div>
+            ))
+          )}
+          <div className="wallet-section-title wallet-earnings-title">
+            <div>
+              <div className="eyebrow">REWARD ACTIVITY</div>
+              <h2>Recent earnings</h2>
+            </div>
+          </div>
+          {!data?.earnings?.length ? (
+            <p className="muted">Watch eligible videos to earn your first points.</p>
+          ) : (
+            data.earnings.map((item) => (
+              <div className="wallet-history-row" key={item.id}>
+                <div>
+                  <strong>{item.title}</strong>
+                  <span>{new Date(item.createdAt).toLocaleString()}</span>
+                </div>
+                <b className="wallet-earned-points">+{item.points} pts</b>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </section>
