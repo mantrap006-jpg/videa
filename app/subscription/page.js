@@ -47,7 +47,7 @@ export default async function SubscriptionPage() {
           </p>
           <div className="subscription-trust">
             <span><ShieldCheck size={16} /> Manual verification</span>
-            <span><Zap size={16} /> 30 days access</span>
+            <span><Zap size={16} /> 30, 90, or 365 days</span>
             <span><Smartphone size={16} /> Mobile-money friendly</span>
           </div>
         </div>
