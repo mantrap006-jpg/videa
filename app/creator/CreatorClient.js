@@ -8,7 +8,6 @@ export default function CreatorClient() {
     title: "",
     youtubeUrl: "",
     description: "",
-    pointsPerMinute: 1,
     minimumWatchPercent: 80
   });
   const [message, setMessage] = useState("");
@@ -43,7 +42,7 @@ export default function CreatorClient() {
           <h2>Put your videos in front of engaged viewers.</h2>
           <p className="muted">
             Creators can subscribe to Videa, submit approved YouTube content,
-            choose a viewer reward, and grow their reach.
+            and grow their reach.
           </p>
         </div>
 
@@ -92,22 +91,6 @@ export default function CreatorClient() {
           </label>
 
           <label>
-            Viewer points per minute
-            <input
-              type="number"
-              min="0.1"
-              step="0.1"
-              value={form.pointsPerMinute}
-              onChange={e =>
-                setForm({
-                  ...form,
-                  pointsPerMinute: Math.max(0.1, Number(e.target.value))
-                })
-              }
-            />
-          </label>
-
-          <label>
             Minimum watch percentage
             <input
               type="number"
@@ -137,10 +120,10 @@ export default function CreatorClient() {
         <div className="creator-benefits">
           <div className="card">
             <Coins size={20} />
-            <h3>Choose your reward</h3>
+            <h3>Automatic rewards</h3>
             <p className="muted">
-              Set a points-per-minute rate. Videa calculates the reward from
-              the verified YouTube video duration on the server.
+              Videa calculates viewer rewards automatically using the verified
+              YouTube video duration and the platform reward rate.
             </p>
           </div>
 
