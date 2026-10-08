@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   UserCircle,
   Coins,
+  Wallet,
   Megaphone,
   LogOut,
   LogIn,
@@ -58,6 +59,7 @@ export default async function RootLayout({ children }) {
             {user ? (
               <>
                 <a href="/dashboard"><LayoutDashboard {...iconProps} /> Dashboard</a>
+                <a href="/wallet"><Wallet {...iconProps} /> Wallet</a>
                 <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
                 <span className="nav-points"><Coins {...iconProps} /> {user.points}</span>
 
