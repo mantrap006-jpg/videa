@@ -63,14 +63,14 @@ export default function AdminFinance({ initialPayments, initialWithdrawals, init
       {tab === "deposits" ? (
         deposits.length ? <div className="admin-payments">{deposits.map(item=><article className="card admin-payment-card" key={item.id}>
           <div className="admin-request-main"><div className="admin-payment-title"><h3>{item.userName || "Videa user"}</h3><span className={"admin-status "+item.status}>{item.status}</span></div>
-            <p>{item.userEmail}</p><div className="admin-payment-meta"><span><b>Deposit:</b> {Number(item.amountRwf).toLocaleString()} RWF</span><span><b>Points on approval:</b> {Number(item.points).toLocaleString()}</span><span><b>Network:</b> {item.network}</span><span><b>Phone:</b> {item.phone}</span><span><b>Transaction reference:</b> {item.transactionReference}</span></div>
+            <p>{item.userEmail}</p><div className="admin-payment-meta"><span><b>Deposit:</b> {Number(item.amountRwf).toLocaleString()} RWF</span><span><b>Points on approval:</b> {Number(item.points).toLocaleString()}</span><span><b>Network:</b> {item.network}</span><span><b>Phone:</b> {item.phone}</span><span><b>Sender name:</b> {item.senderName || "Not provided on older request"}</span></div>
             <small>{item.createdAt ? new Date(item.createdAt).toLocaleString() : ""}</small>{item.adminNote && <div className="admin-note">{item.adminNote}</div>}
           </div>{actions("deposits",item)}
         </article>)}</div> : <div className="card admin-empty">No deposit requests yet.</div>
       ) : tab === "subscriptions" ? (
         payments.length ? <div className="admin-payments">{payments.map(payment=><article className="card admin-payment-card" key={payment.id}>
           <div className="admin-request-main"><div className="admin-payment-title"><h3>{payment.userName || "Creator"}</h3><span className={"admin-status "+payment.status}>{payment.status}</span></div>
-            <p>{payment.userEmail}</p><div className="admin-payment-meta"><span><b>Amount:</b> {Number(payment.amountRwf).toLocaleString()} RWF</span><span><b>Phone:</b> {payment.phone}</span><span><b>Reference:</b> {payment.transactionReference}</span></div>
+            <p>{payment.userEmail}</p><div className="admin-payment-meta"><span><b>Amount:</b> {Number(payment.amountRwf).toLocaleString()} RWF</span><span><b>Phone:</b> {payment.phone}</span><span><b>Sender name:</b> {payment.senderName || "Not provided on older request"}</span></div>
             <small>{payment.createdAt ? new Date(payment.createdAt).toLocaleString() : ""}</small>{payment.adminNote && <div className="admin-note">{payment.adminNote}</div>}
           </div>{actions("subscriptions",payment)}
         </article>)}</div> : <div className="card admin-empty">No subscription payment requests yet.</div>
