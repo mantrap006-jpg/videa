@@ -27,7 +27,9 @@ export async function POST(request) {
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
-    if (progress.rewarded) return NextResponse.json({ rewarded: true, points: video.rewardPoints, watchedPercent: progress.watchedPercent, message: "Reward already claimed for this video." });
+    const calculatedReward = Math.max(1, Math.floor(((video.durationSeconds || 0) / 60) * (video.pointsPerMinute || 0)));
+
+    if (progress.rewarded) return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent: progress.watchedPercent, message: "Reward already claimed for this video." });
     if (progress.watchedPercent < video.minimumWatchPercent) {
       return NextResponse.json({ rewarded: false, watchedPercent: progress.watchedPercent, required: video.minimumWatchPercent, message: "Keep watching until " + video.minimumWatchPercent + "%." });
     }
@@ -37,12 +39,12 @@ export async function POST(request) {
       { $set: { rewarded: true, rewardedAt: new Date() } },
       { new: true }
     );
-    if (!claimed) return NextResponse.json({ rewarded: true, points: video.rewardPoints, watchedPercent: progress.watchedPercent });
+    if (!claimed) return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent: progress.watchedPercent });
 
-    await User.findByIdAndUpdate(session.sub, { $inc: { points: video.rewardPoints } });
-    await Earning.create({ userId: session.sub, videoId, points: video.rewardPoints });
+    await User.findByIdAndUpdate(session.sub, { $inc: { points: calculatedReward } });
+    await Earning.create({ userId: session.sub, videoId, points: calculatedReward });
 
-    return NextResponse.json({ rewarded: true, points: video.rewardPoints, watchedPercent: claimed.watchedPercent, message: "Reward received: +" + video.rewardPoints + " points" });
+    return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent: claimed.watchedPercent, message: "Reward received: +" + calculatedReward + " points" });
   } catch (error) {
     return NextResponse.json({ error: "Could not save watch progress.", detail: error.message }, { status: 500 });
   }
