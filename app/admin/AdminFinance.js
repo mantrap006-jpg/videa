@@ -70,7 +70,7 @@ export default function AdminFinance({ initialPayments, initialWithdrawals, init
       ) : tab === "subscriptions" ? (
         payments.length ? <div className="admin-payments">{payments.map(payment=><article className="card admin-payment-card" key={payment.id}>
           <div className="admin-request-main"><div className="admin-payment-title"><h3>{payment.userName || "Creator"}</h3><span className={"admin-status "+payment.status}>{payment.status}</span></div>
-            <p>{payment.userEmail}</p><div className="admin-payment-meta"><span><b>Amount:</b> {Number(payment.amountRwf).toLocaleString()} RWF</span><span><b>Phone:</b> {payment.phone}</span><span><b>Sender name:</b> {payment.senderName || "Not provided on older request"}</span></div>
+            <p>{payment.userEmail}</p><div className="admin-payment-meta"><span><b>Plan:</b> {({ monthly: "Monthly Creator", quarterly: "Quarterly Creator", annual: "Annual Creator", creator: "Creator (legacy)" })[payment.plan] || payment.plan || "Creator"}</span><span><b>Amount:</b> {Number(payment.amountRwf).toLocaleString()} RWF</span><span><b>Phone:</b> {payment.phone}</span><span><b>Sender name:</b> {payment.senderName || "Not provided on older request"}</span></div>
             <small>{payment.createdAt ? new Date(payment.createdAt).toLocaleString() : ""}</small>{payment.adminNote && <div className="admin-note">{payment.adminNote}</div>}
           </div>{actions("subscriptions",payment)}
         </article>)}</div> : <div className="card admin-empty">No subscription payment requests yet.</div>
