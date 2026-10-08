@@ -29,7 +29,7 @@ export default async function AdminPage() {
   ]);
   const initialPayments = paymentDocs.map(item => ({
     id: item._id.toString(), userName: item.user?.name || "Unknown user", userEmail: item.user?.email || "",
-    amountRwf: item.amountRwf, phone: item.phone, transactionReference: item.transactionReference,
+    amountRwf: item.amountRwf, phone: item.phone, senderName: item.senderName || "", transactionReference: item.transactionReference,
     status: item.status, adminNote: item.adminNote || "", createdAt: item.createdAt?.toISOString() || null,
     verifiedAt: item.verifiedAt?.toISOString() || null
   }));
@@ -42,7 +42,7 @@ export default async function AdminPage() {
   const initialDeposits = depositDocs.map(item => ({
     id: item._id.toString(), userName: item.user?.name || "Unknown user", userEmail: item.user?.email || "",
     points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network,
-    transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote || "",
+    senderName: item.senderName || "", transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote || "",
     createdAt: item.createdAt?.toISOString() || null, reviewedAt: item.reviewedAt?.toISOString() || null
   }));
   return <><AdminControlCenter /><AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} initialDeposits={initialDeposits} /></>;
