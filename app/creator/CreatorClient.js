@@ -50,7 +50,8 @@ export default function CreatorClient() {
           <Sparkles size={20} />
           <span>Creator subscription</span>
           <strong>Required</strong>
-          <small>Payment integration connects here.</small>
+          <small>Manage your Creator subscription.</small>
+          <a className="button" href="/subscription">View subscription</a>
         </div>
       </div>
 
