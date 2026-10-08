@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
-import { CheckCircle2, Copy, Smartphone, Sparkles } from "lucide-react";
+import { CheckCircle2, Smartphone, Sparkles } from "lucide-react";
+import SubscriptionForm from "./SubscriptionForm";
 
 export const dynamic = "force-dynamic";
 
@@ -83,13 +84,9 @@ export default async function SubscriptionPage() {
             Admin verification is required. Do not send your PIN or password to Videa.
           </p>
 
-          <div className="card subscription-submit-placeholder">
-            <strong>Verification submission</strong>
-            <p className="muted">
-              The transaction-reference submission form will appear here once the
-              server verification endpoint is enabled.
-            </p>
-          </div>
+          {user.role === "creator" && !active && (
+            <SubscriptionForm price={price} />
+          )}
 
           {user.role === "creator" && (
             <a className="button" href="/creator">Back to Creator</a>
