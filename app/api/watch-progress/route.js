@@ -5,18 +5,12 @@ import WatchProgress from "@/models/WatchProgress";
 import Earning from "@/models/Earning";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
-import { getUserFromRequest } from "@/lib/auth";
+import { getActiveUserFromRequest } from "@/lib/auth";
 
 export async function POST(request) {
   try {
-    const session = getUserFromRequest(request);
+    const session = await getActiveUserFromRequest(request);
     if (!session?.sub) return NextResponse.json({ error: "Please log in to earn points." }, { status: 401 });
-
-    await connectDB();
-    const account = await User.findById(session.sub).select("status").lean();
-    if (!account || account.status === "suspended") {
-      return NextResponse.json({ error: "This account cannot earn rewards." }, { status: 403 });
-    }
 
     const body = await request.json();
     const { videoId, watchedPercent } = body;
