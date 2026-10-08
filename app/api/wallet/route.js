@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import { getUserFromRequest } from "@/lib/auth";
+import { getActiveUserFromRequest } from "@/lib/auth";
 import User from "@/models/User";
 import Earning from "@/models/Earning";
 import Withdrawal from "@/models/Withdrawal";
@@ -11,7 +11,7 @@ const POINTS_TO_RWF = 1;
 const MIN_WITHDRAWAL_POINTS = 100;
 
 export async function GET(request) {
-  const session = getUserFromRequest(request);
+  const session = await getActiveUserFromRequest(request);
   if (!session?.sub) return NextResponse.json({ error: "Please log in." }, { status: 401 });
   await connectDB();
   const user = await User.findById(session.sub).select("name points").lean();
@@ -32,7 +32,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const session = getUserFromRequest(request);
+  const session = await getActiveUserFromRequest(request);
   if (!session?.sub) return NextResponse.json({ error: "Please log in." }, { status: 401 });
 
   let body;
