@@ -7,6 +7,7 @@ import Withdrawal from "@/models/Withdrawal";
 import Deposit from "@/models/Deposit";
 import { connectDB } from "@/lib/mongodb";
 import AdminFinance from "./AdminFinance";
+import AdminControlCenter from "./AdminControlCenter";
 
 export const dynamic = "force-dynamic";
 
@@ -44,5 +45,5 @@ export default async function AdminPage() {
     transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote || "",
     createdAt: item.createdAt?.toISOString() || null, reviewedAt: item.reviewedAt?.toISOString() || null
   }));
-  return <AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} initialDeposits={initialDeposits} />;
+  return <><AdminControlCenter /><AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} initialDeposits={initialDeposits} /></>;
 }
