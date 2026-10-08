@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import SubscriptionPayment from "@/models/SubscriptionPayment";
 import Withdrawal from "@/models/Withdrawal";
+import Deposit from "@/models/Deposit";
 import { connectDB } from "@/lib/mongodb";
 import AdminFinance from "./AdminFinance";
 
@@ -20,9 +21,10 @@ export default async function AdminPage() {
   const admin = await User.findById(session.sub).select("role").lean();
   if (!admin || admin.role !== "admin") redirect("/admin/login");
 
-  const [paymentDocs, withdrawalDocs] = await Promise.all([
+  const [paymentDocs, withdrawalDocs, depositDocs] = await Promise.all([
     SubscriptionPayment.find({}).sort({ createdAt: -1 }).limit(100).populate("user", "name email").lean(),
-    Withdrawal.find({}).sort({ createdAt: -1 }).limit(100).populate("user", "name email").lean()
+    Withdrawal.find({}).sort({ createdAt: -1 }).limit(100).populate("user", "name email").lean(),
+    Deposit.find({}).sort({ createdAt: -1 }).limit(100).populate("user", "name email").lean()
   ]);
   const initialPayments = paymentDocs.map(item => ({
     id: item._id.toString(), userName: item.user?.name || "Unknown user", userEmail: item.user?.email || "",
@@ -36,5 +38,11 @@ export default async function AdminPage() {
     status: item.status, adminNote: item.adminNote || "", createdAt: item.createdAt?.toISOString() || null,
     reviewedAt: item.reviewedAt?.toISOString() || null
   }));
-  return <AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} />;
+  const initialDeposits = depositDocs.map(item => ({
+    id: item._id.toString(), userName: item.user?.name || "Unknown user", userEmail: item.user?.email || "",
+    points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network,
+    transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote || "",
+    createdAt: item.createdAt?.toISOString() || null, reviewedAt: item.reviewedAt?.toISOString() || null
+  }));
+  return <AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} initialDeposits={initialDeposits} />;
 }
