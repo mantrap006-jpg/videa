@@ -636,3 +636,11 @@ select:focus{border-color:#7567ff;box-shadow:0 0 0 3px rgba(109,93,252,.12);}
 .control-empty span{font-size:11px}
 @media(max-width:850px){.control-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.control-overview-grid{grid-template-columns:1fr}}
 @media(max-width:600px){.control-center{padding-top:12px}.control-center-head{align-items:flex-start;flex-direction:column}.control-center-head h1{font-size:42px;letter-spacing:-2px}.control-refresh{margin:0}.control-stat-grid{gap:9px}.control-stat{padding:14px}.control-stat>strong{font-size:27px}.control-list-card{padding:14px}.control-list-head{flex-direction:column}.control-search{width:100%;min-width:0}.control-video-row,.control-flag-card{align-items:flex-start;flex-wrap:wrap}.control-video-info{width:calc(100% - 55px);flex:none}.control-video-row>.control-status{margin-left:53px}.control-video-row>.control-action-button{margin-left:53px}.control-flag-card>.control-action-button{margin-left:53px}.control-tabs{display:grid;grid-template-columns:1fr 1fr}.control-tabs button{justify-content:center;padding:10px 7px;font-size:11px}}
+
+.subscription-plan-option{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.subscription-plan-option:last-child{border-bottom:0}
+.subscription-plan-option>svg{flex:none;margin-top:3px;color:#68e0b0}
+.subscription-plan-option>span{font-size:12px;line-height:1.7}
+.subscription-plan-option strong{font-size:13px}
+.subscription-plan-option b{display:inline-block;margin-top:3px;color:#a89fff}
+.subscription-selected-plan{margin:14px 0}
