@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
+import Navigation from "./Navigation";
 import {
   Video,
   LayoutDashboard,
@@ -51,7 +52,7 @@ export default async function RootLayout({ children }) {
         <header className="topbar">
           <a href="/" className="brand"><span>V</span>IDEA</a>
 
-          <nav>
+          <Navigation>
             <a href="/videos"><Video {...iconProps} /> Videos</a>
 
             {user ? (
@@ -82,7 +83,7 @@ export default async function RootLayout({ children }) {
                 <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Create account</a>
               </>
             )}
-          </nav>
+          </Navigation>
         </header>
 
         <main>{children}</main>
