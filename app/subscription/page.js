@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { CheckCircle2, Copy, Smartphone, Sparkles } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -19,52 +19,78 @@ export default async function SubscriptionPage() {
   }
 
   await connectDB();
-  const user = await User.findById(session.sub)
-    .select("name role subscription")
-    .lean();
-
+  const user = await User.findById(session.sub).select("name role subscription").lean();
   if (!user) redirect("/login");
 
   const active =
     user.subscription?.status === "active" &&
-    (!user.subscription?.expiresAt ||
-      new Date(user.subscription.expiresAt) > new Date());
+    (!user.subscription?.expiresAt || new Date(user.subscription.expiresAt) > new Date());
+
+  const price = Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 5000);
+  const ussdNumber = process.env.CREATOR_USSD_NUMBER || "YOUR_USSD_NUMBER";
+  const network = process.env.CREATOR_PAYMENT_NETWORK || "MTN / Airtel Money";
 
   return (
     <section className="page subscription-page">
       <div className="eyebrow"><Sparkles size={15} /> CREATOR SUBSCRIPTION</div>
-      <h1>Grow your audience with Videa</h1>
+      <h1>Activate Creator access</h1>
       <p className="muted">
-        An active Creator subscription is required to promote videos on Videa.
-        Viewers can continue watching and earning for free.
+        Pay manually by USSD/mobile money. Videa will activate your Creator subscription
+        only after an administrator confirms the transaction.
       </p>
 
-      <div className="card subscription-card">
-        <div>
+      <div className="subscription-grid">
+        <div className="card">
           <h2>Creator Plan</h2>
-          <p className="muted">Monthly creator access</p>
+          <p className="muted">30 days of Creator access</p>
+          <h3 className="subscription-price">{price.toLocaleString()} RWF</h3>
+
           <ul className="subscription-list">
             <li><CheckCircle2 size={17} /> Submit YouTube videos</li>
             <li><CheckCircle2 size={17} /> Promote approved content</li>
             <li><CheckCircle2 size={17} /> Reach Videa viewers</li>
           </ul>
-        </div>
 
-        <div className="subscription-status">
-          <span className={active ? "success" : "muted"}>
-            {active ? "Subscription active" : "Subscription inactive"}
-          </span>
+          <div className={active ? "subscription-active" : "subscription-pending"}>
+            {active ? "Subscription active" : "Subscription requires verification"}
+          </div>
+
           {active && user.subscription?.expiresAt && (
-            <small>
-              Expires {new Date(user.subscription.expiresAt).toLocaleDateString()}
-            </small>
-          )}
-          {!active && (
             <p className="muted">
-              Payment is not connected yet. Once a payment provider is added,
-              this page will start the subscription checkout flow.
+              Expires {new Date(user.subscription.expiresAt).toLocaleDateString()}
             </p>
           )}
+        </div>
+
+        <div className="card ussd-card">
+          <div className="eyebrow"><Smartphone size={15} /> MANUAL USSD PAYMENT</div>
+          <h2>Pay using {network}</h2>
+          <p className="muted">Send exactly the subscription amount, then keep your transaction/reference number.</p>
+
+          <div className="ussd-box">
+            <span>USSD / payment number</span>
+            <strong>{ussdNumber}</strong>
+          </div>
+
+          <ol className="ussd-steps">
+            <li>Open your mobile-money USSD menu.</li>
+            <li>Send <strong>{price.toLocaleString()} RWF</strong> to the Videa payment number.</li>
+            <li>Save the transaction/reference number.</li>
+            <li>Submit that reference to Videa for manual verification.</li>
+          </ol>
+
+          <p className="muted">
+            Admin verification is required. Do not send your PIN or password to Videa.
+          </p>
+
+          <div className="card subscription-submit-placeholder">
+            <strong>Verification submission</strong>
+            <p className="muted">
+              The transaction-reference submission form will appear here once the
+              server verification endpoint is enabled.
+            </p>
+          </div>
+
           {user.role === "creator" && (
             <a className="button" href="/creator">Back to Creator</a>
           )}
