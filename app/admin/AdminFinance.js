@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, Clock3, XCircle, Wallet, CreditCard } from "lucide-react";
+import { CheckCircle2, Clock3, XCircle, Wallet, CreditCard, ShieldCheck } from "lucide-react";
 
 export default function AdminFinance({ initialPayments, initialWithdrawals }) {
   const [tab, setTab] = useState("subscriptions");
