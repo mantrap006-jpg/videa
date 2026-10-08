@@ -5,7 +5,7 @@ const DepositSchema = new mongoose.Schema({
   amountRwf: { type: Number, required: true, min: 100 },
   points: { type: Number, required: true, min: 100 },
   phone: { type: String, required: true, trim: true },
-  senderName: { type: String, required: true, trim: true, maxlength: 120 },
+  senderName: { type: String, default: "", trim: true, maxlength: 120 },
   network: { type: String, required: true, trim: true },
   transactionReference: { type: String, required: true, trim: true },
   status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending", index: true },
