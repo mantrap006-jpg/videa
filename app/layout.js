@@ -14,7 +14,15 @@ import {
   UserPlus
 } from "lucide-react";
 
-export const metadata = { title: "Videa — Watch & Earn", description: "Watch approved videos and earn points." };
+export const metadata = {
+  title: "Videa — Watch & Earn",
+  description: "Watch approved videos and earn points.",
+  icons: {
+    icon: "/favicon.jpg",
+    shortcut: "/favicon.jpg",
+    apple: "/favicon.jpg"
+  }
+};
 export const dynamic = "force-dynamic";
 
 async function getNavigationUser() {
