@@ -126,8 +126,7 @@ export default function AuthPage() {
                 Account type
                 <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
                   <option value="viewer">Viewer — watch & earn</option>
-                  <option value="youtuber">Creator — upload & promote videos</option>
-                  <option value="advertiser">Creator — upload & promote videos</option>
+                  <option value="creator">Creator — upload & promote videos</option>
                 </select>
               </label>
             )}
