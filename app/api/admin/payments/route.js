@@ -39,11 +39,13 @@ export async function PATCH(request) {
         ? new Date(user.subscription.expiresAt)
         : null;
     const baseDate = currentExpiry && currentExpiry > now ? currentExpiry : now;
+    const planDays = { monthly: 30, quarterly: 90, annual: 365, creator: 30 };
+    const selectedPlan = ["monthly", "quarterly", "annual"].includes(payment.plan) ? payment.plan : "creator";
     const expiresAt = new Date(baseDate);
-    expiresAt.setDate(expiresAt.getDate() + 30);
+    expiresAt.setDate(expiresAt.getDate() + (planDays[selectedPlan] || 30));
 
     user.role = "creator";
-    user.subscription = { plan: "creator", status: "active", expiresAt };
+    user.subscription = { plan: selectedPlan, status: "active", expiresAt };
     await user.save();
 
     payment.status = "approved";
