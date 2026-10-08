@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import SubscriptionPayment from "@/models/SubscriptionPayment";
@@ -42,11 +43,11 @@ export async function POST(request) {
   }
 
   const phone = String(body.phone || "").trim();
-  const transactionReference = String(body.transactionReference || "").trim();
+  const senderName = String(body.senderName || "").trim();
   const amountRwf = Number(body.amountRwf);
 
-  if (!phone || !transactionReference) {
-    return NextResponse.json({ error: "Phone and transaction reference are required" }, { status: 400 });
+  if (!phone || !senderName || senderName.length > 120) {
+    return NextResponse.json({ error: "Phone and sender name are required" }, { status: 400 });
   }
   if (!Number.isFinite(amountRwf) || amountRwf !== priceRwf()) {
     return NextResponse.json({ error: `Payment amount must be ${priceRwf().toLocaleString()} RWF` }, { status: 400 });
@@ -59,17 +60,13 @@ export async function POST(request) {
     return NextResponse.json({ error: "Only Creator accounts can subscribe" }, { status: 403 });
   }
 
-  const duplicate = await SubscriptionPayment.findOne({ transactionReference }).lean();
-  if (duplicate) {
-    return NextResponse.json({ error: "This transaction reference has already been submitted" }, { status: 409 });
-  }
-
   const payment = await SubscriptionPayment.create({
     user: session.sub,
     plan: "creator",
     amountRwf,
     phone,
-    transactionReference,
+    senderName,
+    transactionReference: `legacy-${randomUUID()}`,
     status: "pending"
   });
 
