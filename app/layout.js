@@ -18,9 +18,9 @@ export const metadata = {
   title: "Videa — Watch & Earn",
   description: "Watch approved videos and earn points.",
   icons: {
-    icon: "/favicon.jpg",
-    shortcut: "/favicon.jpg",
-    apple: "/favicon.jpg"
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png"
   }
 };
 export const dynamic = "force-dynamic";
