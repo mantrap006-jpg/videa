@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Activity, AlertTriangle, CheckCircle2, Eye, Film, PauseCircle,
-  PlayCircle, RefreshCw, Search, ShieldAlert, Users
+  PlayCircle, RefreshCw, Search, ShieldAlert, Users, Settings, Save
 } from "lucide-react";
 
 const number = (value) => Number(value || 0).toLocaleString();
@@ -15,6 +15,9 @@ export default function AdminControlCenter() {
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [ussdNumber, setUssdNumber] = useState("");
+  const [paymentNetwork, setPaymentNetwork] = useState("MTN / Airtel Money");
+  const [settingsBusy, setSettingsBusy] = useState(false);
 
   const load = useCallback(async () => {
     setError("");
@@ -23,12 +26,41 @@ export default function AdminControlCenter() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not load control center.");
       setData(result);
+      const settingsResponse = await fetch("/api/admin/settings", { cache: "no-store" });
+      const settings = await settingsResponse.json();
+      if (settingsResponse.ok) {
+        setUssdNumber(settings.ussdNumber || "");
+        setPaymentNetwork(settings.paymentNetwork || "MTN / Airtel Money");
+      }
     } catch (e) {
       setError(e.message || "Could not load control center.");
     }
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  async function saveSettings(event) {
+    event.preventDefault();
+    setSettingsBusy(true);
+    setMessage("");
+    setError("");
+    try {
+      const response = await fetch("/api/admin/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ussdNumber: ussdNumber.trim(), paymentNetwork: paymentNetwork.trim() })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not save settings.");
+      setUssdNumber(result.ussdNumber || "");
+      setPaymentNetwork(result.paymentNetwork || "MTN / Airtel Money");
+      setMessage("Payment number settings saved. User payment forms will use the updated number.");
+    } catch (e) {
+      setError(e.message || "Could not save settings.");
+    } finally {
+      setSettingsBusy(false);
+    }
+  }
 
   async function act(id, action, extra = {}) {
     const label = action === "suspend-user" ? "suspend this user" :
@@ -95,6 +127,7 @@ export default function AdminControlCenter() {
             <button type="button" className={tab === "users" ? "active" : ""} onClick={() => { setTab("users"); setQuery(""); }}>Users <span>{number(data.stats.usersCount)}</span></button>
             <button type="button" className={tab === "videos" ? "active" : ""} onClick={() => { setTab("videos"); setQuery(""); }}>Videos <span>{number(data.stats.videoCount)}</span></button>
             <button type="button" className={tab === "reviews" ? "active" : ""} onClick={() => { setTab("reviews"); setQuery(""); }}>Activity review <span>{data.flags.length}</span></button>
+            <button type="button" className={tab === "settings" ? "active" : ""} onClick={() => { setTab("settings"); setQuery(""); }}><Settings size={15}/> Payment settings</button>
           </div>
 
           {tab === "overview" && (
@@ -159,6 +192,22 @@ export default function AdminControlCenter() {
                 <span className={"control-status " + (flag.status === "suspended" ? "suspended" : "active")}>{flag.status}</span>
                 {flag.role === "admin" ? <span className="control-muted">Protected</span> : <button type="button" className="control-action-button" disabled={busy === flag.userId} onClick={() => act(flag.userId, flag.status === "suspended" ? "activate-user" : "suspend-user")}>{flag.status === "suspended" ? "Reactivate" : "Suspend user"}</button>}
               </article>)}</div> : <div className="control-empty"><CheckCircle2 size={25}/><strong>No flags right now</strong><span>Accounts that reach the review threshold will appear here.</span></div>}
+            </div>
+          )}
+
+          {tab === "settings" && (
+            <div className="card control-list-card">
+              <div className="control-list-head"><div><h2>Payment details</h2><p>Set the mobile-money number shown to users when they deposit or subscribe.</p></div></div>
+              <form className="admin-settings-form" onSubmit={saveSettings}>
+                <label>USSD / mobile-money payment number
+                  <input value={ussdNumber} onChange={(event) => setUssdNumber(event.target.value)} placeholder="e.g. *182*1*1*078XXXXXXX#" maxLength={40} />
+                </label>
+                <label>Payment network
+                  <input value={paymentNetwork} onChange={(event) => setPaymentNetwork(event.target.value)} placeholder="MTN MoMo / Airtel Money" maxLength={80} required />
+                </label>
+                <p className="control-hint">Leave the number empty if you do not want to display one. Do not enter a mobile-money PIN or account password.</p>
+                <button type="submit" className="button" disabled={settingsBusy}><Save size={16}/>{settingsBusy ? "Saving…" : "Save payment settings"}</button>
+              </form>
             </div>
           )}
         </>
