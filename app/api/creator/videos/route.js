@@ -22,10 +22,19 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { title, youtubeUrl, description = "", rewardPoints = 10, minimumWatchPercent = 80 } = body;
+    const { title, youtubeUrl, description = "", durationSeconds = 0, pointsPerMinute = 1, minimumWatchPercent = 80 } = body;
 
     if (!title || !youtubeUrl) {
       return NextResponse.json({ error: "Title and YouTube URL are required." }, { status: 400 });
+    }
+
+    const duration = Number(durationSeconds);
+    const rate = Number(pointsPerMinute);
+    if (!Number.isFinite(duration) || duration <= 0) {
+      return NextResponse.json({ error: "Video duration in seconds is required." }, { status: 400 });
+    }
+    if (!Number.isFinite(rate) || rate <= 0) {
+      return NextResponse.json({ error: "Points per minute must be greater than 0." }, { status: 400 });
     }
 
     const youtubeId = extractYoutubeId(youtubeUrl);
@@ -36,7 +45,9 @@ export async function POST(request) {
       youtubeUrl: youtubeUrl.trim(),
       youtubeId,
       description: description.trim(),
-      rewardPoints: Math.max(0, Number(rewardPoints) || 0),
+      durationSeconds: Math.round(duration),
+      pointsPerMinute: rate,
+      rewardPoints: Math.max(1, Math.floor((duration / 60) * rate)),
       minimumWatchPercent: Math.min(100, Math.max(1, Number(minimumWatchPercent) || 80)),
       active: true
     });
