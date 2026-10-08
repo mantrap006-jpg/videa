@@ -11,7 +11,8 @@ import {
   Megaphone,
   LogOut,
   LogIn,
-  UserPlus
+  UserPlus,
+  ShieldCheck
 } from "lucide-react";
 
 export const metadata = {
@@ -62,6 +63,12 @@ export default async function RootLayout({ children }) {
                 {user.role === "creator" && (
                   <a className="nav-admin" href="/creator">
                     <Megaphone {...iconProps} /> Creator
+                  </a>
+                )}
+
+                {user.role === "admin" && (
+                  <a className="nav-admin" href="/admin">
+                    <ShieldCheck {...iconProps} /> Admin
                   </a>
                 )}
 
