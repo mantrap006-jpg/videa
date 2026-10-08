@@ -437,3 +437,42 @@ select:focus{border-color:#7567ff;box-shadow:0 0 0 3px rgba(109,93,252,.12);}
 .subscription-mini-card span{font-size:10px;color:#7f8aa7;line-height:1.45}
 @media(max-width:850px){.subscription-page{padding-top:20px}.subscription-hero,.subscription-layout{grid-template-columns:1fr}.subscription-hero h1{font-size:clamp(39px,12vw,58px)}.subscription-bottom{grid-template-columns:1fr}}
 @media(max-width:520px){.subscription-page{padding-top:10px}.subscription-plan-card,.subscription-payment-card{padding:20px;border-radius:18px}.plan-heading{display:block}.plan-price{text-align:left;margin-top:18px}.plan-price strong{font-size:27px;display:inline-block;margin-right:6px}.plan-price span{display:inline-block}.payment-number strong{font-size:25px}.subscription-trust{gap:8px 12px}}
+
+
+/* Admin panel */
+.admin-login-page{min-height:680px;display:grid;place-items:center;padding:30px 0;}
+.admin-login-card{width:min(460px,100%);padding:32px;box-shadow:0 25px 70px rgba(0,0,0,.3);}
+.admin-login-icon{width:58px;height:58px;display:grid;place-items:center;border-radius:17px;background:rgba(104,224,176,.1);color:#68e0b0;margin-bottom:20px;}
+.admin-login-card h1{font-size:clamp(34px,6vw,48px);letter-spacing:-2px;margin:6px 0 10px;}
+.admin-login-card>p{font-size:13px;margin-bottom:25px;}
+.admin-login-form label{display:block;margin-top:14px;font-weight:700;font-size:13px;}
+.admin-login-form input{min-height:48px;}
+.admin-login-button{width:100%;margin:8px 0 0;display:flex;align-items:center;justify-content:center;gap:8px;min-height:49px;}
+.admin-page{max-width:1120px;margin:0 auto;padding-top:30px;}
+.admin-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:28px;}
+.admin-head h1{font-size:clamp(40px,6vw,65px);letter-spacing:-3px;margin:5px 0 10px;}
+.admin-head p{margin:0;font-size:14px;}
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:22px;}
+.admin-stats .card{padding:20px;}
+.admin-stats span{display:block;color:#8792b0;font-size:11px;font-weight:800;}
+.admin-stats strong{display:block;font-size:35px;margin-top:6px;}
+.admin-payments{display:grid;gap:14px;}
+.admin-payment-card{display:flex;justify-content:space-between;gap:22px;align-items:flex-start;padding:21px;}
+.admin-payment-title{display:flex;align-items:center;gap:10px;}
+.admin-payment-title h3{margin:0;font-size:18px;}
+.admin-payment-card p{margin:4px 0 13px;font-size:12px;}
+.admin-status{padding:5px 9px;border-radius:99px;font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;}
+.admin-status.pending{background:rgba(157,145,255,.12);color:#a89fff;}
+.admin-status.approved{background:rgba(104,224,176,.12);color:#68e0b0;}
+.admin-status.rejected{background:rgba(255,100,120,.1);color:#ff9ba8;}
+.admin-payment-meta{display:flex;flex-wrap:wrap;gap:8px 18px;color:#aeb7d2;font-size:11px;}
+.admin-payment-meta b{color:#dce2f2;}
+.admin-payment-card small{display:block;color:#68738e;font-size:10px;margin-top:12px;}
+.admin-payment-actions{display:flex;gap:8px;flex:none;}
+.admin-payment-actions .button{display:inline-flex;align-items:center;gap:6px;margin:0;padding:11px 13px;font-size:11px;}
+.admin-approve{background:rgba(104,224,176,.13);color:#68e0b0;box-shadow:none;}
+.admin-reject{background:rgba(255,100,120,.1);color:#ff9ba8;box-shadow:none;}
+.admin-verified{display:flex;align-items:center;gap:7px;color:#8792b0;font-size:10px;white-space:nowrap;}
+.admin-note{margin-top:12px;padding:9px 11px;border-radius:9px;background:rgba(255,255,255,.04);color:#aeb7d2;font-size:11px;}
+.admin-empty{padding:30px;text-align:center;color:#8792b0;}
+@media(max-width:700px){.admin-login-page{min-height:600px;padding:15px 0;}.admin-login-card{padding:21px;border-radius:17px;}.admin-page{padding-top:15px;}.admin-head{flex-direction:column;align-items:flex-start;gap:14px;}.admin-head .button{margin:0;}.admin-stats{grid-template-columns:1fr;}.admin-payment-card{display:block;}.admin-payment-actions{margin-top:18px;}.admin-payment-actions .button{flex:1;justify-content:center;}.admin-verified{margin-top:15px;white-space:normal;}}
