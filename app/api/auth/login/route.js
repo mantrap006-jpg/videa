@@ -20,6 +20,10 @@ export async function POST(request) {
       return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
     }
 
+    if (user.status === "suspended") {
+      return NextResponse.json({ error: "This account is suspended. Please contact Videa support." }, { status: 403 });
+    }
+
     const response = NextResponse.json({
       user: { name: user.name, email: user.email, role: user.role }
     });
