@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
+import PlatformSetting from "@/models/PlatformSetting";
 import { connectDB } from "@/lib/mongodb";
 import { CheckCircle2, Clock3, ShieldCheck, Smartphone, Sparkles, Zap } from "lucide-react";
 import SubscriptionForm from "./SubscriptionForm";
@@ -32,8 +33,9 @@ export default async function SubscriptionPage() {
     { id: "quarterly", name: "Quarterly Creator", price: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 13500), days: 90, description: "One payment for 90 days of Creator access." },
     { id: "annual", name: "Annual Creator", price: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 50000), days: 365, description: "One payment for a full year of Creator access." }
   ];
-  const ussdNumber = process.env.CREATOR_USSD_NUMBER || "YOUR_USSD_NUMBER";
-  const network = process.env.CREATOR_PAYMENT_NETWORK || "MTN / Airtel Money";
+  const paymentSettings = await PlatformSetting.findOne({ key: "payment" }).lean().catch(() => null);
+  const ussdNumber = paymentSettings?.ussdNumber || process.env.CREATOR_USSD_NUMBER || "Payment number not configured";
+  const network = paymentSettings?.paymentNetwork || process.env.CREATOR_PAYMENT_NETWORK || "MTN / Airtel Money";
 
   return (
     <section className="page subscription-page">
