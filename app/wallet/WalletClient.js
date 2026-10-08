@@ -11,7 +11,7 @@ export default function WalletClient() {
   const [depositAmount, setDepositAmount] = useState("1000");
   const [depositPhone, setDepositPhone] = useState("");
   const [depositNetwork, setDepositNetwork] = useState("MTN MoMo");
-  const [transactionReference, setTransactionReference] = useState("");
+  const [senderName, setSenderName] = useState("");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [depositSubmitting, setDepositSubmitting] = useState(false);
@@ -51,12 +51,12 @@ export default function WalletClient() {
     try {
       const res = await fetch("/api/wallet/deposits", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amountRwf: Number(depositAmount), phone: depositPhone, network: depositNetwork, transactionReference })
+        body: JSON.stringify({ amountRwf: Number(depositAmount), phone: depositPhone, network: depositNetwork, senderName })
       });
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Could not submit deposit.");
       setMessage("Deposit submitted for admin verification. Points will be added only after approval.");
-      setTransactionReference("");
+      setSenderName("");
       await load();
     } catch (e) { setError(e.message); }
     finally { setDepositSubmitting(false); }
@@ -80,15 +80,15 @@ export default function WalletClient() {
 
       <form className="card wallet-withdraw-form wallet-deposit-form" onSubmit={deposit}>
         <div className="eyebrow"><ArrowUpFromLine size={15}/> DEPOSIT</div><h2>Deposit to your wallet</h2>
-        <p className="muted">Pay using mobile money, then submit the transaction reference. An admin will verify the payment before points are added.</p>
+        <p className="muted">Pay using mobile money, then submit the sender name shown on your payment receipt. An admin will verify the payment before points are added.</p>
         <div className="wallet-deposit-fields">
           <label>Deposit amount (RWF)<input type="number" min="100" max="10000000" step="1" required value={depositAmount} onChange={e=>setDepositAmount(e.target.value)} /></label>
           <label>Mobile money network<select value={depositNetwork} onChange={e=>setDepositNetwork(e.target.value)}><option>MTN MoMo</option><option>Airtel Money</option><option>Other</option></select></label>
           <label>Payment phone number<input required value={depositPhone} onChange={e=>setDepositPhone(e.target.value)} placeholder="e.g. 078..." autoComplete="tel" /></label>
-          <label>Transaction reference<input required value={transactionReference} onChange={e=>setTransactionReference(e.target.value)} placeholder="Reference from your payment receipt" maxLength={120} /></label>
+          <label>Sender name<input required value={senderName} onChange={e=>setSenderName(e.target.value)} placeholder="Name shown on the payment receipt" maxLength={120} autoComplete="name" /></label>
         </div>
         <div className="wallet-amount-preview"><span>Points after approval</span><strong>{(Number(depositAmount) || 0).toLocaleString()} points</strong></div>
-        <button className="button wallet-submit" disabled={depositSubmitting || !Number.isSafeInteger(Number(depositAmount)) || Number(depositAmount) < 100 || !depositPhone.trim() || !transactionReference.trim()}>{depositSubmitting ? "Submitting…" : "Submit deposit for verification"}</button>
+        <button className="button wallet-submit" disabled={depositSubmitting || !Number.isSafeInteger(Number(depositAmount)) || Number(depositAmount) < 100 || !depositPhone.trim() || !senderName.trim()}>{depositSubmitting ? "Submitting…" : "Submit deposit for verification"}</button>
         <div className="wallet-security"><ShieldCheck size={16}/> Never submit a payment reference for a payment you did not make. Admin approval is required.</div>
       </form>
 
@@ -113,7 +113,7 @@ export default function WalletClient() {
                 <div>
                   <strong>{item.amountRwf.toLocaleString()} RWF · +{item.points.toLocaleString()} pts</strong>
                   <span>{item.network} · {item.phone}</span>
-                  <small>Ref: {item.transactionReference}</small>
+                  <small>Sender: {item.senderName || "Not recorded"}</small>
                   <small>{new Date(item.createdAt).toLocaleString()}</small>
                   {item.adminNote && <small>{item.adminNote}</small>}
                 </div>
