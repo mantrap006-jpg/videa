@@ -4,7 +4,7 @@ import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 import { signToken, COOKIE_NAME } from "@/lib/auth";
 
-const allowedRoles = ["viewer", "youtuber", "advertiser"];
+const allowedRoles = ["viewer", "creator"];
 
 export async function POST(request) {
   try {
