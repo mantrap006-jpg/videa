@@ -167,3 +167,104 @@ td, th { padding: 12px; text-align: left; border-bottom: 1px solid #293451; }
 @keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 @media (max-width:800px){.hero-light{grid-template-columns:1fr;}.lightweight-visual{min-height:390px;}.quick-stats,.lightweight-grid,.earn-calculator{grid-template-columns:1fr;}.quick-stats{margin-bottom:55px;}.quick-stats div{padding:15px 18px;}.floating-points{right:0;top:25px}.floating-stats{left:0;bottom:35px}.earn-calculator{gap:25px;margin:70px 0;padding:24px;}.cta-card{align-items:flex-start;flex-direction:column;}.orbit-two{width:400px;height:400px;}}
 @media (prefers-reduced-motion:reduce){.watch-card{animation:none}.interactive-card{transition:none}}
+
+/* Final responsive pass */
+html{overflow-x:hidden;}
+body{overflow-x:hidden;}
+img,svg{max-width:100%;}
+button,.button,a{touch-action:manipulation;}
+@media (max-width:1100px){
+  main{padding-left:20px;padding-right:20px;}
+  .hero{grid-template-columns:1fr 1fr;gap:15px;}
+  .hero-light .hero-copy{max-width:590px;}
+  .lightweight-visual{transform:scale(.94);}
+  .quick-stats{margin-bottom:60px;}
+}
+@media (max-width:800px){
+  .topbar{height:auto;min-height:64px;align-items:center;padding:10px 14px;gap:10px;}
+  .brand{font-size:19px;letter-spacing:1px;flex-shrink:0;}
+  .brand span{width:28px;height:28px;margin-right:5px;}
+  nav{min-width:0;gap:6px;justify-content:flex-end;flex-wrap:nowrap;}
+  nav a{white-space:nowrap;}
+  nav a:not(.nav-signup):not(.nav-login){display:none;}
+  .nav-login{padding:8px 7px;}
+  .nav-signup{padding:9px 11px;font-size:11px;}
+  main{width:100%;padding:22px 14px 55px;}
+  .hero,.hero-light{display:grid;grid-template-columns:1fr;min-height:0;padding-top:20px;gap:5px;}
+  .hero-copy{max-width:none!important;}
+  .eyebrow{font-size:10px;letter-spacing:1.4px;margin-bottom:12px;}
+  h1{font-size:clamp(42px,13vw,62px);line-height:.98;letter-spacing:-2.5px;margin-bottom:18px;}
+  h2{font-size:28px;letter-spacing:-1px;}
+  .hero-text{font-size:16px;line-height:1.6;}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px;}
+  .hero-actions .button{margin:0;min-height:46px;display:inline-flex;align-items:center;justify-content:center;}
+  .trust-row{gap:9px 14px;font-size:11px;}
+  .lightweight-visual{min-height:340px;width:100%;transform:none;margin-top:5px;overflow:visible;}
+  .watch-card{width:min(330px,78%);padding:20px;border-radius:20px;}
+  .play-circle{margin:34px auto 18px;width:62px;height:62px;}
+  .watch-card h3{font-size:21px;}
+  .floating-points{top:18px;right:0;padding:10px 12px;}
+  .floating-stats{bottom:18px;left:0;padding:10px 12px;font-size:10px;}
+  .orbit-one{width:285px;height:285px;}
+  .orbit-two{width:350px;height:350px;}
+  .quick-stats{grid-template-columns:1fr;margin:35px 0 45px;}
+  .quick-stats div{min-height:52px;padding:13px 16px;}
+  .section,.video-showcase{padding:45px 0 30px;}
+  .section-heading{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:20px;}
+  .section-heading p{margin:0;font-size:13px;}
+  .category-tabs{margin-bottom:15px;scrollbar-width:none;}
+  .category-tabs::-webkit-scrollbar{display:none;}
+  .category-tabs button{min-height:42px;padding:9px 16px;}
+  .lightweight-grid,.video-grid,.feature-grid,.video-library,.stats-grid{grid-template-columns:1fr;gap:14px;}
+  .video-thumb{height:165px;}
+  .video-info{padding:15px;}
+  .earn-calculator{grid-template-columns:1fr;margin:55px 0;padding:21px;gap:22px;border-radius:20px;}
+  .earn-calculator h2{font-size:29px;}
+  .calculator-card{padding:19px;}
+  .calculator-value strong{font-size:25px;}
+  .calculator-card input{height:30px;}
+  .steps-section{margin-bottom:50px;}
+  .feature-card{padding:20px;}
+  .cta-card{padding:24px 20px;margin-top:20px;}
+  .cta-card .button{width:100%;justify-content:center;margin:0;}
+  .reward-banner{grid-template-columns:1fr;padding:22px;margin-bottom:45px;gap:25px;border-radius:20px;}
+  .dashboard-preview{width:100%;padding:17px;}
+  .balance{font-size:34px;margin:22px 0 15px;}
+  .reward-copy h2{font-size:34px;}
+  .search-bar{width:100%;}
+  .search-bar .button{width:100%;margin:0;text-align:center;}
+  .dashboard-head{gap:12px;}
+  table{display:block;overflow-x:auto;white-space:nowrap;}
+  td,th{padding:10px;}
+}
+@media (max-width:430px){
+  .topbar{padding:9px 10px;}
+  .brand{font-size:17px;}
+  .brand span{width:26px;height:26px;}
+  nav{gap:3px;}
+  .nav-login{font-size:11px;padding:7px 5px;}
+  .nav-signup{font-size:10px;padding:8px 9px;}
+  .hero{padding-top:14px;}
+  h1{font-size:clamp(39px,12.5vw,52px);}
+  .hero-text{font-size:15px;}
+  .trust-row span:nth-child(3){display:none;}
+  .lightweight-visual{min-height:310px;}
+  .watch-card{width:76%;padding:17px;}
+  .watch-card-top{font-size:8px;}
+  .play-circle{width:56px;height:56px;margin:29px auto 15px;}
+  .watch-card h3{font-size:18px;}
+  .watch-card p{font-size:11px;}
+  .floating-points{font-size:10px;}
+  .floating-points strong{font-size:14px;}
+  .floating-stats{font-size:9px;}
+  .orbit-one{width:250px;height:250px;}
+  .orbit-two{width:300px;height:300px;}
+  .quick-stats{margin-top:25px;}
+  .quick-stats div{padding:12px 14px;font-size:11px;}
+  .video-thumb{height:145px;}
+  .reward-copy h2{font-size:30px;}
+  .section-heading h2{font-size:25px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .watch-card,.interactive-card{animation:none!important;transition:none!important;}
+}
