@@ -4,6 +4,7 @@ import { getUserFromRequest } from "@/lib/auth";
 import User from "@/models/User";
 import Earning from "@/models/Earning";
 import Withdrawal from "@/models/Withdrawal";
+import Deposit from "@/models/Deposit";
 
 export const dynamic = "force-dynamic";
 const POINTS_TO_RWF = 1;
@@ -16,15 +17,17 @@ export async function GET(request) {
   const user = await User.findById(session.sub).select("name points").lean();
   if (!user) return NextResponse.json({ error: "Account not found." }, { status: 404 });
 
-  const [earnings, withdrawals] = await Promise.all([
+  const [earnings, withdrawals, deposits] = await Promise.all([
     Earning.find({ userId: session.sub }).sort({ createdAt: -1 }).limit(30).populate("videoId", "title").lean(),
-    Withdrawal.find({ user: session.sub }).sort({ createdAt: -1 }).limit(30).lean()
+    Withdrawal.find({ user: session.sub }).sort({ createdAt: -1 }).limit(30).lean(),
+    Deposit.find({ user: session.sub }).sort({ createdAt: -1 }).limit(30).lean()
   ]);
 
   return NextResponse.json({
     wallet: { name: user.name, points: user.points || 0, balanceRwf: (user.points || 0) * POINTS_TO_RWF, pointValueRwf: POINTS_TO_RWF, minimumWithdrawalPoints: MIN_WITHDRAWAL_POINTS },
     earnings: earnings.map(item => ({ id: item._id.toString(), title: item.videoId?.title || "Video reward", points: item.points, createdAt: item.createdAt })),
-    withdrawals: withdrawals.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt }))
+    withdrawals: withdrawals.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt })),
+    deposits: deposits.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt }))
   });
 }
 
@@ -46,7 +49,6 @@ export async function POST(request) {
   }
 
   await connectDB();
-  // Reserve the points immediately so simultaneous requests cannot spend the same balance.
   const user = await User.findOneAndUpdate(
     { _id: session.sub, points: { $gte: points } },
     { $inc: { points: -points } },
