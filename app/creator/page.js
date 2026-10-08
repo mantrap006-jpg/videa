@@ -27,9 +27,9 @@ export default function Creator() {
     <section className="creator-page">
       <div className="creator-hero">
         <div>
-          <div className="eyebrow"><Megaphone size={15} /> CREATOR & ADVERTISER</div>
+          <div className="eyebrow"><Megaphone size={15} /> CREATOR</div>
           <h2>Put your videos in front of engaged viewers.</h2>
-          <p className="muted">YouTubers and advertisers can subscribe to Videa, submit approved YouTube content, choose a viewer reward, and grow their reach.</p>
+          <p className="muted">Creators can subscribe to Videa, submit approved YouTube content, choose a viewer reward, and grow their reach.</p>
         </div>
         <div className="creator-plan">
           <Sparkles size={20} />
