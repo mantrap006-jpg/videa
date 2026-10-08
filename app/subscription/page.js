@@ -27,7 +27,11 @@ export default async function SubscriptionPage() {
     user.subscription?.status === "active" &&
     (!user.subscription?.expiresAt || new Date(user.subscription.expiresAt) > new Date());
 
-  const price = Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 5000);
+  const plans = [
+    { id: "monthly", name: "Monthly Creator", price: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 5000), days: 30, description: "A flexible plan billed every 30 days." },
+    { id: "quarterly", name: "Quarterly Creator", price: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 13500), days: 90, description: "One payment for 90 days of Creator access." },
+    { id: "annual", name: "Annual Creator", price: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 50000), days: 365, description: "One payment for a full year of Creator access." }
+  ];
   const ussdNumber = process.env.CREATOR_USSD_NUMBER || "YOUR_USSD_NUMBER";
   const network = process.env.CREATOR_PAYMENT_NETWORK || "MTN / Airtel Money";
 
@@ -68,30 +72,28 @@ export default async function SubscriptionPage() {
 
       <div className="subscription-layout">
         <div className="subscription-plan-card">
-          <div className="plan-badge">CREATOR PLAN</div>
+          <div className="plan-badge">CREATOR PLANS</div>
           <div className="plan-heading">
             <div>
-              <h2>Creator</h2>
-              <p>Everything you need to publish and promote approved content.</p>
-            </div>
-            <div className="plan-price">
-              <strong>{price.toLocaleString()}</strong>
-              <span>RWF / 30 days</span>
+              <h2>Choose your access period</h2>
+              <p>All plans include Creator access after payment verification.</p>
             </div>
           </div>
 
           <div className="plan-benefits">
-            <div><CheckCircle2 size={18} /><span>Submit YouTube videos for approval</span></div>
-            <div><CheckCircle2 size={18} /><span>Promote approved content to Videa viewers</span></div>
-            <div><CheckCircle2 size={18} /><span>Creator dashboard and publishing tools</span></div>
-            <div><CheckCircle2 size={18} /><span>Manual payment verification for added security</span></div>
+            {plans.map((plan) => (
+              <div key={plan.id} className="subscription-plan-option">
+                <CheckCircle2 size={18} />
+                <span><strong>{plan.name}</strong><br />{plan.description}<br /><b>{plan.price.toLocaleString()} RWF · {plan.days} days</b></span>
+              </div>
+            ))}
           </div>
 
           <div className="plan-note">
             <ShieldCheck size={18} />
             <div>
-              <strong>No automatic activation</strong>
-              <span>Your subscription becomes active only after an administrator confirms your payment.</span>
+              <strong>Manual payment verification</strong>
+              <span>Your selected plan activates only after an administrator confirms your payment.</span>
             </div>
           </div>
         </div>
@@ -99,22 +101,16 @@ export default async function SubscriptionPage() {
         <div className="subscription-payment-card">
           <div className="eyebrow"><Smartphone size={15} /> STEP 1 · PAY</div>
           <h2>Pay with {network}</h2>
-          <p className="muted">Send the exact amount below, then keep your transaction/reference number.</p>
-
-          <div className="payment-number">
-            <span>Videa payment number</span>
-            <strong>{ussdNumber}</strong>
-            <small>{price.toLocaleString()} RWF · 30 days</small>
-          </div>
+          <p className="muted">Choose a plan and send the exact amount shown. Then enter the sender name displayed on your payment confirmation.</p>
 
           <div className="payment-steps">
-            <div><b>01</b><span>Open your mobile-money USSD menu.</span></div>
-            <div><b>02</b><span>Send <strong>{price.toLocaleString()} RWF</strong> to the Videa payment number.</span></div>
-            <div><b>03</b><span>Save the transaction/reference number from the confirmation message.</span></div>
+            <div><b>01</b><span>Open your mobile-money menu.</span></div>
+            <div><b>02</b><span>Send the amount for your selected plan to the Videa payment number shown in the form.</span></div>
+            <div><b>03</b><span>Submit the sender name and phone number used for the payment.</span></div>
           </div>
 
           {user.role === "creator" && !active ? (
-            <SubscriptionForm price={price} />
+            <SubscriptionForm plans={plans} ussdNumber={ussdNumber} network={network} />
           ) : active ? (
             <div className="subscription-success">
               <CheckCircle2 size={20} />
