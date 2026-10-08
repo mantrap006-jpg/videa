@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { connectDB } from "@/lib/mongodb";
-import { getUserFromRequest } from "@/lib/auth";
+import { getActiveUserFromRequest } from "@/lib/auth";
 import User from "@/models/User";
 import Video from "@/models/Video";
 import Deposit from "@/models/Deposit";
@@ -12,7 +12,7 @@ import Earning from "@/models/Earning";
 export const dynamic = "force-dynamic";
 
 async function requireAdmin(request) {
-  const session = getUserFromRequest(request);
+  const session = await getActiveUserFromRequest(request);
   if (!session?.sub) return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   await connectDB();
   const admin = await User.findById(session.sub).select("role").lean();
