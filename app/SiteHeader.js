@@ -23,7 +23,7 @@ export default function SiteHeader({ user }) {
 
   return (
     <header className="topbar">
-      <a href="/" className="brand" aria-label="Videa home"><img src="/logo.svg" alt="VIDEA" style={{ display: "block", width: 150, height: 42, objectFit: "contain" }} /></a>
+      <a href="/" className="brand" aria-label="Videa home"><img src="/logo.svg" alt="VIDEA" style={{ display: "block", width: 190, height: 50, objectFit: "contain" }} /></a>
       {!isAdminRoute && (
         <Navigation>
           {user?.role === "admin" ? (
