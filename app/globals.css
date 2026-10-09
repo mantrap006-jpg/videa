@@ -848,3 +848,62 @@ select:focus{border-color:#7567ff;box-shadow:0 0 0 3px rgba(109,93,252,.12);}
   .subscription-plan-box { padding: 15px; }
   .subscription-hero h1 { font-size: 31px; }
 }
+
+
+/* Final responsive overrides for the current Videa deployment */
+.subscription-page {
+  display: block;
+  width: 100%;
+  max-width: 1120px;
+  min-width: 0;
+  margin-inline: auto;
+  padding: 28px 16px 48px;
+  overflow-wrap: anywhere;
+}
+.subscription-hero,
+.subscription-layout,
+.subscription-bottom,
+.subscription-plans-grid {
+  width: 100%;
+  min-width: 0;
+}
+.subscription-hero {
+  grid-template-columns: minmax(0, 1.35fr) minmax(250px, .65fr);
+}
+.subscription-layout {
+  grid-template-columns: minmax(0, 1fr);
+}
+.subscription-plan-card,
+.subscription-payment-card,
+.subscription-status-card,
+.subscription-plan-box,
+.subscription-mini-card {
+  min-width: 0;
+  max-width: 100%;
+}
+.subscription-plans-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 900px) {
+  .subscription-page { max-width: 760px; padding: 22px 14px 38px; }
+  .subscription-hero { grid-template-columns: minmax(0, 1fr); }
+  .subscription-plans-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .subscription-bottom { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .subscription-page { padding: 14px 12px 30px; }
+  .subscription-hero h1 { font-size: clamp(30px, 8.8vw, 42px); line-height: 1.1; }
+  .subscription-trust { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .subscription-plans-grid { grid-template-columns: minmax(0, 1fr); }
+  .subscription-plan-card,
+  .subscription-payment-card { padding: 16px; }
+  .subscription-plan-box { padding: 17px; }
+  .subscription-plan-price { flex-wrap: wrap; }
+  .subscription-plan-price strong { font-size: clamp(24px, 7vw, 29px); }
+  .subscription-status-card { padding: 16px; }
+}
+@media (max-width: 360px) {
+  .subscription-page { padding-inline: 8px; }
+  .subscription-plan-card,
+  .subscription-payment-card { padding: 12px; }
+}
