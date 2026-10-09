@@ -28,9 +28,33 @@ export default async function SubscriptionPage() {
     (!user.subscription?.expiresAt || new Date(user.subscription.expiresAt) > new Date());
 
   const plans = [
-    { id: "monthly", name: "Monthly Creator", price: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 5000), days: 30, description: "30 days of Creator access." },
-    { id: "quarterly", name: "Quarterly Creator", price: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 13500), days: 90, description: "90 days of Creator access." },
-    { id: "annual", name: "Annual Creator", price: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 50000), days: 365, description: "365 days of Creator access." }
+    {
+      id: "monthly",
+      name: "Monthly Creator",
+      price: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 5000),
+      days: 30,
+      tagline: "A flexible way to get started",
+      description: "Great for creators who want to try Videa promotion without a long commitment.",
+      features: ["30 days of Creator access", "Submit eligible YouTube videos", "Promote content to Videa viewers", "Renew anytime with wallet points"]
+    },
+    {
+      id: "quarterly",
+      name: "Quarterly Creator",
+      price: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 13500),
+      days: 90,
+      tagline: "More time to grow",
+      description: "For creators who want a longer campaign and fewer renewals.",
+      features: ["90 days of Creator access", "Submit eligible YouTube videos", "Promote content to Videa viewers", "Renew using wallet points"]
+    },
+    {
+      id: "annual",
+      name: "Annual Creator",
+      price: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 50000),
+      days: 365,
+      tagline: "Best for long-term creators",
+      description: "Keep your Creator access for a full year with one points deduction.",
+      features: ["365 days of Creator access", "Submit eligible YouTube videos", "Promote content to Videa viewers", "Fewer renewal interruptions"]
+    }
   ];
 
   return (
@@ -81,12 +105,26 @@ export default async function SubscriptionPage() {
             </div>
           </div>
 
-          <div className="plan-benefits">
+          <div className="subscription-plans-grid">
             {plans.map((plan) => (
-              <div key={plan.id} className="subscription-plan-option">
-                <CheckCircle2 size={18} />
-                <span><strong>{plan.name}</strong><br />{plan.description}<br /><b>{plan.price.toLocaleString()} points · {plan.days} days</b></span>
-              </div>
+              <article key={plan.id} className={`subscription-plan-box subscription-plan-box-${plan.id}`}>
+                <div className="subscription-plan-box-top">
+                  <span className="subscription-plan-duration">{plan.days} DAYS</span>
+                  {plan.id === "quarterly" && <span className="subscription-plan-popular">POPULAR</span>}
+                </div>
+                <h3>{plan.name}</h3>
+                <p className="subscription-plan-tagline">{plan.tagline}</p>
+                <div className="subscription-plan-price">
+                  <strong>{plan.price.toLocaleString()}</strong>
+                  <span>points</span>
+                </div>
+                <p className="subscription-plan-description">{plan.description}</p>
+                <ul className="subscription-plan-features">
+                  {plan.features.map((feature) => (
+                    <li key={feature}><CheckCircle2 size={16} /><span>{feature}</span></li>
+                  ))}
+                </ul>
+              </article>
             ))}
           </div>
 
