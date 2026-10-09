@@ -1204,3 +1204,29 @@ input:hover, textarea:hover, select:hover {
   .legal-section{transition:border-color .2s ease}
   .legal-section:hover{border-top-color:rgba(104,224,176,.3)}
 }
+
+
+/* Fix: show every navigation item when the mobile menu is expanded */
+@media (max-width: 900px) {
+  .topbar nav.nav-links.open > a,
+  .topbar nav.nav-links.open > .nav-user,
+  .topbar nav.nav-links.open > .nav-points {
+    display: flex !important;
+    visibility: visible;
+    opacity: 1;
+  }
+  .topbar nav.nav-links.open > a {
+    width: 100%;
+    min-height: 46px;
+    white-space: normal;
+    justify-content: flex-start;
+  }
+  .topbar nav.nav-links.open > .nav-signup {
+    justify-content: center;
+  }
+  .topbar nav.nav-links.open > .nav-user,
+  .topbar nav.nav-links.open > .nav-points {
+    width: 100%;
+    min-height: 42px;
+  }
+}
