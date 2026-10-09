@@ -8,6 +8,7 @@ import Deposit from "@/models/Deposit";
 import Withdrawal from "@/models/Withdrawal";
 import SubscriptionPayment from "@/models/SubscriptionPayment";
 import Earning from "@/models/Earning";
+import PlatformSetting from "@/models/PlatformSetting";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ export async function GET(request) {
     const [
       usersCount, creatorCount, videoCount, activeVideoCount,
       pendingDeposits, pendingWithdrawals, pendingSubscriptions,
-      users, videos, rewards24h, flaggedGroups
+      users, videos, rewards24h, rewards30d, revenue30d, platformSettings, flaggedGroups
     ] = await Promise.all([
       User.countDocuments({}),
       User.countDocuments({ role: "creator" }),
@@ -47,6 +48,15 @@ export async function GET(request) {
         { $group: { _id: null, count: { $sum: 1 }, points: { $sum: "$points" } } }
       ]),
       Earning.aggregate([
+        { $match: { createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } },
+        { $group: { _id: null, count: { $sum: 1 }, points: { $sum: "$points" } } }
+      ]),
+      SubscriptionPayment.aggregate([
+        { $match: { status: "approved", createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } },
+        { $group: { _id: null, revenueRwf: { $sum: "$amountRwf" }, count: { $sum: 1 } } }
+      ]),
+      PlatformSetting.findOne({ key: "payment" }).lean(),
+      Earning.aggregate([
         { $match: { createdAt: { $gte: since } } },
         { $group: { _id: "$userId", rewardCount: { $sum: 1 }, points: { $sum: "$points" }, lastRewardAt: { $max: "$createdAt" } } },
         { $match: { rewardCount: { $gte: 10 } } },
@@ -60,6 +70,12 @@ export async function GET(request) {
       ? await User.find({ _id: { $in: flaggedUserIds } }).select("name email role status").lean()
       : [];
     const flaggedById = new Map(flaggedUsers.map((user) => [user._id.toString(), user]));
+
+    const revenueRwf30d = Number(revenue30d[0]?.revenueRwf || 0);
+    const rewardCostRwf30d = Number(rewards30d[0]?.points || 0);
+    const monthlyFixedCostsRwf = Number(platformSettings?.monthlyFixedCostsRwf ?? 100000);
+    const estimatedProfitRwf30d = revenueRwf30d - rewardCostRwf30d - monthlyFixedCostsRwf;
+    const profitMarginPercent = revenueRwf30d > 0 ? Math.round((estimatedProfitRwf30d / revenueRwf30d) * 1000) / 10 : 0;
 
     const securityChecks = [
       {
@@ -117,7 +133,18 @@ export async function GET(request) {
         usersCount, creatorCount, videoCount, activeVideoCount,
         pendingDeposits, pendingWithdrawals, pendingSubscriptions,
         rewards24h: rewards24h[0]?.count || 0,
-        pointsIssued24h: rewards24h[0]?.points || 0
+        pointsIssued24h: rewards24h[0]?.points || 0,
+        rewards30d: rewards30d[0]?.count || 0,
+        pointsIssued30d: rewardCostRwf30d,
+        revenueRwf30d,
+        rewardCostRwf30d,
+        monthlyFixedCostsRwf,
+        estimatedProfitRwf30d,
+        profitMarginPercent,
+        dailyRewardPointsLimit: Number(platformSettings?.dailyRewardPointsLimit ?? 100),
+        dailyRewardCountLimit: Number(platformSettings?.dailyRewardCountLimit ?? 10),
+        maxPointsPerVideo: Number(platformSettings?.maxPointsPerVideo ?? 50),
+        minimumWatchPercent: Number(platformSettings?.minimumWatchPercent ?? 80)
       },
       users: users.map((user) => ({
         id: user._id.toString(), name: user.name, email: user.email, role: user.role,
