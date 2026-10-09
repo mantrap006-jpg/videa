@@ -55,7 +55,7 @@ export async function POST(request) {
     }
 
     const platformSettings = await PlatformSetting.findOne({ key: "payment" }).lean();
-    const dailyRewardPointsLimit = Math.max(0, Number(platformSettings?.dailyRewardPointsLimit ?? 100));
+    const dailyRewardPointsLimit = Math.max(0, Number(platformSettings?.dailyRewardPointsLimit ?? 500));
     const dailyRewardCountLimit = Math.max(0, Number(platformSettings?.dailyRewardCountLimit ?? 10));
     const maxPointsPerVideo = Math.max(0, Number(platformSettings?.maxPointsPerVideo ?? 50));
     const globalMinimumWatchPercent = Math.min(100, Math.max(1, Number(platformSettings?.minimumWatchPercent ?? 80)));
