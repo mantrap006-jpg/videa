@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Video from "@/models/Video";
 import WatchProgress from "@/models/WatchProgress";
 import Earning from "@/models/Earning";
+import PlatformSetting from "@/models/PlatformSetting";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 import { getActiveUserFromRequest } from "@/lib/auth";
@@ -52,6 +53,12 @@ export async function POST(request) {
         return NextResponse.json({ error: "Videa could not detect this video's YouTube channel. Please try again later." }, { status: 503 });
       }
     }
+
+    const platformSettings = await PlatformSetting.findOne({ key: "payment" }).lean();
+    const dailyRewardPointsLimit = Math.max(0, Number(platformSettings?.dailyRewardPointsLimit ?? 100));
+    const dailyRewardCountLimit = Math.max(0, Number(platformSettings?.dailyRewardCountLimit ?? 10));
+    const maxPointsPerVideo = Math.max(0, Number(platformSettings?.maxPointsPerVideo ?? 50));
+    const globalMinimumWatchPercent = Math.min(100, Math.max(1, Number(platformSettings?.minimumWatchPercent ?? 80)));
 
     const subscriptionProof = request.cookies.get(subscriptionCookieName(video.channelId))?.value;
     if (!verifySubscriptionProof(subscriptionProof, session.sub, video.channelId)) {
@@ -127,16 +134,17 @@ export async function POST(request) {
       100,
       Math.floor((Number(progress.watchedSeconds || 0) / video.durationSeconds) * 100)
     );
-    const requiredPercent = Number(video.minimumWatchPercent || 80);
-    const calculatedReward = Math.max(
-      1,
-      Math.floor((video.durationSeconds / 60) * Number(video.pointsPerMinute || 1))
+    const requiredPercent = Math.max(globalMinimumWatchPercent, Number(video.minimumWatchPercent || 80));
+    const calculatedReward = Math.min(
+      maxPointsPerVideo,
+      Math.max(1, Math.floor((video.durationSeconds / 60) * Number(video.pointsPerMinute || 1)))
     );
 
     if (progress.rewarded) {
+      const previousEarning = await Earning.findOne({ userId: session.sub, videoId }).select("points").lean();
       return NextResponse.json({
         rewarded: true,
-        points: calculatedReward,
+        points: previousEarning?.points ?? calculatedReward,
         watchedPercent,
         watchedSeconds: progress.watchedSeconds || 0,
         durationSeconds: video.durationSeconds,
@@ -156,6 +164,29 @@ export async function POST(request) {
       });
     }
 
+    const dayStart = new Date(now);
+    dayStart.setUTCHours(0, 0, 0, 0);
+    const dailyEarnings = await Earning.aggregate([
+      { $match: { userId: new mongoose.Types.ObjectId(session.sub), createdAt: { $gte: dayStart } } },
+      { $group: { _id: null, count: { $sum: 1 }, points: { $sum: "$points" } } }
+    ]);
+    const dailyCount = Number(dailyEarnings[0]?.count || 0);
+    const dailyPoints = Number(dailyEarnings[0]?.points || 0);
+    const remainingPoints = Math.max(0, dailyRewardPointsLimit - dailyPoints);
+
+    if (dailyCount >= dailyRewardCountLimit || remainingPoints <= 0 || maxPointsPerVideo <= 0) {
+      return NextResponse.json({
+        rewarded: false,
+        dailyLimitReached: true,
+        watchedPercent,
+        watchedSeconds: progress.watchedSeconds || 0,
+        durationSeconds: video.durationSeconds,
+        required: requiredPercent,
+        message: "You reached today's reward limit. You can continue earning after the daily limit resets."
+      });
+    }
+
+    const pointsToAward = Math.min(calculatedReward, remainingPoints);
     const claimed = await WatchProgress.findOneAndUpdate(
       { _id: progress._id, rewarded: false },
       { $set: { rewarded: true, rewardedAt: now, watchedPercent } },
@@ -165,17 +196,17 @@ export async function POST(request) {
       return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent });
     }
 
-    await User.findByIdAndUpdate(session.sub, { $inc: { points: calculatedReward } });
-    await Earning.create({ userId: session.sub, videoId, points: calculatedReward });
+    await User.findByIdAndUpdate(session.sub, { $inc: { points: pointsToAward } });
+    await Earning.create({ userId: session.sub, videoId, points: pointsToAward });
 
     return NextResponse.json({
       rewarded: true,
-      points: calculatedReward,
+      points: pointsToAward,
       watchedPercent,
       watchedSeconds: progress.watchedSeconds || 0,
       durationSeconds: video.durationSeconds,
       required: requiredPercent,
-      message: `Reward received: +${calculatedReward} points`
+      message: `Reward received: +${pointsToAward} points`
     });
   } catch (error) {
     return NextResponse.json({ error: "Could not save watch progress." }, { status: 500 });
