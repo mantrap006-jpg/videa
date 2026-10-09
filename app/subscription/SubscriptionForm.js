@@ -2,99 +2,90 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
 
 export default function SubscriptionForm({ plans, points = 0 }) {
   const router = useRouter();
-  const [planId, setPlanId] = useState(plans?.[0]?.id || "monthly");
+  const [busyPlan, setBusyPlan] = useState(null);
   const [status, setStatus] = useState(null);
-  const [busy, setBusy] = useState(false);
   const [availablePoints, setAvailablePoints] = useState(Number(points) || 0);
-  const selectedPlan = plans.find((plan) => plan.id === planId) || plans[0];
-  const canAfford = Boolean(selectedPlan && availablePoints >= selectedPlan.price);
 
-  async function submit(event) {
-    event.preventDefault();
-    if (!selectedPlan || busy) return;
-    setBusy(true);
+  async function submit(plan) {
+    if (!plan || busyPlan) return;
+    if (availablePoints < plan.price) {
+      setStatus({ type: "error", message: `You need ${(plan.price - availablePoints).toLocaleString()} more points for the ${plan.name} plan.` });
+      return;
+    }
+
+    setBusyPlan(plan.id);
     setStatus(null);
-
     try {
       const response = await fetch("/api/subscription/payments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: selectedPlan.id })
+        body: JSON.stringify({ plan: plan.id })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Could not activate subscription.");
 
-      setAvailablePoints(Number(data.wallet?.points ?? Math.max(0, availablePoints - selectedPlan.price)));
-      setStatus({
-        type: "success",
-        message: data.message || "Creator subscription activated.",
-        detail: `Your plan is active for ${selectedPlan.days} days. Your remaining balance is ${Number(data.wallet?.points ?? 0).toLocaleString()} points.`
-      });
+      setAvailablePoints(Number(data.wallet?.points ?? Math.max(0, availablePoints - plan.price)));
+      setStatus({ type: "success", message: data.message || `${plan.name} activated successfully.` });
       router.refresh();
     } catch (error) {
-      setStatus({
-        type: "error",
-        message: error.message || "Subscription upgrade failed.",
-        detail: "Your points are not deducted unless the subscription is successfully activated."
-      });
+      setStatus({ type: "error", message: error.message || "Subscription upgrade failed." });
     } finally {
-      setBusy(false);
+      setBusyPlan(null);
     }
   }
 
   return (
-    <div className="subscription-submit">
-      <div className="form-section-heading">
-        <div className="step-label">USE YOUR VIDEA POINTS</div>
-        <h3>Upgrade your Creator plan</h3>
-        <p>Choose a plan and activate it with points already in your wallet. One point equals 1 RWF.</p>
-      </div>
-
-      <div className="payment-number subscription-selected-plan">
+    <div className="subscription-choice">
+      <div className="subscription-wallet-balance">
         <span>Available wallet balance</span>
         <strong>{availablePoints.toLocaleString()} points</strong>
         <small>Deposits become spendable after an administrator approves them.</small>
       </div>
 
-      <form onSubmit={submit}>
-        <label>
-          Subscription plan
-          <select value={planId} onChange={(e) => setPlanId(e.target.value)} required disabled={busy}>
-            {plans.map((plan) => (
-              <option key={plan.id} value={plan.id}>
-                {plan.name} — {plan.price.toLocaleString()} points / {plan.days} days
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {selectedPlan && (
-          <div className="payment-number subscription-selected-plan">
-            <span>Points required</span>
-            <strong>{selectedPlan.price.toLocaleString()} points</strong>
-            <small>{selectedPlan.days} days of Creator access</small>
-          </div>
-        )}
-
-        <button className="button subscription-submit-button" type="submit" disabled={busy || !selectedPlan || !canAfford}>
-          {busy ? "Activating..." : canAfford ? "Upgrade using points" : "Not enough points"}
-        </button>
-
-        {!canAfford && selectedPlan && (
-          <p className="muted">You need {(selectedPlan.price - availablePoints).toLocaleString()} more points. Make a deposit in your wallet and wait for admin approval.</p>
-        )}
-      </form>
-
-      <div className="subscription-form-hint">No mobile-money payment is made from this page. Subscription cost is deducted from your approved Videa wallet points.</div>
+      <div className="subscription-plans-grid">
+        {plans.map((plan) => {
+          const canAfford = availablePoints >= plan.price;
+          const isBusy = busyPlan === plan.id;
+          return (
+            <article key={plan.id} className={`subscription-plan-box subscription-plan-box-${plan.id}`}>
+              <div className="subscription-plan-box-top">
+                <span className="subscription-plan-duration">{plan.days} DAYS</span>
+                {plan.id === "quarterly" && <span className="subscription-plan-popular">POPULAR</span>}
+              </div>
+              <h3>{plan.name}</h3>
+              <p className="subscription-plan-tagline">{plan.tagline}</p>
+              <div className="subscription-plan-price">
+                <strong>{plan.price.toLocaleString()}</strong>
+                <span>points</span>
+              </div>
+              <p className="subscription-plan-description">{plan.description}</p>
+              <ul className="subscription-plan-features">
+                {plan.features.map((feature) => (
+                  <li key={feature}><CheckCircle2 size={16} /><span>{feature}</span></li>
+                ))}
+              </ul>
+              <div className="subscription-plan-action">
+                <p>{plan.days} days of Creator access</p>
+                <button className="button subscription-submit-button" type="button" onClick={() => submit(plan)} disabled={Boolean(busyPlan) || !canAfford}>
+                  {isBusy ? "Activating..." : canAfford ? "Upgrade this plan" : "Not enough points"}
+                </button>
+                {!canAfford && <small>You need {(plan.price - availablePoints).toLocaleString()} more points.</small>}
+              </div>
+            </article>
+          );
+        })}
+      </div>
 
       {status && (
-        <div className={status.type === "success" ? "form-status success" : "form-status error"}>
-          <div><strong>{status.message}</strong><span>{status.detail}</span></div>
+        <div className={status.type === "success" ? "form-status success" : "form-status error"} role="status">
+          <div><strong>{status.message}</strong></div>
         </div>
       )}
+      <p className="subscription-form-hint">No mobile-money payment is made from this page. Subscription cost is deducted from your approved Videa wallet points.</p>
     </div>
   );
 }
