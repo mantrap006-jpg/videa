@@ -34,7 +34,7 @@ export async function POST(request) {
     if (!video) return NextResponse.json({ error: "Video not found." }, { status: 404 });
 
     // Recover older records whose verified duration was never stored.
-    if (!video.durationSeconds || video.durationSeconds <= 0) {
+    if (!video.durationSeconds || video.durationSeconds <= 0 || !video.durationVerifiedAt) {
       try {
         const duration = await getYouTubeDurationSeconds(video.youtubeId);
         video.durationSeconds = duration;
