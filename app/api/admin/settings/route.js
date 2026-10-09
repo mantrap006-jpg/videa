@@ -21,7 +21,7 @@ function defaults() {
   return {
     ussdNumber: process.env.CREATOR_USSD_NUMBER || "",
     paymentNetwork: process.env.CREATOR_PAYMENT_NETWORK || "MTN / Airtel Money",
-    dailyRewardPointsLimit: 100,
+    dailyRewardPointsLimit: 500,
     dailyRewardCountLimit: 10,
     maxPointsPerVideo: 50,
     minimumWatchPercent: 80,
