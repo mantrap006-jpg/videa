@@ -164,8 +164,9 @@ export async function POST(request) {
       });
     }
 
-    const dayStart = new Date(now);
-    dayStart.setUTCHours(0, 0, 0, 0);
+    // Rwanda is UTC+2 year-round; reset daily earning limits at local midnight.
+    const kigaliOffsetMs = 2 * 60 * 60 * 1000;
+    const dayStart = new Date(Math.floor((now.getTime() + kigaliOffsetMs) / 86400000) * 86400000 - kigaliOffsetMs);
     const dailyEarnings = await Earning.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(session.sub), createdAt: { $gte: dayStart } } },
       { $group: { _id: null, count: { $sum: 1 }, points: { $sum: "$points" } } }
@@ -193,7 +194,8 @@ export async function POST(request) {
       { new: true }
     );
     if (!claimed) {
-      return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent });
+      const existingEarning = await Earning.findOne({ userId: session.sub, videoId }).select("points").lean();
+      return NextResponse.json({ rewarded: true, points: existingEarning?.points ?? pointsToAward, watchedPercent });
     }
 
     await User.findByIdAndUpdate(session.sub, { $inc: { points: pointsToAward } });
