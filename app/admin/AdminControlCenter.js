@@ -158,7 +158,7 @@ export default function AdminControlCenter() {
             <button type="button" className={tab === "users" ? "active" : ""} onClick={() => { setTab("users"); setQuery(""); }}>Users <span>{number(data.stats.usersCount)}</span></button>
             <button type="button" className={tab === "videos" ? "active" : ""} onClick={() => { setTab("videos"); setQuery(""); }}>Videos <span>{number(data.stats.videoCount)}</span></button>
             <button type="button" className={tab === "reviews" ? "active" : ""} onClick={() => { setTab("reviews"); setQuery(""); }}>Activity review <span>{data.flags.length}</span></button>
-            <button type="button" className={tab === "settings" ? "active" : ""} onClick={() => { setTab("settings"); setQuery(""); }}><Settings size={15}/> Payment settings</button>
+            <button type="button" className={tab === "settings" ? "active" : ""} onClick={() => { setTab("settings"); setQuery(""); }}><Settings size={15}/> Business & rewards</button>
           </div>
 
           {tab === "overview" && (
@@ -256,7 +256,7 @@ export default function AdminControlCenter() {
 
           {tab === "settings" && (
             <div className="card control-list-card">
-              <div className="control-list-head"><div><h2>Payment details</h2><p>Set the mobile-money number shown to users when they deposit or subscribe.</p></div></div>
+              <div className="control-list-head"><div><h2>Business model & reward controls</h2><p>Configure creator payment instructions, server-enforced viewer limits, and the cost assumptions used in the profitability estimate.</p></div></div>
               <form className="admin-settings-form" onSubmit={saveSettings}>
                 <label>USSD / mobile-money payment number
                   <input value={ussdNumber} onChange={(event) => setUssdNumber(event.target.value)} placeholder="e.g. *182*1*1*078XXXXXXX#" maxLength={40} />
