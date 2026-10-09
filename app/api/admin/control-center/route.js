@@ -144,7 +144,7 @@ export async function GET(request) {
         monthlyFixedCostsRwf,
         estimatedProfitRwf30d,
         profitMarginPercent,
-        dailyRewardPointsLimit: Number(platformSettings?.dailyRewardPointsLimit ?? 100),
+        dailyRewardPointsLimit: Number(platformSettings?.dailyRewardPointsLimit ?? 500),
         dailyRewardCountLimit: Number(platformSettings?.dailyRewardCountLimit ?? 10),
         maxPointsPerVideo: Number(platformSettings?.maxPointsPerVideo ?? 50),
         minimumWatchPercent: Number(platformSettings?.minimumWatchPercent ?? 80)
