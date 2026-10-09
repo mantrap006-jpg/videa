@@ -20,7 +20,25 @@ async function requireAdmin(request) {
 function defaults() {
   return {
     ussdNumber: process.env.CREATOR_USSD_NUMBER || "",
-    paymentNetwork: process.env.CREATOR_PAYMENT_NETWORK || "MTN / Airtel Money"
+    paymentNetwork: process.env.CREATOR_PAYMENT_NETWORK || "MTN / Airtel Money",
+    dailyRewardPointsLimit: 100,
+    dailyRewardCountLimit: 10,
+    maxPointsPerVideo: 50,
+    minimumWatchPercent: 80,
+    monthlyFixedCostsRwf: 100000
+  };
+}
+
+function serialize(saved) {
+  const fallback = defaults();
+  return {
+    ussdNumber: saved?.ussdNumber ?? fallback.ussdNumber,
+    paymentNetwork: saved?.paymentNetwork || fallback.paymentNetwork,
+    dailyRewardPointsLimit: Number(saved?.dailyRewardPointsLimit ?? fallback.dailyRewardPointsLimit),
+    dailyRewardCountLimit: Number(saved?.dailyRewardCountLimit ?? fallback.dailyRewardCountLimit),
+    maxPointsPerVideo: Number(saved?.maxPointsPerVideo ?? fallback.maxPointsPerVideo),
+    minimumWatchPercent: Number(saved?.minimumWatchPercent ?? fallback.minimumWatchPercent),
+    monthlyFixedCostsRwf: Number(saved?.monthlyFixedCostsRwf ?? fallback.monthlyFixedCostsRwf)
   };
 }
 
@@ -29,12 +47,9 @@ export async function GET(request) {
   if (auth.error) return auth.error;
   try {
     const saved = await PlatformSetting.findOne({ key: "payment" }).lean();
-    return NextResponse.json(saved ? {
-      ussdNumber: saved.ussdNumber || "",
-      paymentNetwork: saved.paymentNetwork || defaults().paymentNetwork
-    } : defaults());
+    return NextResponse.json(serialize(saved));
   } catch {
-    return NextResponse.json({ error: "Could not load payment settings." }, { status: 500 });
+    return NextResponse.json({ error: "Could not load platform settings." }, { status: 500 });
   }
 }
 
@@ -46,23 +61,46 @@ export async function PATCH(request) {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
-  const ussdNumber = String(body.ussdNumber || "").trim();
-  const paymentNetwork = String(body.paymentNetwork || "MTN / Airtel Money").trim();
+  const current = serialize(await PlatformSetting.findOne({ key: "payment" }).lean().catch(() => null));
+  const ussdNumber = String(body.ussdNumber ?? current.ussdNumber).trim();
+  const paymentNetwork = String(body.paymentNetwork ?? current.paymentNetwork).trim();
+  const dailyRewardPointsLimit = Number(body.dailyRewardPointsLimit ?? current.dailyRewardPointsLimit);
+  const dailyRewardCountLimit = Number(body.dailyRewardCountLimit ?? current.dailyRewardCountLimit);
+  const maxPointsPerVideo = Number(body.maxPointsPerVideo ?? current.maxPointsPerVideo);
+  const minimumWatchPercent = Number(body.minimumWatchPercent ?? current.minimumWatchPercent);
+  const monthlyFixedCostsRwf = Number(body.monthlyFixedCostsRwf ?? current.monthlyFixedCostsRwf);
+
   if (ussdNumber.length > 40 || !/^[+*#0-9\s()-]*$/.test(ussdNumber)) {
     return NextResponse.json({ error: "Enter a valid USSD or mobile-money payment number." }, { status: 400 });
   }
-  if (paymentNetwork.length > 80) {
-    return NextResponse.json({ error: "Payment network name is too long." }, { status: 400 });
+  if (!paymentNetwork || paymentNetwork.length > 80) {
+    return NextResponse.json({ error: "Enter a valid payment network name." }, { status: 400 });
+  }
+  const validInteger = (value, min, max) => Number.isSafeInteger(value) && value >= min && value <= max;
+  if (!validInteger(dailyRewardPointsLimit, 0, 100000)) {
+    return NextResponse.json({ error: "Daily reward points limit must be between 0 and 100,000." }, { status: 400 });
+  }
+  if (!validInteger(dailyRewardCountLimit, 0, 1000)) {
+    return NextResponse.json({ error: "Daily reward count limit must be between 0 and 1,000." }, { status: 400 });
+  }
+  if (!validInteger(maxPointsPerVideo, 0, 10000)) {
+    return NextResponse.json({ error: "Maximum points per video must be between 0 and 10,000." }, { status: 400 });
+  }
+  if (!validInteger(minimumWatchPercent, 1, 100)) {
+    return NextResponse.json({ error: "Minimum watch percentage must be between 1 and 100." }, { status: 400 });
+  }
+  if (!validInteger(monthlyFixedCostsRwf, 0, 1000000000)) {
+    return NextResponse.json({ error: "Monthly fixed costs must be between 0 and 1,000,000,000 RWF." }, { status: 400 });
   }
 
   try {
     const saved = await PlatformSetting.findOneAndUpdate(
       { key: "payment" },
-      { $set: { ussdNumber, paymentNetwork } },
+      { $set: { ussdNumber, paymentNetwork, dailyRewardPointsLimit, dailyRewardCountLimit, maxPointsPerVideo, minimumWatchPercent, monthlyFixedCostsRwf } },
       { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true }
     ).lean();
-    return NextResponse.json({ ussdNumber: saved.ussdNumber, paymentNetwork: saved.paymentNetwork });
+    return NextResponse.json(serialize(saved));
   } catch {
-    return NextResponse.json({ error: "Could not save payment settings." }, { status: 500 });
+    return NextResponse.json({ error: "Could not save platform settings." }, { status: 500 });
   }
 }
