@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { randomUUID } from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import SubscriptionPayment from "@/models/SubscriptionPayment";
@@ -50,50 +49,68 @@ export async function GET(request) {
 
 export async function POST(request) {
   const session = await getActiveUserFromRequest(request);
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!session?.sub) return NextResponse.json({ error: "Please log in." }, { status: 401 });
 
   let body;
   try {
     body = await request.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+    return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const phone = String(body.phone || "").trim();
-  const senderName = String(body.senderName || "").trim();
   const planId = String(body.plan || "monthly").trim();
   const plan = PLANS[planId];
-  const amountRwf = Number(body.amountRwf);
-
-  if (!phone || phone.length < 8 || phone.length > 20 || !senderName || senderName.length > 120) {
-    return NextResponse.json({ error: "Enter a valid payment phone number and sender name." }, { status: 400 });
-  }
   if (!plan) {
     return NextResponse.json({ error: "Choose a valid subscription plan." }, { status: 400 });
   }
-  if (!Number.isSafeInteger(amountRwf) || amountRwf !== plan.amountRwf) {
-    return NextResponse.json({ error: `Payment amount for ${plan.name} must be ${plan.amountRwf.toLocaleString()} RWF.` }, { status: 400 });
-  }
 
   await connectDB();
-  const user = await User.findById(session.sub).select("role").lean();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  if (user.role !== "creator") {
-    return NextResponse.json({ error: "Only Creator accounts can subscribe" }, { status: 403 });
+  const existingUser = await User.findById(session.sub).select("role points subscription").lean();
+  if (!existingUser) return NextResponse.json({ error: "Account not found." }, { status: 404 });
+  if (existingUser.role !== "creator") {
+    return NextResponse.json({ error: "Only Creator accounts can subscribe." }, { status: 403 });
   }
 
-  const payment = await SubscriptionPayment.create({
-    user: session.sub,
-    plan: plan.id,
-    amountRwf,
-    phone,
-    senderName,
-    transactionReference: `legacy-${randomUUID()}`,
-    status: "pending"
-  });
+  const now = new Date();
+  const currentExpiry =
+    existingUser.subscription?.status === "active" && existingUser.subscription?.expiresAt
+      ? new Date(existingUser.subscription.expiresAt)
+      : null;
+  const baseDate = currentExpiry && currentExpiry > now ? currentExpiry : now;
+  const expiresAt = new Date(baseDate);
+  expiresAt.setDate(expiresAt.getDate() + plan.days);
 
-  return NextResponse.json(
-    { payment: { id: payment._id.toString(), status: payment.status, plan: plan.id } },
-    { status: 201 }
-  );
+  // Points are credited only after a deposit is approved. One point equals one RWF
+  // for subscription pricing; no mobile-money transfer is initiated here.
+  const updatedUser = await User.findOneAndUpdate(
+    { _id: session.sub, role: "creator", points: { $gte: plan.amountRwf } },
+    {
+      $inc: { points: -plan.amountRwf },
+      $set: {
+        "subscription.plan": plan.id,
+        "subscription.status": "active",
+        "subscription.expiresAt": expiresAt
+      }
+    },
+    { new: true, runValidators: true }
+  ).select("points subscription").lean();
+
+  if (!updatedUser) {
+    return NextResponse.json({
+      error: `You need ${plan.amountRwf.toLocaleString()} points for this plan. Please deposit and wait for admin approval first.`,
+      requiredPoints: plan.amountRwf,
+      availablePoints: Number(existingUser.points || 0)
+    }, { status: 400 });
+  }
+
+  return NextResponse.json({
+    subscription: {
+      plan: plan.id,
+      status: "active",
+      expiresAt: updatedUser.subscription?.expiresAt,
+      days: plan.days
+    },
+    wallet: { points: updatedUser.points },
+    message: `${plan.name} activated using ${plan.amountRwf.toLocaleString()} points.`
+  }, { status: 200 });
 }
