@@ -1136,3 +1136,7 @@ input:hover, textarea:hover, select:hover {
 .legal-section h2{font-size:22px;letter-spacing:-.4px;margin:0 0 12px}
 .legal-section p{color:#aeb7d2;line-height:1.8;margin:10px 0}
 @media(max-width:640px){.legal-page{padding:20px 0 50px}.legal-title{letter-spacing:-.035em}.legal-section h2{font-size:20px}}
+
+.footer-legal{display:flex;justify-content:center;gap:18px;margin-top:10px;flex-wrap:wrap}
+.footer-legal a{color:#8994b2;text-decoration:underline;text-underline-offset:3px}
+.footer-legal a:hover{color:#fff}
