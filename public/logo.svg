@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="150" viewBox="0 0 560 150">
+  <defs>
+    <linearGradient id="vgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#06e3f2"/><stop offset=".45" stop-color="#087cff"/><stop offset="1" stop-color="#a000ff"/></linearGradient>
+    <linearGradient id="play" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b500ff"/><stop offset="1" stop-color="#ef24d7"/></linearGradient>
+  </defs>
+  <path d="M18 23 Q14 14 27 14 H72 Q82 14 88 26 L119 81 L150 28 Q157 14 171 14 H205 Q216 14 208 28 L151 126 Q139 148 117 133 L18 23Z" fill="url(#vgrad)"/>
+  <path d="M85 39 L127 65 Q135 70 127 76 L85 102 Q77 107 77 97 V45 Q77 34 85 39Z" fill="#fff"/>
+  <path d="M279 24 Q279 17 287 17 H309 Q317 17 313 25 L281 119 Q278 126 270 126 H254 Q247 126 244 118 L214 25 Q211 17 220 17 H242 Q250 17 253 25 L269 79Z" fill="#fff"/>
+  <path d="M329 45 H352 V126 H329Z" fill="#fff"/><path d="M330 20 L350 8 Q357 4 357 12 V30 L330 43Z" fill="url(#play)"/>
+  <path d="M368 17 H410 Q451 17 451 71 Q451 126 410 126 H368Z M390 39 V104 H408 Q428 104 428 71 Q428 39 408 39Z" fill="#fff" fill-rule="evenodd"/>
+  <path d="M464 17 H527 Q535 17 535 25 V38 Q535 45 527 45 H487 V59 H521 Q529 59 529 67 V79 Q529 86 521 86 H487 V103 H528 Q536 103 536 111 V118 Q536 126 528 126 H464 Q456 126 456 118 V25 Q456 17 464 17Z" fill="#fff"/>
+  <path d="M542 126 L573 25 Q576 17 584 17 H596 Q604 17 607 25 L638 126 H614 L608 106 H571 L565 126Z M578 84 H602 L590 45Z" fill="#fff" transform="translate(-75 0)"/>
+</svg>
