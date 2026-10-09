@@ -6,7 +6,8 @@ import Earning from "@/models/Earning";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 import { getActiveUserFromRequest } from "@/lib/auth";
-import { getYouTubeDurationSeconds } from "@/lib/youtube";
+import { getYouTubeDurationSeconds, getYouTubeVideoDetails } from "@/lib/youtube";
+import { subscriptionCookieName, verifySubscriptionProof } from "@/lib/youtube-subscription";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +33,36 @@ export async function POST(request) {
     await connectDB();
     const video = await Video.findOne({ _id: videoId, active: true });
     if (!video) return NextResponse.json({ error: "Video not found." }, { status: 404 });
+
+    // Detect the video's channel on the server and require a verified subscription
+    // before recording watch time or issuing any reward.
+    if (!video.channelId) {
+      try {
+        const details = await getYouTubeVideoDetails(video.youtubeId);
+        video.channelId = details.channelId;
+        video.channelTitle = details.channelTitle;
+        video.channelThumbnail = details.channelThumbnail;
+        if (details.durationSeconds > 0 && (!video.durationSeconds || !video.durationVerifiedAt)) {
+          video.durationSeconds = details.durationSeconds;
+          video.durationVerifiedAt = new Date();
+          video.rewardPoints = Math.max(1, Math.floor((details.durationSeconds / 60) * Number(video.pointsPerMinute || 1)));
+        }
+        await video.save();
+      } catch {
+        return NextResponse.json({ error: "Videa could not detect this video's YouTube channel. Please try again later." }, { status: 503 });
+      }
+    }
+
+    const subscriptionProof = request.cookies.get(subscriptionCookieName(video.channelId))?.value;
+    if (!verifySubscriptionProof(subscriptionProof, session.sub, video.channelId)) {
+      return NextResponse.json({
+        error: "Subscribe to this video's YouTube channel and verify your subscription before earning points.",
+        subscriptionRequired: true,
+        channelId: video.channelId,
+        channelTitle: video.channelTitle || "YouTube channel",
+        channelUrl: `https://www.youtube.com/channel/${video.channelId}`
+      }, { status: 403 });
+    }
 
     // Recover older records whose verified duration was never stored.
     if (!video.durationSeconds || video.durationSeconds <= 0 || !video.durationVerifiedAt) {
