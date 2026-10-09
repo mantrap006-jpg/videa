@@ -17,7 +17,7 @@ export default function AdminControlCenter() {
   const [error, setError] = useState("");
   const [ussdNumber, setUssdNumber] = useState("");
   const [paymentNetwork, setPaymentNetwork] = useState("MTN / Airtel Money");
-  const [dailyRewardPointsLimit, setDailyRewardPointsLimit] = useState(100);
+  const [dailyRewardPointsLimit, setDailyRewardPointsLimit] = useState(500);
   const [dailyRewardCountLimit, setDailyRewardCountLimit] = useState(10);
   const [maxPointsPerVideo, setMaxPointsPerVideo] = useState(50);
   const [minimumWatchPercent, setMinimumWatchPercent] = useState(80);
@@ -36,7 +36,7 @@ export default function AdminControlCenter() {
       if (settingsResponse.ok) {
         setUssdNumber(settings.ussdNumber || "");
         setPaymentNetwork(settings.paymentNetwork || "MTN / Airtel Money");
-        setDailyRewardPointsLimit(Number(settings.dailyRewardPointsLimit ?? 100));
+        setDailyRewardPointsLimit(Number(settings.dailyRewardPointsLimit ?? 500));
         setDailyRewardCountLimit(Number(settings.dailyRewardCountLimit ?? 10));
         setMaxPointsPerVideo(Number(settings.maxPointsPerVideo ?? 50));
         setMinimumWatchPercent(Number(settings.minimumWatchPercent ?? 80));
@@ -72,7 +72,7 @@ export default function AdminControlCenter() {
       if (!response.ok) throw new Error(result.error || "Could not save settings.");
       setUssdNumber(result.ussdNumber || "");
       setPaymentNetwork(result.paymentNetwork || "MTN / Airtel Money");
-      setDailyRewardPointsLimit(Number(result.dailyRewardPointsLimit ?? 100));
+      setDailyRewardPointsLimit(Number(result.dailyRewardPointsLimit ?? 500));
       setDailyRewardCountLimit(Number(result.dailyRewardCountLimit ?? 10));
       setMaxPointsPerVideo(Number(result.maxPointsPerVideo ?? 50));
       setMinimumWatchPercent(Number(result.minimumWatchPercent ?? 80));
