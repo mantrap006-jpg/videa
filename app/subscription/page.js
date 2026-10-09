@@ -95,65 +95,24 @@ export default async function SubscriptionPage() {
         </div>
       </div>
 
-      <div className="subscription-layout">
-        <div className="subscription-plan-card">
+      <section className="subscription-choose-section">
+        <div className="subscription-choose-heading">
           <div className="plan-badge">CREATOR PLANS</div>
-          <div className="plan-heading">
-            <div>
-              <h2>Choose your access period</h2>
-              <p>One point equals 1 RWF. Your points are deducted only when the upgrade succeeds.</p>
-            </div>
-          </div>
-
-          <div className="subscription-plans-grid">
-            {plans.map((plan) => (
-              <article key={plan.id} className={`subscription-plan-box subscription-plan-box-${plan.id}`}>
-                <div className="subscription-plan-box-top">
-                  <span className="subscription-plan-duration">{plan.days} DAYS</span>
-                  {plan.id === "quarterly" && <span className="subscription-plan-popular">POPULAR</span>}
-                </div>
-                <h3>{plan.name}</h3>
-                <p className="subscription-plan-tagline">{plan.tagline}</p>
-                <div className="subscription-plan-price">
-                  <strong>{plan.price.toLocaleString()}</strong>
-                  <span>points</span>
-                </div>
-                <p className="subscription-plan-description">{plan.description}</p>
-                <ul className="subscription-plan-features">
-                  {plan.features.map((feature) => (
-                    <li key={feature}><CheckCircle2 size={16} /><span>{feature}</span></li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-
-          <div className="plan-note">
-            <ShieldCheck size={18} />
-            <div>
-              <strong>Use approved wallet points</strong>
-              <span>No separate payment, sender name, phone number, or manual subscription payment verification is needed here.</span>
-            </div>
-          </div>
+          <h2>Choose your access period</h2>
+          <p>One point equals 1 RWF. Your points are deducted only when the upgrade succeeds.</p>
         </div>
 
-        <div className="subscription-payment-card">
-          <div className="eyebrow"><Sparkles size={15} /> WALLET POINTS</div>
-          <h2>Upgrade with your balance</h2>
-          <p className="muted">Choose your plan below. If your balance is too low, deposit points into your wallet and wait for admin approval.</p>
+        {user.role === "creator" ? (
+          <SubscriptionForm plans={plans} points={Number(user.points || 0)} />
+        ) : (
+          <div className="subscription-info">Creator access is available for creator accounts. Sign in with a Creator account to use wallet points for a subscription.</div>
+        )}
 
-          {user.role === "creator" ? (
-            <SubscriptionForm plans={plans} points={Number(user.points || 0)} />
-          ) : (
-            <div className="subscription-info">Creator access is available for creator accounts. Sign in with a Creator account to use wallet points for a subscription.</div>
-          )}
-
-          {user.role === "creator" && (
-            <a className="button secondary subscription-back" href="/creator">Back to Creator dashboard</a>
-          )}
+        <div className="subscription-links">
+          {user.role === "creator" && <a className="button secondary subscription-back" href="/creator">Back to Creator dashboard</a>}
           <a className="button secondary subscription-back" href="/wallet">Open wallet / deposit points</a>
         </div>
-      </div>
+      </section>
 
       <div className="subscription-bottom">
         <div className="subscription-mini-card">
