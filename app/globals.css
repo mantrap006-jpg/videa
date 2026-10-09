@@ -1086,3 +1086,41 @@ input:hover, textarea:hover, select:hover {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+
+/* Mobile navigation finishing touches */
+.nav-toggle:focus-visible {
+  outline: 2px solid #68e0b0;
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  .topbar { position: sticky; }
+  .topbar nav.nav-links {
+    max-height: calc(100dvh - 88px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    z-index: 30;
+  }
+  .topbar nav.nav-links > a,
+  .topbar nav.nav-links > .nav-user,
+  .topbar nav.nav-links > .nav-points {
+    border-radius: 11px;
+  }
+  .topbar nav.nav-links > a:active {
+    background: rgba(104,224,176,.1);
+  }
+}
+@media (max-width: 480px) {
+  .brand img {
+    max-width: 145px;
+    height: 42px !important;
+  }
+  .topbar {
+    gap: 8px;
+  }
+  .nav-toggle {
+    min-width: 42px;
+    min-height: 42px;
+  }
+}
