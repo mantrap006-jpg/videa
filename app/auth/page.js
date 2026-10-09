@@ -78,7 +78,7 @@ export default function AuthPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               credential: response.credential,
-              role: mode === "signup" ? form.role : "viewer"
+              role: form.role
             })
           });
           const data = await res.json();
@@ -149,6 +149,19 @@ export default function AuthPage() {
             <p>{signup ? "It only takes a minute to get started." : "Enter your account details below."}</p>
           </div>
 
+          {(signup || googleClientId) && (
+            <label className="auth-account-type">
+              {signup ? "Account type" : "Account type for a new Google account"}
+              <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
+                <option value="viewer">Viewer — watch &amp; earn</option>
+                <option value="creator">Creator — upload &amp; promote videos</option>
+              </select>
+              {!signup && googleClientId && (
+                <small className="muted">Your choice applies only if this Google account is new. Existing accounts keep their current role.</small>
+              )}
+            </label>
+          )}
+
           {googleClientId ? (
             <>
               <div id="google-signin-button" style={{ display: "flex", justifyContent: "center", minHeight: 40 }} />
@@ -201,15 +214,6 @@ export default function AuthPage() {
               />
             </label>
 
-            {signup && (
-              <label>
-                Account type
-                <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
-                  <option value="viewer">Viewer — watch & earn</option>
-                  <option value="creator">Creator — upload & promote videos</option>
-                </select>
-              </label>
-            )}
 
             <button className="button auth-submit" disabled={loading}>
               {loading ? "Please wait..." : signup ? "Create account" : "Log in"}
