@@ -38,7 +38,7 @@ export default async function RootLayout({ children }) {
       <body>
         <SiteHeader user={user} />
         <main>{children}</main>
-        <footer className="footer">© 2026 Videa. Watch responsibly. Earn transparently.</footer>
+        <footer className="footer">© 2026 Videa. Watch responsibly. Earn transparently.<div className="footer-legal"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a></div></footer>
       </body>
     </html>
   );
