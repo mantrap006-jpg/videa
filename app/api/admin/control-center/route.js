@@ -52,7 +52,10 @@ export async function GET(request) {
         { $group: { _id: null, count: { $sum: 1 }, points: { $sum: "$points" } } }
       ]),
       SubscriptionPayment.aggregate([
-        { $match: { status: "approved", createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } } },
+        { $match: { status: "approved", $or: [
+          { verifiedAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } },
+          { verifiedAt: null, createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } }
+        ] } },
         { $group: { _id: null, revenueRwf: { $sum: "$amountRwf" }, count: { $sum: 1 } } }
       ]),
       PlatformSetting.findOne({ key: "payment" }).lean(),
