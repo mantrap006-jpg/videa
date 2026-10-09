@@ -6,45 +6,147 @@ import Earning from "@/models/Earning";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 import { getActiveUserFromRequest } from "@/lib/auth";
+import { getYouTubeDurationSeconds } from "@/lib/youtube";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(request) {
   try {
     const session = await getActiveUserFromRequest(request);
-    if (!session?.sub) return NextResponse.json({ error: "Please log in to earn points." }, { status: 401 });
+    if (!session?.sub) {
+      return NextResponse.json({ error: "Please log in to earn points." }, { status: 401 });
+    }
 
     const body = await request.json();
-    const { videoId, watchedPercent } = body;
-    if (!mongoose.isValidObjectId(videoId)) return NextResponse.json({ error: "Invalid video." }, { status: 400 });
+    const { videoId } = body;
+    const isPlaying = body.isPlaying === true;
+    const currentTime = Number(body.currentTime);
 
-    const percent = Math.min(100, Math.max(0, Number(watchedPercent) || 0));
-    const video = await Video.findOne({ _id: videoId, active: true }).lean();
+    if (!mongoose.isValidObjectId(videoId)) {
+      return NextResponse.json({ error: "Invalid video." }, { status: 400 });
+    }
+    if (!Number.isFinite(currentTime) || currentTime < 0) {
+      return NextResponse.json({ error: "Invalid playback position." }, { status: 400 });
+    }
+
+    await connectDB();
+    const video = await Video.findOne({ _id: videoId, active: true });
     if (!video) return NextResponse.json({ error: "Video not found." }, { status: 404 });
 
-    const progress = await WatchProgress.findOneAndUpdate(
-      { userId: session.sub, videoId },
-      { $max: { watchedPercent: percent } },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+    // Recover older records whose verified duration was never stored.
+    if (!video.durationSeconds || video.durationSeconds <= 0) {
+      try {
+        const duration = await getYouTubeDurationSeconds(video.youtubeId);
+        video.durationSeconds = duration;
+        video.durationVerifiedAt = new Date();
+        video.rewardPoints = Math.max(1, Math.floor((duration / 60) * (video.pointsPerMinute || 1)));
+        await video.save();
+      } catch (error) {
+        const missingKey = error.message?.includes("YOUTUBE_API_KEY");
+        return NextResponse.json({
+          error: missingKey
+            ? "Server duration verification needs YOUTUBE_API_KEY. Add it in Vercel Project Settings → Environment Variables, then redeploy."
+            : "Videa could not verify this video's duration with YouTube. Check the server API key and YouTube video availability."
+        }, { status: 503 });
+      }
+    }
+
+    let progress = await WatchProgress.findOne({ userId: session.sub, videoId });
+    const now = new Date();
+
+    if (!progress) {
+      try {
+        progress = await WatchProgress.create({
+          userId: session.sub,
+          videoId,
+          watchedPercent: 0,
+          watchedSeconds: 0,
+          lastPlayerTime: currentTime,
+          lastHeartbeatAt: now,
+          rewarded: false
+        });
+      } catch (error) {
+        if (error?.code !== 11000) throw error;
+        progress = await WatchProgress.findOne({ userId: session.sub, videoId });
+      }
+    } else {
+      const previousHeartbeat = progress.lastHeartbeatAt ? new Date(progress.lastHeartbeatAt).getTime() : 0;
+      const elapsed = previousHeartbeat ? Math.max(0, Math.min(8, (now.getTime() - previousHeartbeat) / 1000)) : 0;
+      const playerDelta = currentTime - Number(progress.lastPlayerTime || 0);
+
+      // Count only time that elapsed on the server while the player was playing
+      // and the YouTube playback position advanced at a plausible rate.
+      if (isPlaying && elapsed >= 1 && playerDelta > 0 && playerDelta <= elapsed + 3) {
+        progress.watchedSeconds = Math.min(
+          video.durationSeconds,
+          Number(progress.watchedSeconds || 0) + elapsed
+        );
+      }
+
+      progress.lastPlayerTime = currentTime;
+      progress.lastHeartbeatAt = now;
+      progress.watchedPercent = Math.min(
+        100,
+        Math.floor((Number(progress.watchedSeconds || 0) / video.durationSeconds) * 100)
+      );
+      await progress.save();
+    }
+
+    const watchedPercent = Math.min(
+      100,
+      Math.floor((Number(progress.watchedSeconds || 0) / video.durationSeconds) * 100)
+    );
+    const requiredPercent = Number(video.minimumWatchPercent || 80);
+    const calculatedReward = Math.max(
+      1,
+      Math.floor((video.durationSeconds / 60) * Number(video.pointsPerMinute || 1))
     );
 
-    const calculatedReward = Math.max(1, Math.floor(((video.durationSeconds || 0) / 60) * (video.pointsPerMinute || 0)));
+    if (progress.rewarded) {
+      return NextResponse.json({
+        rewarded: true,
+        points: calculatedReward,
+        watchedPercent,
+        watchedSeconds: progress.watchedSeconds || 0,
+        durationSeconds: video.durationSeconds,
+        required: requiredPercent,
+        message: "Reward already claimed for this video."
+      });
+    }
 
-    if (progress.rewarded) return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent: progress.watchedPercent, message: "Reward already claimed for this video." });
-    if (progress.watchedPercent < video.minimumWatchPercent) {
-      return NextResponse.json({ rewarded: false, watchedPercent: progress.watchedPercent, required: video.minimumWatchPercent, message: "Keep watching until " + video.minimumWatchPercent + "%." });
+    if (watchedPercent < requiredPercent) {
+      return NextResponse.json({
+        rewarded: false,
+        watchedPercent,
+        watchedSeconds: progress.watchedSeconds || 0,
+        durationSeconds: video.durationSeconds,
+        required: requiredPercent,
+        message: `Keep watching. Your verified watch time is ${watchedPercent}% of the required ${requiredPercent}%.`
+      });
     }
 
     const claimed = await WatchProgress.findOneAndUpdate(
       { _id: progress._id, rewarded: false },
-      { $set: { rewarded: true, rewardedAt: new Date() } },
+      { $set: { rewarded: true, rewardedAt: now, watchedPercent } },
       { new: true }
     );
-    if (!claimed) return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent: progress.watchedPercent });
+    if (!claimed) {
+      return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent });
+    }
 
     await User.findByIdAndUpdate(session.sub, { $inc: { points: calculatedReward } });
     await Earning.create({ userId: session.sub, videoId, points: calculatedReward });
 
-    return NextResponse.json({ rewarded: true, points: calculatedReward, watchedPercent: claimed.watchedPercent, message: "Reward received: +" + calculatedReward + " points" });
+    return NextResponse.json({
+      rewarded: true,
+      points: calculatedReward,
+      watchedPercent,
+      watchedSeconds: progress.watchedSeconds || 0,
+      durationSeconds: video.durationSeconds,
+      required: requiredPercent,
+      message: `Reward received: +${calculatedReward} points`
+    });
   } catch (error) {
-    return NextResponse.json({ error: "Could not save watch progress.", detail: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Could not save watch progress." }, { status: 500 });
   }
 }
