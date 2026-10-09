@@ -1504,3 +1504,88 @@ input:hover, textarea:hover, select:hover {
     transform: none;
   }
 }
+
+
+/* Wallet and admin finance polish */
+.wallet-page,.admin-page{max-width:1180px;margin:0 auto}
+.wallet-hero,.admin-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:28px}
+.wallet-hero h1,.admin-head h1{font-size:clamp(34px,5vw,52px);letter-spacing:-1.8px;line-height:1.05;margin:12px 0}
+.wallet-refresh{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.wallet-balance-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:24px 0}
+.wallet-balance-card{padding:26px;background:linear-gradient(145deg,rgba(109,93,252,.15),rgba(17,26,49,.9));border-color:rgba(157,145,255,.2)}
+.wallet-balance-card span{display:flex;align-items:center;gap:9px;color:#b5bfd9;font-weight:750}
+.wallet-balance-card span svg{color:#9d91ff}
+.wallet-balance-card strong{display:block;font-size:clamp(32px,4vw,46px);letter-spacing:-1px;margin:15px 0 8px;overflow-wrap:anywhere}
+.wallet-balance-card strong small{font-size:14px;color:#8994b2;letter-spacing:0}
+.wallet-balance-card>small{color:#8994b2}
+.wallet-money{background:linear-gradient(145deg,rgba(104,224,176,.1),rgba(17,26,49,.9));border-color:rgba(104,224,176,.18)}
+.wallet-money span svg{color:#68e0b0}
+.wallet-withdraw-form{padding:clamp(20px,3vw,30px);min-width:0}
+.wallet-withdraw-form h2{font-size:clamp(24px,3vw,30px);letter-spacing:-.8px;margin:10px 0}
+.wallet-withdraw-form .muted{margin:0 0 20px}
+.wallet-deposit-form{margin-bottom:20px;border-color:rgba(109,93,252,.25);background:linear-gradient(145deg,rgba(109,93,252,.07),rgba(17,26,49,.92))}
+.payment-number{padding:20px;border:1px solid rgba(104,224,176,.2);border-radius:14px;background:rgba(104,224,176,.055);margin:22px 0}
+.payment-number span,.payment-number small{display:block;color:#9ba6c1;font-size:13px}
+.payment-number strong{display:block;font-size:clamp(24px,4vw,34px);letter-spacing:.5px;margin:8px 0;overflow-wrap:anywhere;color:#68e0b0}
+.wallet-deposit-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}
+.wallet-withdraw-form label{display:block;font-weight:650;line-height:1.5}
+.wallet-withdraw-form input,.wallet-withdraw-form select{display:block;width:100%;margin:8px 0 16px;padding:13px 14px;border:1px solid #35415f;border-radius:11px;background:#0b1020;color:#f7f8ff;font:inherit}
+.wallet-withdraw-form input:focus,.wallet-withdraw-form select:focus{border-color:#8175ff;outline:none;box-shadow:0 0 0 3px rgba(109,93,252,.13)}
+.wallet-amount-preview{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;margin:8px 0 18px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07)}
+.wallet-amount-preview span{color:#8994b2;font-size:13px}
+.wallet-amount-preview strong{color:#68e0b0;text-align:right}
+.wallet-submit{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin:4px 0 12px;padding:14px}
+.wallet-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.wallet-security{display:flex;align-items:flex-start;gap:8px;color:#8994b2;font-size:12px;line-height:1.6}
+.wallet-security svg{flex:none;color:#68e0b0;margin-top:2px}
+.wallet-message{padding:13px 16px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}
+.wallet-columns{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:20px;align-items:start}
+.wallet-history{padding:clamp(18px,2.5vw,26px);min-width:0}
+.wallet-section-title{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:0 0 12px}
+.wallet-section-title:not(:first-child){margin-top:28px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08)}
+.wallet-section-title h2{font-size:24px;letter-spacing:-.7px;margin:4px 0}
+.wallet-section-title>svg{color:#8994b2;flex:none}
+.wallet-history-row{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:15px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.wallet-history-row:last-child{border-bottom:0}
+.wallet-history-row>div{display:grid;gap:5px;min-width:0}
+.wallet-history-row strong{font-size:14px;overflow-wrap:anywhere}
+.wallet-history-row span,.wallet-history-row small{color:#8994b2;font-size:12px;overflow-wrap:anywhere}
+.wallet-history-row>.admin-status{flex:none}
+.admin-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:22px 0}
+.admin-stats>.card{padding:20px;min-width:0;background:linear-gradient(145deg,rgba(109,93,252,.09),rgba(17,26,49,.82))}
+.admin-stats>.card span{display:block;color:#8994b2;font-size:13px;line-height:1.5}
+.admin-stats>.card strong{display:block;font-size:clamp(25px,3vw,36px);margin:8px 0;color:#f7f8ff}
+.admin-stats>.card small{color:#8994b2}
+.admin-tabs{display:flex;gap:8px;padding:7px;margin:22px 0;border:1px solid rgba(255,255,255,.08);border-radius:15px;background:rgba(8,13,28,.7);overflow-x:auto}
+.admin-tabs button{display:inline-flex;align-items:center;justify-content:center;gap:9px;flex:1;min-width:max-content;padding:12px 15px;border:1px solid transparent;border-radius:10px;background:transparent;color:#aeb8d5;font:inherit;font-size:13px;font-weight:750;cursor:pointer}
+.admin-tabs button.active{background:rgba(109,93,252,.18);border-color:rgba(129,117,255,.25);color:#fff}
+.admin-tabs button span{display:inline-grid;place-items:center;min-width:23px;height:23px;padding:0 6px;border-radius:7px;background:rgba(255,255,255,.08);font-size:11px}
+.admin-flash{padding:13px 16px;border-radius:12px;border:1px solid rgba(104,224,176,.2);background:rgba(104,224,176,.07);color:#83e5a8}
+.admin-payments{display:grid;gap:14px}
+.admin-payment-card{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:22px;min-width:0}
+.admin-request-main{min-width:0;flex:1}
+.admin-payment-title{display:flex;align-items:center;flex-wrap:wrap;gap:12px}
+.admin-payment-title h3{margin:0;font-size:19px;overflow-wrap:anywhere}
+.admin-payment-card p{margin:7px 0 14px;overflow-wrap:anywhere}
+.admin-payment-meta{display:flex;flex-wrap:wrap;gap:9px 18px;margin:14px 0}
+.admin-payment-meta span{font-size:13px;color:#aeb8d5;overflow-wrap:anywhere}
+.admin-payment-meta b{color:#f7f8ff}
+.admin-payment-card>div>small,.admin-request-main>small{display:block;color:#8994b2;font-size:12px;line-height:1.6}
+.admin-status{display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border:1px solid rgba(255,255,255,.1);border-radius:999px;background:rgba(255,255,255,.05);color:#cbd3e9;font-size:11px;font-weight:850;text-transform:capitalize;letter-spacing:.3px}
+.admin-status.pending{color:#ffd48a;background:rgba(255,190,80,.09);border-color:rgba(255,190,80,.2)}
+.admin-status.approved{color:#83e5a8;background:rgba(104,224,176,.08);border-color:rgba(104,224,176,.2)}
+.admin-status.rejected{color:#ff9b9b;background:rgba(255,110,125,.08);border-color:rgba(255,110,125,.2)}
+.admin-payment-actions{display:flex;gap:8px;flex-wrap:wrap;flex:none}
+.admin-payment-actions .button{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin:0;padding:11px 13px;font-size:13px}
+.admin-payment-actions .admin-approve{background:linear-gradient(135deg,#168c67,#26b981);box-shadow:none}
+.admin-payment-actions .admin-reject{background:rgba(255,100,120,.09);border:1px solid rgba(255,100,120,.22);color:#ff9b9b;box-shadow:none}
+.admin-payment-actions button:disabled{opacity:.5;cursor:wait}
+.admin-verified{display:flex;align-items:flex-start;gap:7px;max-width:230px;color:#83e5a8;font-size:12px;line-height:1.5}
+.admin-verified svg{flex:none;margin-top:1px}
+.admin-note{margin-top:10px;padding:10px 12px;border-radius:9px;background:rgba(255,255,255,.04);color:#aeb8d5;font-size:12px;overflow-wrap:anywhere}
+.admin-empty{padding:30px;text-align:center;color:#aeb8d5}
+.admin-payout-warning{display:flex;align-items:flex-start;gap:9px;margin-top:20px;padding:15px;border:1px solid rgba(255,190,80,.18);border-radius:12px;background:rgba(255,190,80,.045);font-size:13px}
+.admin-payout-warning svg{flex:none;color:#ffd48a;margin-top:3px}
+@media(max-width:900px){.admin-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.wallet-columns{grid-template-columns:1fr}.admin-payment-card{flex-direction:column}.admin-payment-actions{width:100%}.admin-payment-actions .button{flex:1}}
+@media(max-width:600px){.wallet-hero,.admin-head{align-items:flex-start;flex-direction:column}.wallet-balance-grid,.wallet-deposit-fields{grid-template-columns:1fr}.wallet-refresh{align-self:flex-start}.admin-stats{gap:10px}.admin-stats>.card{padding:15px}.admin-tabs{margin:16px -2px}.admin-tabs button{padding:11px 12px}.admin-payment-card{padding:17px}.admin-payment-actions{flex-direction:column}.admin-payment-actions .button{width:100%}.wallet-history-row{gap:8px}.wallet-history-row>.admin-status{font-size:10px;padding:5px 7px}}
+@media(prefers-reduced-motion:reduce){.wallet-page *,.admin-page *{scroll-behavior:auto!important;transition:none!important}}
