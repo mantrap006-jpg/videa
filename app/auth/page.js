@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn, UserPlus, Eye, Megaphone } from "lucide-react";
 
@@ -11,6 +12,10 @@ export default function AuthPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "viewer" });
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleReady, setGoogleReady] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
   function switchMode(nextMode) {
     setMode(nextMode);
@@ -41,7 +46,7 @@ export default function AuthPage() {
       }
 
       const role = data.user?.role || form.role;
-      router.push(role === "creator" ? "/creator" : "/dashboard");
+      router.push(role === "creator" ? "/creator" : role === "admin" ? "/admin" : "/dashboard");
       router.refresh();
     } catch {
       setMessage("Something went wrong. Please try again.");
@@ -50,10 +55,69 @@ export default function AuthPage() {
     }
   }
 
+  useEffect(() => {
+    if (!googleReady || !googleClientId || !window.google?.accounts?.id) return;
+
+    const container = document.getElementById("google-signin-button");
+    if (!container) return;
+    container.innerHTML = "";
+
+    window.google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: async (response) => {
+        if (!response?.credential) {
+          setMessage("Google sign-in did not return a credential. Please try again.");
+          return;
+        }
+
+        setMessage("");
+        setGoogleLoading(true);
+        try {
+          const res = await fetch("/api/auth/google", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              credential: response.credential,
+              role: mode === "signup" ? form.role : "viewer"
+            })
+          });
+          const data = await res.json();
+
+          if (!res.ok) {
+            setMessage(data.error || "Google sign-in failed.");
+            return;
+          }
+
+          const role = data.user?.role || "viewer";
+          router.push(role === "admin" ? "/admin" : role === "creator" ? "/creator" : "/dashboard");
+          router.refresh();
+        } catch {
+          setMessage("Could not connect to Videa. Please try again.");
+        } finally {
+          setGoogleLoading(false);
+        }
+      }
+    });
+
+    window.google.accounts.id.renderButton(container, {
+      theme: "outline",
+      size: "large",
+      shape: "rectangular",
+      text: mode === "signup" ? "signup_with" : "signin_with",
+      logo_alignment: "left",
+      width: 320
+    });
+  }, [googleReady, googleClientId, mode, form.role, router]);
+
   const signup = mode === "signup";
 
   return (
     <section className="auth-page">
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        strategy="afterInteractive"
+        onLoad={() => setGoogleReady(true)}
+      />
       <div className="auth-shell">
         <div className="auth-copy">
           <div className="eyebrow">WELCOME TO VIDEA</div>
@@ -84,6 +148,22 @@ export default function AuthPage() {
             <h3>{signup ? "Create your account" : "Log in"}</h3>
             <p>{signup ? "It only takes a minute to get started." : "Enter your account details below."}</p>
           </div>
+
+          {googleClientId ? (
+            <>
+              <div id="google-signin-button" style={{ display: "flex", justifyContent: "center", minHeight: 40 }} />
+              {googleLoading && <p className="muted" style={{ textAlign: "center" }}>Signing in with Google...</p>}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "18px 0", color: "var(--muted, #777)", fontSize: 12 }}>
+                <span style={{ height: 1, flex: 1, background: "var(--border, #ddd)" }} />
+                OR USE EMAIL
+                <span style={{ height: 1, flex: 1, background: "var(--border, #ddd)" }} />
+              </div>
+            </>
+          ) : (
+            <p className="muted" style={{ fontSize: 13, marginBottom: 16 }}>
+              Google sign-in will appear after <code>NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> is configured in Vercel.
+            </p>
+          )}
 
           <form onSubmit={submit}>
             {signup && (
@@ -135,7 +215,7 @@ export default function AuthPage() {
               {loading ? "Please wait..." : signup ? "Create account" : "Log in"}
             </button>
 
-            {message && <p className="error">{message}</p>}
+            {message && <p className="error" role="alert">{message}</p>}
           </form>
 
           <p className="auth-switch muted">
