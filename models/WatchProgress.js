@@ -5,6 +5,9 @@ const WatchProgressSchema = new mongoose.Schema(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     videoId: { type: mongoose.Schema.Types.ObjectId, ref: "Video", required: true },
     watchedPercent: { type: Number, default: 0, min: 0, max: 100 },
+    watchedSeconds: { type: Number, default: 0, min: 0 },
+    lastPlayerTime: { type: Number, default: 0, min: 0 },
+    lastHeartbeatAt: { type: Date, default: null },
     rewarded: { type: Boolean, default: false },
     rewardedAt: { type: Date, default: null }
   },
