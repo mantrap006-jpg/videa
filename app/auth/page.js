@@ -3,61 +3,20 @@
 import { useEffect, useState } from "react";
 import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
-import { LogIn, UserPlus, Eye, Megaphone } from "lucide-react";
+import { Eye, Megaphone, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function AuthPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mode, setMode] = useState(searchParams.get("mode") === "signup" ? "signup" : "login");
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "viewer" });
+  const [role, setRole] = useState("viewer");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const [googleReady, setGoogleReady] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-  function switchMode(nextMode) {
-    setMode(nextMode);
-    setMessage("");
-  }
-
-  async function submit(e) {
-    e.preventDefault();
-    setMessage("");
-    setLoading(true);
-
-    const endpoint = mode === "login" ? "/api/auth/login" : "/api/auth/signup";
-    const body = mode === "login"
-      ? { email: form.email, password: form.password }
-      : form;
-
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        setMessage(data.error || (mode === "login" ? "Login failed." : "Signup failed."));
-        return;
-      }
-
-      const role = data.user?.role || form.role;
-      router.push(role === "creator" ? "/creator" : role === "admin" ? "/admin" : "/dashboard");
-      router.refresh();
-    } catch {
-      setMessage("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
   useEffect(() => {
     if (!googleReady || !googleClientId || !window.google?.accounts?.id) return;
-
     const container = document.getElementById("google-signin-button");
     if (!container) return;
     container.innerHTML = "";
@@ -66,30 +25,24 @@ export default function AuthPage() {
       client_id: googleClientId,
       callback: async (response) => {
         if (!response?.credential) {
-          setMessage("Google sign-in did not return a credential. Please try again.");
+          setMessage("Google did not return a sign-in credential. Please try again.");
           return;
         }
-
         setMessage("");
         setGoogleLoading(true);
         try {
           const res = await fetch("/api/auth/google", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              credential: response.credential,
-              role: form.role
-            })
+            body: JSON.stringify({ credential: response.credential, role })
           });
           const data = await res.json();
-
           if (!res.ok) {
-            setMessage(data.error || "Google sign-in failed.");
+            setMessage(data.error || "Google sign-in failed. Please try again.");
             return;
           }
-
-          const role = data.user?.role || "viewer";
-          router.push(role === "admin" ? "/admin" : role === "creator" ? "/creator" : "/dashboard");
+          const userRole = data.user?.role || "viewer";
+          router.push(userRole === "admin" ? "/admin" : userRole === "creator" ? "/creator" : "/dashboard");
           router.refresh();
         } catch {
           setMessage("Could not connect to Videa. Please try again.");
@@ -107,9 +60,7 @@ export default function AuthPage() {
       logo_alignment: "left",
       width: 320
     });
-  }, [googleReady, googleClientId, mode, form.role, router]);
-
-  const signup = mode === "signup";
+  }, [googleReady, googleClientId, mode, role, router]);
 
   return (
     <section className="auth-page">
@@ -117,117 +68,70 @@ export default function AuthPage() {
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
         onLoad={() => setGoogleReady(true)}
+        onError={() => setMessage("Google sign-in could not load. Check your internet connection and try again.")}
       />
       <div className="auth-shell">
         <div className="auth-copy">
-          <div className="eyebrow">WELCOME TO VIDEA</div>
-          <h2>{signup ? "Create your Videa account." : "Welcome back to Videa."}</h2>
+          <div className="eyebrow"><Sparkles size={15} /> WELCOME TO VIDEA</div>
+          <h2>{mode === "signup" ? "Your Videa journey starts here." : "Welcome back to Videa."}</h2>
           <p>
-            {signup
-              ? "Choose how you want to use Videa: watch and earn, promote your videos or campaigns."
-              : "Log in to keep watching videos, earning points, and managing your Videa account."}
+            {mode === "signup"
+              ? "Create your account securely with Google. No separate password to remember."
+              : "Continue securely with your Google account to watch videos, earn points, or manage your creator account."}
           </p>
-
           <div className="auth-benefits">
-            <div><Eye size={18} /> Watch and earn points</div>
+            <div><Eye size={18} /> Watch videos and earn points</div>
             <div><Megaphone size={18} /> Promote your content</div>
+            <div><ShieldCheck size={18} /> Google-secured sign-in</div>
           </div>
         </div>
 
         <div className="auth-card card">
           <div className="auth-tabs">
-            <button type="button" className={!signup ? "active" : ""} onClick={() => switchMode("login")}>
-              <LogIn size={17} /> Log in
+            <button type="button" className={mode === "login" ? "active" : ""} onClick={() => { setMode("login"); setMessage(""); }}>
+              Log in
             </button>
-            <button type="button" className={signup ? "active" : ""} onClick={() => switchMode("signup")}>
-              <UserPlus size={17} /> Create account
+            <button type="button" className={mode === "signup" ? "active" : ""} onClick={() => { setMode("signup"); setMessage(""); }}>
+              Create account
             </button>
           </div>
 
           <div className="auth-heading">
-            <h3>{signup ? "Create your account" : "Log in"}</h3>
-            <p>{signup ? "It only takes a minute to get started." : "Enter your account details below."}</p>
+            <h3>{mode === "signup" ? "Create your account" : "Log in to Videa"}</h3>
+            <p>{mode === "signup" ? "Choose an account type, then continue with Google." : "Use the Google account connected to your Videa profile."}</p>
           </div>
 
-          {(signup || googleClientId) && (
-            <label className="auth-account-type">
-              {signup ? "Account type" : "Account type for a new Google account"}
-              <select value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}>
-                <option value="viewer">Viewer — watch &amp; earn</option>
-                <option value="creator">Creator — upload &amp; promote videos</option>
-              </select>
-              {!signup && googleClientId && (
-                <small className="muted">Your choice applies only if this Google account is new. Existing accounts keep their current role.</small>
-              )}
-            </label>
-          )}
+          <label className="auth-account-type">
+            Account type
+            <select value={role} onChange={event => setRole(event.target.value)}>
+              <option value="viewer">Viewer — watch &amp; earn</option>
+              <option value="creator">Creator — upload &amp; promote videos</option>
+            </select>
+            {mode === "login" && <small className="muted">For existing accounts, Videa keeps your saved account type.</small>}
+          </label>
 
           {googleClientId ? (
             <>
-              <div id="google-signin-button" style={{ display: "flex", justifyContent: "center", minHeight: 40 }} />
-              {googleLoading && <p className="muted" style={{ textAlign: "center" }}>Signing in with Google...</p>}
-              <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "18px 0", color: "var(--muted, #777)", fontSize: 12 }}>
-                <span style={{ height: 1, flex: 1, background: "var(--border, #ddd)" }} />
-                OR USE EMAIL
-                <span style={{ height: 1, flex: 1, background: "var(--border, #ddd)" }} />
-              </div>
+              <div id="google-signin-button" className="auth-google-button" />
+              {googleLoading && <p className="muted auth-google-status" role="status">Connecting securely with Google…</p>}
             </>
           ) : (
-            <p className="muted" style={{ fontSize: 13, marginBottom: 16 }}>
-              Google sign-in will appear after <code>NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> is configured in Vercel.
-            </p>
+            <div className="auth-google-missing" role="alert">
+              <strong>Google sign-in needs setup</strong>
+              <p>The site administrator must configure NEXT_PUBLIC_GOOGLE_CLIENT_ID in Vercel before accounts can be created or accessed.</p>
+            </div>
           )}
 
-          <form onSubmit={submit}>
-            {signup && (
-              <label>
-                Name
-                <input
-                  required
-                  value={form.name}
-                  onChange={e => setForm({ ...form, name: e.target.value })}
-                  placeholder="Your name"
-                />
-              </label>
-            )}
+          {message && <p className="error" role="alert">{message}</p>}
 
-            <label>
-              Email
-              <input
-                required
-                type="email"
-                value={form.email}
-                onChange={e => setForm({ ...form, email: e.target.value })}
-                placeholder="you@example.com"
-              />
-            </label>
+          <p className="auth-google-terms">By continuing, you agree to use Videa in accordance with its terms and policies. Your Google account is used to verify your identity.</p>
 
-            <label>
-              Password
-              <input
-                required
-                minLength={6}
-                type="password"
-                value={form.password}
-                onChange={e => setForm({ ...form, password: e.target.value })}
-                placeholder="At least 6 characters"
-              />
-            </label>
-
-
-            <button className="button auth-submit" disabled={loading}>
-              {loading ? "Please wait..." : signup ? "Create account" : "Log in"}
+          <div className="auth-switch muted">
+            {mode === "signup" ? "Already have an account?" : "New to Videa?"}{" "}
+            <button type="button" onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setMessage(""); }}>
+              {mode === "signup" ? "Log in with Google" : "Create account with Google"}
             </button>
-
-            {message && <p className="error" role="alert">{message}</p>}
-          </form>
-
-          <p className="auth-switch muted">
-            {signup ? "Already have an account?" : "New to Videa?"}{" "}
-            <button type="button" onClick={() => switchMode(signup ? "login" : "signup")}>
-              {signup ? "Log in" : "Create account"}
-            </button>
-          </p>
+          </div>
         </div>
       </div>
     </section>
