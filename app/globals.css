@@ -767,3 +767,12 @@ select:focus{border-color:#7567ff;box-shadow:0 0 0 3px rgba(109,93,252,.12);}
 .auth-account-type{display:grid;gap:8px;margin:0 0 18px;font-size:12px;font-weight:750}
 .auth-account-type select{width:100%;min-height:44px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#10172a;color:inherit}
 .auth-account-type small{font-size:10px;font-weight:400;line-height:1.5}
+
+
+/* Reward controls and business profitability */
+.control-finance-grid{margin-top:18px}
+.control-profit{color:#68e0b0!important}
+.control-loss{color:#ff9ba8!important}
+.control-business-heading{border-top:1px solid rgba(255,255,255,.08);padding-top:14px;margin-top:6px}
+.control-business-heading h3{font-size:16px;margin:0 0 5px}
+.control-business-heading p{font-size:11px;margin:0;color:#8792b0}
