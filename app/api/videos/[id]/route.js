@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import Video from "@/models/Video";
+import PlatformSetting from "@/models/PlatformSetting";
 import { connectDB } from "@/lib/mongodb";
 import { getYouTubeVideoDetails, getYouTubeDurationSeconds } from "@/lib/youtube";
 
@@ -45,6 +46,12 @@ export async function GET(_request, { params }) {
       }
     }
 
+    const platformSettings = await PlatformSetting.findOne({ key: "payment" }).lean();
+    const maxPointsPerVideo = Math.max(0, Number(platformSettings?.maxPointsPerVideo ?? 50));
+    const globalMinimumWatchPercent = Math.min(100, Math.max(1, Number(platformSettings?.minimumWatchPercent ?? 80)));
+    const rewardPoints = Math.min(maxPointsPerVideo, Math.max(1, Math.floor((Number(video.durationSeconds || 0) / 60) * Number(video.pointsPerMinute || 1))));
+    const minimumWatchPercent = Math.max(globalMinimumWatchPercent, Number(video.minimumWatchPercent || 80));
+
     return NextResponse.json({
       video: {
         id: video._id.toString(),
@@ -58,8 +65,8 @@ export async function GET(_request, { params }) {
         durationSeconds: video.durationSeconds,
         durationVerifiedAt: video.durationVerifiedAt?.toISOString() || null,
         pointsPerMinute: video.pointsPerMinute || 1,
-        rewardPoints: video.rewardPoints || 0,
-        minimumWatchPercent: video.minimumWatchPercent || 80
+        rewardPoints,
+        minimumWatchPercent
       }
     });
   } catch {
