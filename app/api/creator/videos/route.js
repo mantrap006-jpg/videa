@@ -68,8 +68,8 @@ export async function POST(request) {
       return NextResponse.json(
         {
           error:
-            error.message === "YOUTUBE_API_KEY is not configured."
-              ? "YouTube duration verification is not configured on the server."
+            error.message?.includes("YOUTUBE_API_KEY") || error.message?.includes("quotaExceeded")
+              ? "YouTube duration verification needs a valid YouTube Data API key. Add YOUTUBE_API_KEY in Vercel → Project Settings → Environment Variables, then redeploy."
               : "Could not verify the YouTube video duration. Please check the URL and try again."
         },
         { status: 502 }
@@ -87,6 +87,7 @@ export async function POST(request) {
       youtubeId,
       description: description.trim(),
       durationSeconds: verifiedDurationSeconds,
+      durationVerifiedAt: new Date(),
       pointsPerMinute: rate,
       rewardPoints,
       minimumWatchPercent: Math.min(
