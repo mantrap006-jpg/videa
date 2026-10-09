@@ -78,8 +78,8 @@ export async function POST(request) {
     }
 
     const tokenAudience = tokenInfo.aud || tokenInfo.azp || tokenInfo.issued_to;
-    if (tokenAudience && tokenAudience !== clientId) {
-      return NextResponse.json({ error: "The YouTube authorization was issued to a different application." }, { status: 401 });
+    if (!tokenAudience || tokenAudience !== clientId) {
+      return NextResponse.json({ error: "The YouTube authorization could not be verified for Videa. Please authorize again using the Videa sign-in window." }, { status: 401 });
     }
     const scopes = String(tokenInfo.scope || "").split(/\s+/);
     if (!scopes.includes(YOUTUBE_READ_SCOPE)) {
