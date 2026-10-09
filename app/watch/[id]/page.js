@@ -350,8 +350,8 @@ export default function WatchPage() {
 
           <section className="watch-reward-card card">
             <span className="eyebrow">STEP 2 · EARN REWARDS</span>
-            <div className="watch-reward-amount"><span>✦</span><strong>{video.rewardPoints}</strong><small>POINTS</small></div>
-            <p>Available after you complete at least {video.minimumWatchPercent}% verified watch time.</p>
+            <div className="watch-reward-amount"><span>✦</span><strong>{video.rewardPoints}</strong><small>UP TO POINTS</small></div>
+            <p>Available after at least {video.minimumWatchPercent}% verified watch time. Daily limits may reduce the final reward.</p>
             <div className="watch-reward-divider" />
             <div className="watch-reward-row"><span>Minimum watch</span><strong>{video.minimumWatchPercent}%</strong></div>
             <div className="watch-reward-row"><span>Current progress</span><strong>{percent}%</strong></div>
