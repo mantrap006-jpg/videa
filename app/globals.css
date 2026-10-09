@@ -1124,3 +1124,15 @@ input:hover, textarea:hover, select:hover {
     min-height: 42px;
   }
 }
+
+
+/* Public legal pages for OAuth consent requirements */
+.legal-page{max-width:850px;margin:0 auto;padding:36px 0 70px}
+.legal-title{font-size:clamp(42px,7vw,68px);letter-spacing:-.045em;line-height:1.04;margin:14px 0 18px}
+.legal-title span{background:linear-gradient(90deg,#68e0b0,#9d91ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.legal-intro{max-width:740px;font-size:17px;color:#c2cbe2}
+.legal-updated{font-size:13px;color:#8994b2;margin:20px 0 34px}
+.legal-section{padding:23px 0;border-top:1px solid rgba(255,255,255,.09)}
+.legal-section h2{font-size:22px;letter-spacing:-.4px;margin:0 0 12px}
+.legal-section p{color:#aeb7d2;line-height:1.8;margin:10px 0}
+@media(max-width:640px){.legal-page{padding:20px 0 50px}.legal-title{letter-spacing:-.035em}.legal-section h2{font-size:20px}}
