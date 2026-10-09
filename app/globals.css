@@ -755,3 +755,15 @@ select:focus{border-color:#7567ff;box-shadow:0 0 0 3px rgba(109,93,252,.12);}
 @media(max-width:980px){.watch-layout{grid-template-columns:minmax(0,1fr) minmax(260px,.75fr)}.watch-page-header{align-items:flex-start;flex-direction:column}.watch-live-pill{white-space:normal}}
 @media(max-width:760px){.watch-layout{grid-template-columns:1fr}.watch-sidebar{grid-template-columns:1fr 1fr;align-items:start}.watch-subscription-card{grid-row:span 2}.watch-page-header h1{letter-spacing:-2px}.watch-video-details,.watch-progress-card,.watch-subscription-card,.watch-reward-card{padding:18px}}
 @media(max-width:520px){.watch-page{padding:18px 12px 50px}.watch-sidebar{grid-template-columns:1fr}.watch-subscription-card{grid-row:auto}.watch-locked-player{padding:22px;min-height:260px}.watch-video-title-row{flex-direction:column;align-items:flex-start}.watch-channel-row{flex-wrap:wrap}.watch-channel-link{margin-left:56px}.watch-progress-meta{font-size:9px}.watch-reward-amount strong{font-size:42px}}
+
+/* Google-only authentication */
+.auth-google-button{display:flex;justify-content:center;align-items:center;min-height:48px;width:100%;margin:10px auto 4px}
+.auth-google-button>div{max-width:100%}
+.auth-google-status{text-align:center;font-size:12px;margin:12px 0}
+.auth-google-missing{padding:15px;border-radius:12px;border:1px solid rgba(255,190,90,.22);background:rgba(255,190,90,.07);font-size:12px;line-height:1.6}
+.auth-google-missing strong{color:#f0d18c}
+.auth-google-missing p{margin:5px 0 0;color:#b6bfd5;overflow-wrap:anywhere}
+.auth-google-terms{margin:18px 0 0;text-align:center;font-size:10px;line-height:1.65;color:#8792b0}
+.auth-account-type{display:grid;gap:8px;margin:0 0 18px;font-size:12px;font-weight:750}
+.auth-account-type select{width:100%;min-height:44px;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#10172a;color:inherit}
+.auth-account-type small{font-size:10px;font-weight:400;line-height:1.5}
