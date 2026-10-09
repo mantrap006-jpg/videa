@@ -17,6 +17,11 @@ export default function AdminControlCenter() {
   const [error, setError] = useState("");
   const [ussdNumber, setUssdNumber] = useState("");
   const [paymentNetwork, setPaymentNetwork] = useState("MTN / Airtel Money");
+  const [dailyRewardPointsLimit, setDailyRewardPointsLimit] = useState(100);
+  const [dailyRewardCountLimit, setDailyRewardCountLimit] = useState(10);
+  const [maxPointsPerVideo, setMaxPointsPerVideo] = useState(50);
+  const [minimumWatchPercent, setMinimumWatchPercent] = useState(80);
+  const [monthlyFixedCostsRwf, setMonthlyFixedCostsRwf] = useState(100000);
   const [settingsBusy, setSettingsBusy] = useState(false);
 
   const load = useCallback(async () => {
@@ -31,6 +36,11 @@ export default function AdminControlCenter() {
       if (settingsResponse.ok) {
         setUssdNumber(settings.ussdNumber || "");
         setPaymentNetwork(settings.paymentNetwork || "MTN / Airtel Money");
+        setDailyRewardPointsLimit(Number(settings.dailyRewardPointsLimit ?? 100));
+        setDailyRewardCountLimit(Number(settings.dailyRewardCountLimit ?? 10));
+        setMaxPointsPerVideo(Number(settings.maxPointsPerVideo ?? 50));
+        setMinimumWatchPercent(Number(settings.minimumWatchPercent ?? 80));
+        setMonthlyFixedCostsRwf(Number(settings.monthlyFixedCostsRwf ?? 100000));
       }
     } catch (e) {
       setError(e.message || "Could not load control center.");
@@ -48,13 +58,26 @@ export default function AdminControlCenter() {
       const response = await fetch("/api/admin/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ussdNumber: ussdNumber.trim(), paymentNetwork: paymentNetwork.trim() })
+        body: JSON.stringify({
+          ussdNumber: ussdNumber.trim(),
+          paymentNetwork: paymentNetwork.trim(),
+          dailyRewardPointsLimit: Number(dailyRewardPointsLimit),
+          dailyRewardCountLimit: Number(dailyRewardCountLimit),
+          maxPointsPerVideo: Number(maxPointsPerVideo),
+          minimumWatchPercent: Number(minimumWatchPercent),
+          monthlyFixedCostsRwf: Number(monthlyFixedCostsRwf)
+        })
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not save settings.");
       setUssdNumber(result.ussdNumber || "");
       setPaymentNetwork(result.paymentNetwork || "MTN / Airtel Money");
-      setMessage("Payment number settings saved. User payment forms will use the updated number.");
+      setDailyRewardPointsLimit(Number(result.dailyRewardPointsLimit ?? 100));
+      setDailyRewardCountLimit(Number(result.dailyRewardCountLimit ?? 10));
+      setMaxPointsPerVideo(Number(result.maxPointsPerVideo ?? 50));
+      setMinimumWatchPercent(Number(result.minimumWatchPercent ?? 80));
+      setMonthlyFixedCostsRwf(Number(result.monthlyFixedCostsRwf ?? 100000));
+      setMessage("Payment and reward settings saved. Server-side reward limits are now updated.");
     } catch (e) {
       setError(e.message || "Could not save settings.");
     } finally {
@@ -121,6 +144,14 @@ export default function AdminControlCenter() {
             <article className="card control-stat"><span><Activity size={16}/> Rewards in 24 hours</span><strong>{number(data.stats.rewards24h)}</strong><small>{number(data.stats.pointsIssued24h)} points issued</small></article>
             <article className="card control-stat"><span><ShieldAlert size={16}/> Pending reviews</span><strong>{number(data.stats.pendingDeposits + data.stats.pendingWithdrawals + data.stats.pendingSubscriptions)}</strong><small>Deposits, withdrawals, subscriptions</small></article>
           </div>
+
+          <div className="control-stat-grid control-finance-grid">
+            <article className="card control-stat"><span>Creator revenue · 30 days</span><strong>{number(data.stats.revenueRwf30d)} <small>RWF</small></strong><small>Approved subscription payments</small></article>
+            <article className="card control-stat"><span>Viewer reward cost · 30 days</span><strong>{number(data.stats.rewardCostRwf30d)} <small>RWF</small></strong><small>1 point is valued at 1 RWF</small></article>
+            <article className="card control-stat"><span>Fixed monthly costs</span><strong>{number(data.stats.monthlyFixedCostsRwf)} <small>RWF</small></strong><small>Configured by admin</small></article>
+            <article className="card control-stat"><span>Estimated 30-day profit</span><strong className={data.stats.estimatedProfitRwf30d < 0 ? "control-loss" : "control-profit"}>{number(data.stats.estimatedProfitRwf30d)} <small>RWF</small></strong><small>Estimated margin: {Number(data.stats.profitMarginPercent || 0).toFixed(1)}%</small></article>
+          </div>
+          <p className="control-hint">Profit estimate = approved creator subscription revenue − viewer reward costs − configured fixed monthly costs. Taxes, refunds, payment fees, and unrecorded expenses are not included.</p>
 
           <div className="control-tabs" role="tablist" aria-label="Admin sections">
             <button type="button" className={tab === "overview" ? "active" : ""} onClick={() => { setTab("overview"); setQuery(""); }}>Overview</button>
@@ -233,8 +264,25 @@ export default function AdminControlCenter() {
                 <label>Payment network
                   <input value={paymentNetwork} onChange={(event) => setPaymentNetwork(event.target.value)} placeholder="MTN MoMo / Airtel Money" maxLength={80} required />
                 </label>
-                <p className="control-hint">Leave the number empty if you do not want to display one. Do not enter a mobile-money PIN or account password.</p>
-                <button type="submit" className="button" disabled={settingsBusy}><Save size={16}/>{settingsBusy ? "Saving…" : "Save payment settings"}</button>
+                <div className="control-business-heading"><h3>Reward limits</h3><p>These limits are checked by the server, not trusted from the browser.</p></div>
+                <label>Maximum points a viewer can earn per day
+                  <input type="number" min="0" max="100000" step="1" value={dailyRewardPointsLimit} onChange={(event) => setDailyRewardPointsLimit(event.target.value)} required />
+                </label>
+                <label>Maximum rewarded videos per viewer per day
+                  <input type="number" min="0" max="1000" step="1" value={dailyRewardCountLimit} onChange={(event) => setDailyRewardCountLimit(event.target.value)} required />
+                </label>
+                <label>Maximum points awarded for one video
+                  <input type="number" min="0" max="10000" step="1" value={maxPointsPerVideo} onChange={(event) => setMaxPointsPerVideo(event.target.value)} required />
+                </label>
+                <label>Minimum watch percentage required (%)
+                  <input type="number" min="1" max="100" step="1" value={minimumWatchPercent} onChange={(event) => setMinimumWatchPercent(event.target.value)} required />
+                </label>
+                <div className="control-business-heading"><h3>Profitability assumptions</h3><p>Videa currently treats 1 point as 1 RWF in the wallet.</p></div>
+                <label>Estimated fixed operating costs per month (RWF)
+                  <input type="number" min="0" max="1000000000" step="1000" value={monthlyFixedCostsRwf} onChange={(event) => setMonthlyFixedCostsRwf(event.target.value)} required />
+                </label>
+                <p className="control-hint">Leave the payment number empty if you do not want to display one. Never enter a mobile-money PIN or account password.</p>
+                <button type="submit" className="button" disabled={settingsBusy}><Save size={16}/>{settingsBusy ? "Saving…" : "Save payment and reward settings"}</button>
               </form>
             </div>
           )}
