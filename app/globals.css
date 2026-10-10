@@ -2388,3 +2388,43 @@ th, td { padding: 8px 10px; }
   .mobile-bottom-nav .mobile-nav-item { font-size: 9px !important; gap: 4px !important; }
   .mobile-bottom-nav .mobile-nav-item svg { width: 19px !important; height: 19px !important; flex-basis: 19px !important; }
 }
+
+
+/* Points and account pages */
+.points-page, .account-page { max-width: 1080px; margin: 0 auto; }
+.points-page .dashboard-head, .account-page .dashboard-head { margin-bottom: 18px; }
+.points-page .dashboard-head h1, .account-page .dashboard-head h1 { margin: 5px 0 8px; font-size: clamp(27px, 4vw, 38px); letter-spacing: -1px; }
+.points-page .dashboard-head p, .account-page .dashboard-head p { color: #aab5d0; font-size: 13px; max-width: 620px; }
+.points-page .stats-grid, .account-page .stats-grid { margin: 16px 0; gap: 10px; }
+.points-page .stat-card, .account-page .stat-card { min-width: 0; }
+.points-page .stat-card span, .account-page .stat-card span { display: flex; align-items: center; gap: 6px; color: #aab5d0; font-size: 12px; }
+.points-page .stat-card strong { overflow-wrap: anywhere; }
+.points-page .card, .account-page .card { border: 1px solid rgba(255,255,255,.09); border-radius: 14px; background: linear-gradient(145deg,#121b32,#0c1324); color: #f2f4ff; }
+.points-page .section-heading h2 { margin: 3px 0 10px; font-size: 19px; }
+.points-page table { width: 100%; border-collapse: collapse; }
+.points-page th { text-align: left; color: #aab5d0; font-size: 11px; }
+.points-page td { border-top: 1px solid rgba(255,255,255,.07); font-size: 12px; }
+.points-page td strong { color: #68e0b0; }
+.points-page .empty-state { padding: 18px 0 8px; }
+.points-page .empty-state p { color: #aab5d0; font-size: 13px; }
+.account-profile-card { display: flex; align-items: center; gap: 14px; padding: 18px !important; margin: 14px 0; }
+.account-avatar { width: 54px; height: 54px; flex: 0 0 54px; display: grid; place-items: center; border-radius: 16px; color: #b2a8ff; background: rgba(139,124,255,.14); border: 1px solid rgba(139,124,255,.22); }
+.account-profile-card h2 { margin: 0 0 4px; font-size: 20px; }
+.account-profile-card p { margin: 0 0 7px; color: #aab5d0; font-size: 12px; overflow-wrap: anywhere; }
+.account-role { display: inline-flex; align-items: center; gap: 5px; text-transform: capitalize; color: #b2a8ff; font-size: 11px; font-weight: 700; }
+.account-page .account-plan { font-size: 19px !important; text-transform: capitalize; }
+.account-page .account-date { font-size: 17px !important; }
+.account-shortcuts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; padding: 16px !important; }
+.account-shortcuts h2 { grid-column: 1 / -1; margin: 0 0 3px; font-size: 18px; }
+.account-shortcuts a { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 11px; border: 1px solid rgba(255,255,255,.08); border-radius: 10px; color: #e8eaff; background: rgba(255,255,255,.025); font-size: 12px; }
+.account-shortcuts a svg { color: #a69aff; flex: 0 0 auto; }
+.account-shortcuts a.account-logout { color: #ffb3bc; }
+@media (max-width: 560px) {
+  .points-page .stats-grid, .account-page .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .points-page .dashboard-head, .account-page .dashboard-head { gap: 8px; }
+  .points-page .table-wrap { overflow-x: auto; }
+  .points-page table { min-width: 420px; }
+  .account-profile-card { padding: 14px !important; }
+  .account-shortcuts { grid-template-columns: minmax(0,1fr); }
+  .account-shortcuts h2 { grid-column: auto; }
+}
