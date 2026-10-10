@@ -58,9 +58,7 @@ export default function SiteHeader({ user }) {
           {user && <a href="/account" className={isActive("/account") ? "mobile-nav-item active" : "mobile-nav-item"}><UserCircle {...mobileIconProps} /><span>Account</span></a>}
           {!user && <a href="/login" className={isActive("/login") ? "mobile-nav-item active" : "mobile-nav-item"}><LogIn {...mobileIconProps} /><span>Log in</span></a>}
           {!user && <a href="/signup" className={isActive("/signup") ? "mobile-nav-item active" : "mobile-nav-item"}><UserPlus {...mobileIconProps} /><span>Sign up</span></a>}
-          {user?.role === "creator" && <a href="/creator" className={isActive("/creator") ? "mobile-nav-item active" : "mobile-nav-item"}><Megaphone {...mobileIconProps} /><span>Creator</span></a>}
-          {user?.role === "admin" && <a href="/admin" className={isActive("/admin") ? "mobile-nav-item active" : "mobile-nav-item"}><ShieldCheck {...mobileIconProps} /><span>Admin</span></a>}
-        </nav>
+                        </nav>
       )}
     </header>
   );
