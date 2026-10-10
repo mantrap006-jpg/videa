@@ -44,7 +44,7 @@ export default function AuthPage() {
             return;
           }
           const userRole = data.user?.role || "viewer";
-          router.push(userRole === "admin" ? "/admin" : userRole === "creator" ? "/creator" : "/dashboard");
+          router.push(userRole === "admin" ? "/admin" : "/points");
           router.refresh();
         } catch {
           setMessage("Could not connect to Videa. Please try again.");
