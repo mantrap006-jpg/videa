@@ -7,6 +7,9 @@ export default async function VideosPage({ searchParams }) {
   await connectDB();
   const params = await searchParams;
   const q = typeof params?.q === "string" ? params.q.trim() : "";
+  const rawPage = Number.parseInt(typeof params?.page === "string" ? params.page : "1", 10);
+  const page = Number.isFinite(rawPage) ? Math.max(1, Math.min(rawPage, 100000)) : 1;
+  const pageSize = 18;
 
   const filter = { active: true };
   if (q) {
@@ -16,7 +19,20 @@ export default async function VideosPage({ searchParams }) {
     ];
   }
 
-  const videos = await Video.find(filter).sort({ createdAt: -1 }).lean();
+  const records = await Video.find(filter)
+    .select("title description youtubeId rewardPoints minimumWatchPercent createdAt")
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * pageSize)
+    .limit(pageSize + 1)
+    .lean();
+  const hasNextPage = records.length > pageSize;
+  const videos = records.slice(0, pageSize);
+  const pageHref = (nextPage) => {
+    const query = new URLSearchParams();
+    if (q) query.set("q", q);
+    query.set("page", String(nextPage));
+    return `/videos?${query.toString()}`;
+  };
 
   return (
     <section>
@@ -36,7 +52,7 @@ export default async function VideosPage({ searchParams }) {
       <div className="grid video-library">
         {videos.map(v => (
           <article className="card library-card" key={v._id.toString()}>
-            <img className="library-thumb" src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`} alt="" />
+            <img className="library-thumb" src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" />
             <div className="library-content">
               <h3>{v.title}</h3>
               <p>{v.description || "Approved Videa content."}</p>
@@ -49,6 +65,14 @@ export default async function VideosPage({ searchParams }) {
           </article>
         ))}
       </div>
+
+      {(page > 1 || hasNextPage) && (
+        <div className="library-pagination" aria-label="Video library pagination">
+          {page > 1 ? <a href={pageHref(page - 1)}>← Previous</a> : <span />}
+          <span>Page {page}</span>
+          {hasNextPage ? <a href={pageHref(page + 1)}>Next →</a> : <span />}
+        </div>
+      )}
 
       {videos.length === 0 && (
         <div className="card">
