@@ -4,10 +4,15 @@ import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 import SiteHeader from "./SiteHeader";
+import PWARegister from "./PWARegister";
 
 export const metadata = {
   title: "Videa — Watch & Earn",
   description: "Watch approved videos and earn points.",
+  manifest: "/manifest.webmanifest",
+  applicationName: "Videa",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Videa" },
+  themeColor: "#635bff",
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
@@ -38,6 +43,7 @@ export default async function RootLayout({ children }) {
       <body>
         <SiteHeader user={user} />
         <main>{children}</main>
+        <PWARegister />
         <footer className="footer">© 2026 Videa. Watch responsibly. Earn transparently.<div className="footer-legal"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a></div></footer>
       </body>
     </html>
