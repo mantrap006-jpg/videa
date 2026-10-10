@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Coins, Megaphone, Play, Sparkles, UploadCloud } from "lucide-react";
+import { Coins, Megaphone, Play, Sparkles, UploadCloud, CheckCircle2, LockKeyhole } from "lucide-react";
 
-export default function CreatorClient() {
+export default function CreatorClient({ subscriptionActive = false, subscriptionExpiresAt = null }) {
   const [form, setForm] = useState({
     title: "",
     youtubeUrl: "",
@@ -29,10 +29,10 @@ export default function CreatorClient() {
       if (!res.ok) throw new Error(data.error || "Could not retrieve YouTube details.");
       setForm(current => ({
         ...current,
-        title: data.title || current.title,
-        description: data.description ?? current.description
+        title: data.title || "",
+        description: data.description ?? ""
       }));
-      setMetadataStatus("Title and description loaded from YouTube. You can edit them before submitting.");
+      setMetadataStatus("Title and description loaded from YouTube.");
     } catch (error) {
       setMetadataStatus(error.message || "Could not retrieve YouTube details. Check the link and try again.");
     } finally {
@@ -43,6 +43,14 @@ export default function CreatorClient() {
   async function add(e) {
     e.preventDefault();
     setMessage("");
+    if (!subscriptionActive) {
+      setMessage("An active Creator subscription is required. Please activate your subscription first.");
+      return;
+    }
+    if (!form.title.trim()) {
+      setMessage("Enter a valid YouTube URL so Videa can retrieve the title and description.");
+      return;
+    }
 
     try {
       const res = await fetch("/api/creator/videos", {
@@ -54,7 +62,7 @@ export default function CreatorClient() {
       const data = await res.json();
       setMessage(
         res.ok
-          ? "Video submitted successfully. Videa verified the video duration automatically."
+          ? "Video submitted successfully. Videa verified the video details and duration."
           : (data.error || "Could not submit video.")
       );
     } catch {
@@ -69,17 +77,24 @@ export default function CreatorClient() {
           <div className="eyebrow"><Megaphone size={15} /> CREATOR</div>
           <h2>Put your videos in front of engaged viewers.</h2>
           <p className="muted">
-            Creators can subscribe to Videa, submit approved YouTube content,
-            and grow their reach.
+            Creators can submit YouTube content and grow their reach with an active subscription.
           </p>
         </div>
 
         <div className="creator-plan">
-          <Sparkles size={20} />
+          {subscriptionActive ? <CheckCircle2 size={20} /> : <LockKeyhole size={20} />}
           <span>Creator subscription</span>
-          <strong>Required</strong>
-          <small>Manage your Creator subscription.</small>
-          <a className="button" href="/subscription">View subscription</a>
+          <strong>{subscriptionActive ? "Active" : "Required"}</strong>
+          <small>
+            {subscriptionActive
+              ? subscriptionExpiresAt
+                ? `Active until ${new Date(subscriptionExpiresAt).toLocaleDateString()}`
+                : "Your creator subscription is active."
+              : "Activate your subscription to submit videos."}
+          </small>
+          <a className="button" href="/subscription">
+            {subscriptionActive ? "Manage subscription" : "View subscription"}
+          </a>
         </div>
       </div>
 
@@ -88,12 +103,21 @@ export default function CreatorClient() {
           <div className="eyebrow"><UploadCloud size={15} /> SUBMIT VIDEO</div>
           <h3>Promote a video</h3>
 
+          {!subscriptionActive && (
+            <div className="error" role="status">
+              An active Creator subscription is required before you can submit a video.
+              <a href="/subscription"> View subscription</a>
+            </div>
+          )}
+
           <label>
-            Title
+            Title (from YouTube)
             <input
               required
               value={form.title}
-              onChange={e => setForm({ ...form, title: e.target.value })}
+              readOnly
+              disabled
+              placeholder="Automatically retrieved from YouTube"
             />
           </label>
 
@@ -103,24 +127,30 @@ export default function CreatorClient() {
               required
               value={form.youtubeUrl}
               placeholder="https://www.youtube.com/watch?v=..."
-              onChange={e => setForm({ ...form, youtubeUrl: e.target.value })}
+              onChange={e => {
+                setForm({ ...form, youtubeUrl: e.target.value, title: "", description: "" });
+                setMetadataStatus("");
+              }}
               onBlur={fetchYouTubeDetails}
             />
             <p className="muted duration-status">
-              {loadingMetadata ? "Retrieving title and description from YouTube…" : "Paste a YouTube link; the title and description will be filled in automatically."}
+              {loadingMetadata ? "Retrieving title and description from YouTube…" : "Paste a YouTube link. The title and description are retrieved automatically and cannot be edited."}
             </p>
             {metadataStatus && <p className={metadataStatus.startsWith("Title and description loaded") ? "success" : "error"}>{metadataStatus}</p>}
           </label>
 
           <p className="muted duration-status">
-            Video duration is detected and verified automatically by Videa.
+            Video duration and reward points are verified and calculated automatically by Videa.
           </p>
 
           <label>
-            Description
+            Description (from YouTube)
             <textarea
               value={form.description}
-              onChange={e => setForm({ ...form, description: e.target.value })}
+              readOnly
+              disabled
+              placeholder="Automatically retrieved from YouTube"
+              rows={4}
             />
           </label>
 
@@ -140,12 +170,12 @@ export default function CreatorClient() {
             />
           </label>
 
-          <button className="button" type="submit">
-            <Play size={17} /> Submit video
+          <button className="button" type="submit" disabled={!subscriptionActive || loadingMetadata}>
+            <Play size={17} /> {subscriptionActive ? "Submit video" : "Subscription required"}
           </button>
 
           {message && (
-            <p className={message.includes("successfully") ? "success" : "error"}>
+            <p className={message.includes("successfully") ? "success" : "error"} role="status">
               {message}
             </p>
           )}
@@ -156,8 +186,7 @@ export default function CreatorClient() {
             <Coins size={20} />
             <h3>Automatic rewards</h3>
             <p className="muted">
-              Videa calculates viewer rewards automatically using the verified
-              YouTube video duration and the platform reward rate.
+              Videa calculates viewer rewards using the verified YouTube video duration and platform reward rate.
             </p>
           </div>
 
@@ -165,17 +194,15 @@ export default function CreatorClient() {
             <Megaphone size={20} />
             <h3>Promote your content</h3>
             <p className="muted">
-              Give viewers a clear reason to discover your videos through the
-              Videa library.
+              Give viewers a clear reason to discover your videos through the Videa library.
             </p>
           </div>
 
           <div className="card">
             <Sparkles size={20} />
-            <h3>Subscription model</h3>
+            <h3>Subscription access</h3>
             <p className="muted">
-              Creator access will be tied to an active subscription and
-              payment status.
+              Video submissions are available only while your Creator subscription is active.
             </p>
           </div>
         </div>
