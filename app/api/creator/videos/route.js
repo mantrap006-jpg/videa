@@ -17,50 +17,46 @@ export async function POST(request) {
       return NextResponse.json({ error: "Creator access required." }, { status: 403 });
     }
 
-    if (user.role !== "admin" && user.subscription?.status !== "active") {
+    const subscriptionActive =
+      user.role === "admin" ||
+      (user.subscription?.status === "active" &&
+        (!user.subscription?.expiresAt || new Date(user.subscription.expiresAt) > new Date()));
+
+    if (!subscriptionActive) {
       return NextResponse.json(
         { error: "An active creator subscription is required before submitting videos." },
         { status: 402 }
       );
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    }
+
     const {
       youtubeUrl,
-      description = "",
       pointsPerMinute = 1,
       minimumWatchPercent = 80
     } = body;
 
     if (!youtubeUrl) {
-      return NextResponse.json(
-        { error: "YouTube URL is required." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "YouTube URL is required." }, { status: 400 });
     }
 
     const rate = Number(pointsPerMinute);
-
     if (!Number.isFinite(rate) || rate <= 0) {
-      return NextResponse.json(
-        { error: "Points per minute must be greater than 0." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Points per minute must be greater than 0." }, { status: 400 });
     }
 
     const youtubeId = extractYouTubeId(youtubeUrl);
-
     if (!youtubeId) {
-      return NextResponse.json(
-        { error: "Please provide a valid YouTube URL." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Please provide a valid YouTube URL." }, { status: 400 });
     }
 
-    // The browser may detect the duration for display, but it is never trusted
-    // for the stored duration or reward calculation.
     let youtubeDetails;
-
     try {
       youtubeDetails = await getYouTubeVideoDetails(youtubeId);
       if (!youtubeDetails.durationSeconds) throw new Error("YouTube returned an invalid video duration.");
@@ -77,24 +73,21 @@ export async function POST(request) {
     }
 
     const verifiedDurationSeconds = youtubeDetails.durationSeconds;
-    const rewardPoints = Math.max(
-      1,
-      Math.floor((verifiedDurationSeconds / 60) * rate)
-    );
+    const rewardPoints = Math.max(1, Math.floor((verifiedDurationSeconds / 60) * rate));
 
     const video = await Video.create({
       title: youtubeDetails.title,
       youtubeUrl: youtubeUrl.trim(),
       youtubeId,
+      channelId: youtubeDetails.channelId || "",
+      channelTitle: youtubeDetails.channelTitle || "",
+      channelThumbnail: youtubeDetails.channelThumbnail || "",
       description: youtubeDetails.description,
       durationSeconds: verifiedDurationSeconds,
       durationVerifiedAt: new Date(),
       pointsPerMinute: rate,
       rewardPoints,
-      minimumWatchPercent: Math.min(
-        100,
-        Math.max(1, Number(minimumWatchPercent) || 80)
-      ),
+      minimumWatchPercent: Math.min(100, Math.max(1, Number(minimumWatchPercent) || 80)),
       active: true
     });
 
@@ -109,6 +102,7 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (e) {
+    console.error("Creator video submission failed:", e);
     return NextResponse.json(
       { error: "Could not submit video.", detail: e.message },
       { status: 500 }
