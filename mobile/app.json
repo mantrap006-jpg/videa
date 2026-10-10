@@ -17,9 +17,7 @@
         "backgroundColor": "#101827"
       }
     },
-    "plugins": [
-      "react-native-webview"
-    ],
+    "plugins": [],
     "extra": {
       "websiteUrl": "https://videa-khaki.vercel.app"
     }
