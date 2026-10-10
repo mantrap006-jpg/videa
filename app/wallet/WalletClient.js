@@ -3,6 +3,25 @@
 import { useEffect, useState } from "react";
 import { Wallet, ArrowDownToLine, ArrowUpFromLine, Clock3, Coins, RefreshCw, ShieldCheck } from "lucide-react";
 
+async function readJsonResponse(response, fallbackMessage) {
+  const responseText = await response.text();
+  if (!responseText.trim()) {
+    throw new Error(response.ok
+      ? "The server returned an empty response. Please refresh and try again."
+      : fallbackMessage + " (HTTP " + response.status + "). Please try again.");
+  }
+  let result;
+  try {
+    result = JSON.parse(responseText);
+  } catch {
+    throw new Error(response.ok
+      ? "The server returned an invalid response. Please refresh and try again."
+      : fallbackMessage + " (HTTP " + response.status + "). Please try again.");
+  }
+  if (!response.ok) throw new Error(result?.error || fallbackMessage + " (HTTP " + response.status + ").");
+  return result;
+}
+
 export default function WalletClient() {
   const [data, setData] = useState(null);
   const [points, setPoints] = useState("100");
@@ -23,11 +42,10 @@ export default function WalletClient() {
     setLoading(true);
     try {
       const res = await fetch("/api/wallet", { cache: "no-store" });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "Could not load wallet.");
+      const result = await readJsonResponse(res, "Could not load wallet");
       setData(result);
       const settingsResponse = await fetch("/api/payment-settings", { cache: "no-store" });
-      if (settingsResponse.ok) setPaymentSettings(await settingsResponse.json());
+      if (settingsResponse.ok) setPaymentSettings(await readJsonResponse(settingsResponse, "Could not load payment settings"));
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
   }
@@ -40,8 +58,7 @@ export default function WalletClient() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ points: Number(points), phone, network })
       });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "Could not submit withdrawal.");
+      const result = await readJsonResponse(res, "Could not submit withdrawal");
       setMessage("Withdrawal request submitted. Your points are reserved while the admin reviews it.");
       setPhone("");
       await load();
@@ -56,8 +73,7 @@ export default function WalletClient() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amountRwf: Number(depositAmount), phone: depositPhone, network: depositNetwork, senderName })
       });
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.error || "Could not submit deposit.");
+      const result = await readJsonResponse(res, "Could not submit deposit");
       setMessage("Deposit submitted for admin verification. Points will be added only after approval.");
       setSenderName("");
       await load();
