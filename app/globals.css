@@ -3090,3 +3090,27 @@ body:has(.mh-redesign) > .footer { display:none !important; }
   .videos-library-card .library-meta span { min-height: 25px; padding: 5px 7px; }
   .videos-watch-button { min-height: 34px; }
 }
+
+
+/* Landing page viewport and scrollbar cleanup */
+html:has(.mh-redesign) {
+  min-height: 100%;
+  overflow-x: clip;
+}
+body:has(.mh-redesign) {
+  min-height: 100vh;
+  overflow-x: clip;
+}
+body:has(.mh-redesign) > main {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+}
+body:has(.mh-redesign) > main > .mh-redesign {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  overflow: clip;
+}
