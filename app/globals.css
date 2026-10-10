@@ -2654,3 +2654,7 @@ th, td { padding: 8px 10px; }
 @media (min-width:769px) {
   .mh-redesign { display:none !important; }
 }
+
+
+/* Keep the old desktop homepage off-screen on phones while redirecting to /mobile-home. */
+@media (max-width:768px) { .home { display:none !important; } }
