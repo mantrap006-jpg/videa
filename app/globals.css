@@ -2267,3 +2267,46 @@ th, td { padding: 8px 10px; }
     bottom: calc(54px + env(safe-area-inset-bottom, 0px)) !important;
   }
 }
+
+
+/* Fix fixed-nav containing block: the header blur was trapping the nav at the top. */
+@media (max-width: 900px) {
+  .topbar {
+    transform: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    contain: none !important;
+    perspective: none !important;
+  }
+  .mobile-bottom-nav {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    top: auto !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: calc(54px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 5px 6px calc(5px + env(safe-area-inset-bottom, 0px)) !important;
+    background: rgba(8,12,24,.98) !important;
+  }
+  .mobile-bottom-nav .mobile-nav-item {
+    font-size: 10px !important;
+    gap: 4px !important;
+  }
+  .mobile-bottom-nav .mobile-nav-item svg {
+    width: 18px !important;
+    height: 18px !important;
+    flex-basis: 18px !important;
+  }
+  body {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+@media (max-width: 420px) {
+  .mobile-bottom-nav {
+    height: calc(52px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body {
+    padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
