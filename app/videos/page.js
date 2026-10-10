@@ -31,6 +31,38 @@ export default async function VideosPage({ searchParams }) {
   ]);
   const hasNextPage = records.length > pageSize;
   const videos = records.slice(0, pageSize);
+
+  // Fetch public YouTube view counts on the server so the API key is never exposed
+  // to browsers. Counts are cached briefly to avoid unnecessary API requests.
+  const youtubeApiKey = process.env.YOUTUBE_API_KEY;
+  if (youtubeApiKey && videos.length) {
+    try {
+      const ids = [...new Set(videos.map((video) => video.youtubeId).filter(Boolean))];
+      const viewCounts = new Map();
+      for (let i = 0; i < ids.length; i += 50) {
+        const batch = ids.slice(i, i + 50);
+        const url = new URL("https://www.googleapis.com/youtube/v3/videos");
+        url.searchParams.set("part", "statistics");
+        url.searchParams.set("id", batch.join(","));
+        url.searchParams.set("key", youtubeApiKey);
+        const response = await fetch(url, { next: { revalidate: 300 } });
+        if (!response.ok) continue;
+        const data = await response.json();
+        for (const item of data.items || []) {
+          const count = Number(item.statistics?.viewCount);
+          if (Number.isFinite(count)) viewCounts.set(item.id, count);
+        }
+      }
+      for (const video of videos) {
+        video.youtubeViews = viewCounts.has(video.youtubeId) ? viewCounts.get(video.youtubeId) : null;
+      }
+    } catch (error) {
+      console.error("Unable to load YouTube view counts:", error);
+      for (const video of videos) video.youtubeViews = null;
+    }
+  } else {
+    for (const video of videos) video.youtubeViews = null;
+  }
   const pageHref = (nextPage) => {
     const query = new URLSearchParams();
     if (q) query.set("q", q);
@@ -74,6 +106,10 @@ export default async function VideosPage({ searchParams }) {
               <div className="videos-card-label">V I D E A&nbsp; • &nbsp;WATCH & EARN</div><div className="library-meta">
                 <strong>+{v.rewardPoints} points</strong>
                 <span>Watch {v.minimumWatchPercent}%</span>
+              </div>
+              <div className="videos-youtube-views" aria-label="YouTube video views">
+                <span aria-hidden="true">▶</span>
+                <span>{v.youtubeViews === null ? "YouTube views unavailable" : `${v.youtubeViews.toLocaleString()} YouTube views`}</span>
               </div>
               <a className="button videos-watch-button" href={`/watch/${v._id}`}>Watch & earn <span aria-hidden="true">→</span></a>
             </div>
