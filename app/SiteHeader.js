@@ -12,10 +12,11 @@ import {
   LogOut,
   LogIn,
   UserPlus,
-  ShieldCheck
+  ShieldCheck,
+  Sparkles
 } from "lucide-react";
 
-const iconProps = { size: 17, strokeWidth: 2 };
+const iconProps = { size: 16, strokeWidth: 2 };
 
 export default function SiteHeader({ user }) {
   const pathname = usePathname();
@@ -23,34 +24,38 @@ export default function SiteHeader({ user }) {
 
   return (
     <header className="topbar">
-      <a href="/" className="brand" aria-label="Videa home"><img src="/logo.svg" alt="VIDEA" style={{ display: "block", width: 190, height: 50, objectFit: "contain" }} /></a>
+      <a href="/" className="brand" aria-label="Videa home">
+        <img src="/logo.svg" alt="VIDEA" width="154" height="40" />
+      </a>
+
       {!isAdminRoute && (
         <Navigation>
-          {user?.role === "admin" ? (
+          {user ? (
             <>
-              <a className="nav-admin" href="/admin"><ShieldCheck {...iconProps} /> Admin control center</a>
+              <a href="/videos"><Video {...iconProps} /> Videos</a>
+              <a href="/dashboard"><LayoutDashboard {...iconProps} /> Dashboard</a>
+              <a href="/wallet"><Wallet {...iconProps} /> Wallet</a>
+
+              {user.role === "creator" && (
+                <>
+                  <a className="nav-admin" href="/creator"><Megaphone {...iconProps} /> Creator</a>
+                  <a href="/subscription"><Sparkles {...iconProps} /> Subscription</a>
+                </>
+              )}
+
+              {user.role === "admin" && (
+                <a className="nav-admin" href="/admin"><ShieldCheck {...iconProps} /> Admin control center</a>
+              )}
+
+              <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
+              <span className="nav-points"><Coins {...iconProps} /> {Number(user.points || 0).toLocaleString()} points</span>
               <a className="nav-logout" href="/api/auth/logout"><LogOut {...iconProps} /> Log out</a>
             </>
           ) : (
             <>
               <a href="/videos"><Video {...iconProps} /> Videos</a>
-              {user ? (
-                <>
-                  <a href="/dashboard"><LayoutDashboard {...iconProps} /> Dashboard</a>
-                  <a href="/wallet"><Wallet {...iconProps} /> Wallet</a>
-                  <span className="nav-user"><UserCircle {...iconProps} /> Hi, {user.name}</span>
-                  <span className="nav-points"><Coins {...iconProps} /> {user.points}</span>
-                  {user.role === "creator" && (
-                    <a className="nav-admin" href="/creator"><Megaphone {...iconProps} /> Creator</a>
-                  )}
-                  <a className="nav-logout" href="/api/auth/logout"><LogOut {...iconProps} /> Log out</a>
-                </>
-              ) : (
-                <>
-                  <a className="nav-login" href="/login"><LogIn {...iconProps} /> Log in</a>
-                  <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Create account</a>
-                </>
-              )}
+              <a className="nav-login" href="/login"><LogIn {...iconProps} /> Log in</a>
+              <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Create account</a>
             </>
           )}
         </Navigation>
