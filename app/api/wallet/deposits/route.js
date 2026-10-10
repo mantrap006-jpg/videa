@@ -27,8 +27,11 @@ export async function POST(request) {
   }
 
   await connectDB();
-  const user = await User.findById(session.sub).select("_id").lean();
+  const user = await User.findById(session.sub).select("_id role").lean();
   if (!user) return NextResponse.json({ error: "Account not found." }, { status: 404 });
+  if (user.role !== "creator") {
+    return NextResponse.json({ error: "Only creator accounts can submit deposits." }, { status: 403 });
+  }
 
   try {
     const deposit = await Deposit.create({
