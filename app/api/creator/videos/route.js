@@ -3,7 +3,7 @@ import Video from "@/models/Video";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongodb";
 import { getActiveUserFromRequest } from "@/lib/auth";
-import { extractYouTubeId, getYouTubeDurationSeconds } from "@/lib/youtube";
+import { extractYouTubeId, getYouTubeVideoDetails } from "@/lib/youtube";
 
 export async function POST(request) {
   try {
@@ -26,16 +26,15 @@ export async function POST(request) {
 
     const body = await request.json();
     const {
-      title,
       youtubeUrl,
       description = "",
       pointsPerMinute = 1,
       minimumWatchPercent = 80
     } = body;
 
-    if (!title || !youtubeUrl) {
+    if (!youtubeUrl) {
       return NextResponse.json(
-        { error: "Title and YouTube URL are required." },
+        { error: "YouTube URL is required." },
         { status: 400 }
       );
     }
@@ -60,10 +59,11 @@ export async function POST(request) {
 
     // The browser may detect the duration for display, but it is never trusted
     // for the stored duration or reward calculation.
-    let verifiedDurationSeconds;
+    let youtubeDetails;
 
     try {
-      verifiedDurationSeconds = await getYouTubeDurationSeconds(youtubeId);
+      youtubeDetails = await getYouTubeVideoDetails(youtubeId);
+      if (!youtubeDetails.durationSeconds) throw new Error("YouTube returned an invalid video duration.");
     } catch (error) {
       return NextResponse.json(
         {
@@ -76,16 +76,17 @@ export async function POST(request) {
       );
     }
 
+    const verifiedDurationSeconds = youtubeDetails.durationSeconds;
     const rewardPoints = Math.max(
       1,
       Math.floor((verifiedDurationSeconds / 60) * rate)
     );
 
     const video = await Video.create({
-      title: title.trim(),
+      title: youtubeDetails.title,
       youtubeUrl: youtubeUrl.trim(),
       youtubeId,
-      description: description.trim(),
+      description: youtubeDetails.description,
       durationSeconds: verifiedDurationSeconds,
       durationVerifiedAt: new Date(),
       pointsPerMinute: rate,
@@ -101,7 +102,9 @@ export async function POST(request) {
       {
         video,
         verifiedDurationSeconds,
-        rewardPoints
+        rewardPoints,
+        title: youtubeDetails.title,
+        description: youtubeDetails.description
       },
       { status: 201 }
     );
