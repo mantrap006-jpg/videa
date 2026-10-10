@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "Videa — Watch & Earn",
+  "short_name": "Videa",
+  "description": "Watch approved videos and earn points.",
+  "start_url": "/videos",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#635bff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/videa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/videa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
