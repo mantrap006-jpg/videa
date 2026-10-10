@@ -19,11 +19,22 @@ export default async function CreatorPage() {
   }
 
   await connectDB();
-  const user = await User.findById(session.sub).select("role").lean();
+  const user = await User.findById(session.sub).select("role subscription").lean();
 
   if (!user || !["creator", "admin"].includes(user.role)) {
     redirect("/dashboard");
   }
 
-  return <CreatorClient />;
+  const now = new Date();
+  const subscriptionActive =
+    user.role === "admin" ||
+    (user.subscription?.status === "active" &&
+      (!user.subscription?.expiresAt || new Date(user.subscription.expiresAt) > now));
+
+  return (
+    <CreatorClient
+      subscriptionActive={subscriptionActive}
+      subscriptionExpiresAt={user.subscription?.expiresAt?.toISOString?.() || null}
+    />
+  );
 }
