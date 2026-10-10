@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 export default function MobileOnlyGuard() {
   useEffect(() => {
+    document.body.classList.add("mobile-home-route");
     const desktop = window.matchMedia("(min-width: 769px)");
     const redirectIfDesktop = () => {
       if (desktop.matches) window.location.replace("/");
