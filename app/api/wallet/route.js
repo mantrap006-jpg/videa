@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { getActiveUserFromRequest } from "@/lib/auth";
 import User from "@/models/User";
 import Earning from "@/models/Earning";
+import "@/models/Video";
 import Withdrawal from "@/models/Withdrawal";
 import Deposit from "@/models/Deposit";
 
