@@ -13,22 +13,27 @@ const MIN_WITHDRAWAL_POINTS = 100;
 export async function GET(request) {
   const session = await getActiveUserFromRequest(request);
   if (!session?.sub) return NextResponse.json({ error: "Please log in." }, { status: 401 });
-  await connectDB();
-  const user = await User.findById(session.sub).select("name points").lean();
-  if (!user) return NextResponse.json({ error: "Account not found." }, { status: 404 });
-
-  const [earnings, withdrawals, deposits] = await Promise.all([
-    Earning.find({ userId: session.sub }).sort({ createdAt: -1 }).limit(30).populate("videoId", "title").lean(),
-    Withdrawal.find({ user: session.sub }).sort({ createdAt: -1 }).limit(30).lean(),
-    Deposit.find({ user: session.sub }).sort({ createdAt: -1 }).limit(30).lean()
-  ]);
-
-  return NextResponse.json({
-    wallet: { name: user.name, points: user.points || 0, balanceRwf: (user.points || 0) * POINTS_TO_RWF, pointValueRwf: POINTS_TO_RWF, minimumWithdrawalPoints: MIN_WITHDRAWAL_POINTS },
-    earnings: earnings.map(item => ({ id: item._id.toString(), title: item.videoId?.title || "Video reward", points: item.points, createdAt: item.createdAt })),
-    withdrawals: withdrawals.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt })),
-    deposits: deposits.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, senderName: item.senderName || "", transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt }))
-  });
+  try {
+    await connectDB();
+    const user = await User.findById(session.sub).select("name points").lean();
+    if (!user) return NextResponse.json({ error: "Account not found." }, { status: 404 });
+  
+    const [earnings, withdrawals, deposits] = await Promise.all([
+      Earning.find({ userId: session.sub }).sort({ createdAt: -1 }).limit(30).populate("videoId", "title").lean(),
+      Withdrawal.find({ user: session.sub }).sort({ createdAt: -1 }).limit(30).lean(),
+      Deposit.find({ user: session.sub }).sort({ createdAt: -1 }).limit(30).lean()
+    ]);
+  
+    return NextResponse.json({
+      wallet: { name: user.name, points: user.points || 0, balanceRwf: (user.points || 0) * POINTS_TO_RWF, pointValueRwf: POINTS_TO_RWF, minimumWithdrawalPoints: MIN_WITHDRAWAL_POINTS },
+      earnings: earnings.map(item => ({ id: item._id.toString(), title: item.videoId?.title || "Video reward", points: item.points, createdAt: item.createdAt })),
+      withdrawals: withdrawals.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt })),
+      deposits: deposits.map(item => ({ id: item._id.toString(), points: item.points, amountRwf: item.amountRwf, phone: item.phone, network: item.network, senderName: item.senderName || "", transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote, createdAt: item.createdAt, reviewedAt: item.reviewedAt }))
+    });
+  } catch (error) {
+    console.error("Wallet GET failed:", error);
+    return NextResponse.json({ error: "Wallet data is temporarily unavailable. Please refresh in a moment." }, { status: 500 });
+  }
 }
 
 export async function POST(request) {
