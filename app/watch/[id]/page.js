@@ -294,7 +294,7 @@ export default function WatchPage() {
                 <div className="watch-lock-icon">▶</div>
                 <span className="eyebrow">WATCH ACCESS</span>
                 <h2>Unlock this video</h2>
-                <p>Verify your subscription to this creator's YouTube channel first. If you already subscribed, simply verify it — no need to subscribe again.</p>
+                <p>Open this creator's YouTube channel, subscribe if you haven't already, then return here and verify your subscription to unlock the video.</p>
               </div>
             )}
             <div className="watch-video-details">
@@ -337,15 +337,15 @@ export default function WatchPage() {
             <p>{subscriptionMessage}</p>
             {!verified && (
               <>
-                {needsSubscribe && <a className="button watch-subscribe-button" href={video.channelUrl || "https://www.youtube.com"} target="_blank" rel="noreferrer">Subscribe on YouTube ↗</a>}
+                <a className="button watch-subscribe-button" href={video.channelUrl || "https://www.youtube.com"} target="_blank" rel="noopener noreferrer">Subscribe on YouTube ↗</a>
                 <button className="button watch-verify-button" onClick={handleVerifySubscription} disabled={verifyingSubscription || subscriptionStatus === "loading" || subscriptionStatus === "login-required"}>
-                  {verifyingSubscription ? "Checking with Google…" : needsSubscribe ? "I've subscribed — check again" : "Verify with Google"}
+                  {verifyingSubscription ? "Checking with Google…" : "I’ve subscribed — verify with Google"}
                 </button>
                 {subscriptionStatus === "login-required" && <a className="button watch-verify-button" href="/auth">Log in to Videa</a>}
               </>
             )}
             {verified && <div className="watch-verified-line">✓ You can watch and earn points</div>}
-            <div className="watch-privacy-note">Videa checks subscription status securely. It does not subscribe on your behalf.</div>
+            <div className="watch-privacy-note">Subscribe on YouTube first, then return here and verify with Google. Videa checks subscription status before unlocking rewards.</div>
           </section>
 
           <section className="watch-reward-card card">
