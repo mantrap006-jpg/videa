@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import Earning from "@/models/Earning";
+import Video from "@/models/Video";
 import WatchProgress from "@/models/WatchProgress";
 import { connectDB } from "@/lib/mongodb";
 
