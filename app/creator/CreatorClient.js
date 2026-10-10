@@ -11,6 +11,34 @@ export default function CreatorClient() {
     minimumWatchPercent: 80
   });
   const [message, setMessage] = useState("");
+  const [metadataStatus, setMetadataStatus] = useState("");
+  const [loadingMetadata, setLoadingMetadata] = useState(false);
+
+  async function fetchYouTubeDetails() {
+    const url = form.youtubeUrl.trim();
+    if (!url) return;
+    setLoadingMetadata(true);
+    setMetadataStatus("");
+    try {
+      const res = await fetch("/api/creator/youtube-details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ youtubeUrl: url })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not retrieve YouTube details.");
+      setForm(current => ({
+        ...current,
+        title: data.title || current.title,
+        description: data.description ?? current.description
+      }));
+      setMetadataStatus("Title and description loaded from YouTube. You can edit them before submitting.");
+    } catch (error) {
+      setMetadataStatus(error.message || "Could not retrieve YouTube details. Check the link and try again.");
+    } finally {
+      setLoadingMetadata(false);
+    }
+  }
 
   async function add(e) {
     e.preventDefault();
@@ -76,7 +104,12 @@ export default function CreatorClient() {
               value={form.youtubeUrl}
               placeholder="https://www.youtube.com/watch?v=..."
               onChange={e => setForm({ ...form, youtubeUrl: e.target.value })}
+              onBlur={fetchYouTubeDetails}
             />
+            <p className="muted duration-status">
+              {loadingMetadata ? "Retrieving title and description from YouTube…" : "Paste a YouTube link; the title and description will be filled in automatically."}
+            </p>
+            {metadataStatus && <p className={metadataStatus.startsWith("Title and description loaded") ? "success" : "error"}>{metadataStatus}</p>}
           </label>
 
           <p className="muted duration-status">
