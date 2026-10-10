@@ -2648,3 +2648,9 @@ th, td { padding: 8px 10px; }
 @media (prefers-reduced-motion:reduce) {
   .mh-redesign .mh-primary,.mh-redesign .mh-secondary { transition:none; }
 }
+
+
+/* The dedicated /mobile-home route is for phones only. */
+@media (min-width:769px) {
+  .mh-redesign { display:none !important; }
+}
