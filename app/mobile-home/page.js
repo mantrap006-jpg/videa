@@ -26,7 +26,7 @@ export default async function MobileHomePage() {
   }
 
   return (
-    <div className="mobile-home mh-redesign">
+    <div className="mobile-home mh-redesign">\n      <MobileOnlyGuard />
       <header className="mh-topbar">
         <a href="/" className="mh-brand" aria-label="Videa home">
           <img src="/logo.svg" alt="VIDEA" width="100" height="28" />
