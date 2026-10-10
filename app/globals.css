@@ -3114,3 +3114,43 @@ body:has(.mh-redesign) > main > .mh-redesign {
   margin: 0;
   overflow: clip;
 }
+
+
+/* Unified Videa navigation styling to match the new landing page */
+.topbar {
+  min-height: 64px;
+  height: 64px;
+  padding: 0 clamp(16px, 4vw, 42px);
+  gap: 16px;
+  background: rgba(8, 13, 27, .96);
+  border-bottom: 1px solid rgba(157, 145, 255, .13);
+  box-shadow: 0 8px 28px rgba(0,0,0,.12);
+}
+.topbar .brand img { display:block; width:104px; max-width:104px; height:auto; max-height:32px; }
+.topbar .nav-links { gap: 5px; font-size: 12px; }
+.topbar .nav-links > a,
+.topbar .nav-links > .nav-user,
+.topbar .nav-links > .nav-points {
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+}
+.topbar .nav-links > a:hover { background: rgba(157,145,255,.10); border-color: rgba(157,145,255,.15); color:#fff; }
+.topbar .nav-links > a.nav-signup { background:linear-gradient(110deg,#8879ff,#6655f5); border-color:transparent; padding:9px 13px; }
+.topbar .nav-links > a.nav-login { border-color:rgba(255,255,255,.12); background:rgba(255,255,255,.025); }
+.topbar .nav-links > a.nav-logout { color:#ff9ca5!important; }
+.topbar .nav-toggle,
+.topbar .nav-auth-icon { width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.045); }
+.mobile-bottom-nav { background:rgba(8,13,27,.97); border-top-color:rgba(157,145,255,.17); }
+.mobile-bottom-nav .mobile-nav-item { border-radius:11px; color:#8995b4; font-size:10px; transition:background .18s ease,color .18s ease; }
+.mobile-bottom-nav .mobile-nav-item.active { color:#c5bbff; background:rgba(125,108,255,.13); }
+.mobile-bottom-nav .mobile-nav-item.active svg { color:#a99bff; }
+@media (max-width:900px) {
+  .topbar { height:58px; min-height:58px; padding:0 14px; }
+  .topbar .brand img { width:96px; max-height:29px; }
+  .topbar nav.nav-links.open { top:calc(100% + 7px); padding:8px; gap:4px; border:1px solid rgba(157,145,255,.18); border-radius:15px; background:rgba(8,13,27,.985); }
+  .topbar nav.nav-links.open > a { min-height:40px; padding:10px 12px; }
+}
