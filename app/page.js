@@ -71,6 +71,30 @@ export default async function MobileHomePage() {
           <div><span><Coins size={17} /></span><p><strong>Tracked points</strong><small>See activity in account</small></p></div>
         </section>
 
+        <section className="mh-discover-v2">
+          <div className="mh-section-head">
+            <div><div className="mh-section-kicker">FIND YOUR NEXT FAVORITE</div><h2>Explore what you love</h2><p>Jump into a collection and discover something new.</p></div>
+            <a href="/videos" className="mh-see-all">Browse library <ChevronRight size={16} /></a>
+          </div>
+          <div className="mh-category-grid">
+            <a className="mh-category-card mh-category-travel" href="/videos">
+              <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=75" alt="Mountain landscape" loading="lazy" decoding="async" />
+              <span className="mh-category-overlay" />
+              <span className="mh-category-copy"><small>01 / DISCOVER</small><strong>Travel & places</strong><em>See somewhere new <ArrowRight size={13} /></em></span>
+            </a>
+            <a className="mh-category-card mh-category-lifestyle" href="/videos">
+              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=75" alt="Lifestyle portrait" loading="lazy" decoding="async" />
+              <span className="mh-category-overlay" />
+              <span className="mh-category-copy"><small>02 / GET INSPIRED</small><strong>Lifestyle</strong><em>Fresh ideas daily <ArrowRight size={13} /></em></span>
+            </a>
+            <a className="mh-category-card mh-category-tech" href="/videos">
+              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=700&q=75" alt="Technology circuit board" loading="lazy" decoding="async" />
+              <span className="mh-category-overlay" />
+              <span className="mh-category-copy"><small>03 / LEARN</small><strong>Tech & creativity</strong><em>Explore new skills <ArrowRight size={13} /></em></span>
+            </a>
+          </div>
+        </section>
+
         <section className="mh-how-v2">
           <div className="mh-section-head">
             <div><div className="mh-section-kicker">SIMPLE BY DESIGN</div><h2>Three steps. One smooth flow.</h2></div>
