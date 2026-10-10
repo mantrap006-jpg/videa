@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { Menu, X, LogOut } from "lucide-react";
+import { LogOut, LogIn, UserPlus } from "lucide-react";
 
 export default function Navigation({ children, user }) {
   const [open, setOpen] = useState(false);
@@ -25,16 +25,14 @@ export default function Navigation({ children, user }) {
           <LogOut size={20} aria-hidden="true" />
         </a>
       ) : (
-        <button
-          type="button"
-          className="nav-toggle"
-          aria-label={open ? "Close navigation menu" : "Open navigation menu"}
-          aria-expanded={open}
-          aria-controls={navigationId}
-          onClick={() => setOpen((value) => !value)}
-        >
-          {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
-        </button>
+        <div className="nav-auth-actions" aria-label="Account actions">
+          <a href="/login" className="nav-auth-icon nav-auth-login" aria-label="Log in" title="Log in">
+            <LogIn size={20} aria-hidden="true" />
+          </a>
+          <a href="/signup" className="nav-auth-icon nav-auth-signup" aria-label="Create account" title="Create account">
+            <UserPlus size={20} aria-hidden="true" />
+          </a>
+        </div>
       )}
 
       <nav
