@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -22,6 +22,16 @@ const videos = [
 const categories = ["All", "Travel", "Lifestyle", "Technology"];
 
 export default function Home() {
+  useEffect(() => {
+    const mobile = window.matchMedia("(max-width: 768px)");
+    const redirectIfMobile = () => {
+      if (mobile.matches) window.location.replace("/mobile-home");
+    };
+    redirectIfMobile();
+    mobile.addEventListener("change", redirectIfMobile);
+    return () => mobile.removeEventListener("change", redirectIfMobile);
+  }, []);
+
   const [category, setCategory] = useState("All");
   const [minutes, setMinutes] = useState(30);
 
