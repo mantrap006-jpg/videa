@@ -29,18 +29,18 @@ export default async function PointsPage() {
   const rewards = totals[0]?.rewards ?? 0;
 
   return (
-    <section className="points-page">
-      <div className="dashboard-head">
+    <section className="points-page points-page-redesign">
+      <div className="points-hero dashboard-head">
         <div><div className="eyebrow">YOUR REWARDS</div><h1>Points</h1><p>Track your available balance and rewards earned from approved video views.</p></div>
         <a className="button" href="/videos">Watch videos →</a>
       </div>
-      <div className="stats-grid">
-        <div className="card stat-card"><span>Available points</span><strong>{Number(user.points || 0).toLocaleString()}</strong><small>Ready to use in Videa</small></div>
-        <div className="card stat-card"><span>Total points earned</span><strong>{Number(totalEarned).toLocaleString()}</strong><small>All recorded rewards</small></div>
-        <div className="card stat-card"><span>Rewards received</span><strong>{Number(rewards).toLocaleString()}</strong><small>Successful reward entries</small></div>
-        <div className="card stat-card"><span>Videos watched</span><strong>{Number(watchedCount).toLocaleString()}</strong><small>Videos with saved progress</small></div>
+      <div className="stats-grid points-stats-grid">
+        <div className="card stat-card points-stat points-stat-primary"><span className="points-stat-icon">✦</span><span>Available points</span><strong>{Number(user.points || 0).toLocaleString()}</strong><small>Ready to use in Videa</small></div>
+        <div className="card stat-card points-stat"><span className="points-stat-icon">↗</span><span>Total points earned</span><strong>{Number(totalEarned).toLocaleString()}</strong><small>All recorded rewards</small></div>
+        <div className="card stat-card points-stat"><span className="points-stat-icon">✧</span><span>Rewards received</span><strong>{Number(rewards).toLocaleString()}</strong><small>Successful reward entries</small></div>
+        <div className="card stat-card points-stat"><span className="points-stat-icon">▶</span><span>Videos watched</span><strong>{Number(watchedCount).toLocaleString()}</strong><small>Videos with saved progress</small></div>
       </div>
-      <div className="card">
+      <div className="card points-history-card">
         <div className="section-heading compact"><div><div className="eyebrow">POINTS HISTORY</div><h2>Recent rewards</h2></div></div>
         {recent.length === 0 ? <div className="empty-state"><h3>Your rewards start here</h3><p>Watch approved videos and eligible rewards will appear here.</p><a className="button" href="/videos">Browse videos</a></div> : (
           <div className="table-wrap"><table><thead><tr><th>Video</th><th>Points</th><th>Date</th></tr></thead><tbody>
