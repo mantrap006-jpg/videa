@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Navigation from "./Navigation";
 import {
-  Video, LayoutDashboard, UserCircle, Coins, Wallet, Megaphone,
+  Video, UserCircle, Coins, Wallet, Megaphone,
   LogOut, LogIn, UserPlus, ShieldCheck, Sparkles
 } from "lucide-react";
 
@@ -28,7 +28,7 @@ export default function SiteHeader({ user }) {
           {user ? (
             <>
               <a href="/videos"><Video {...iconProps} /> Videos</a>
-              <a href="/dashboard"><LayoutDashboard {...iconProps} /> Dashboard</a>
+              <a className="nav-points-link" href="/points"><Coins {...iconProps} /> Points</a>
               <a href="/wallet"><Wallet {...iconProps} /> Wallet</a>
               {user.role === "creator" && (
                 <>
@@ -54,10 +54,9 @@ export default function SiteHeader({ user }) {
       {user && !isAdminRoute && (
         <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
           <a href="/videos" className={isActive("/videos") ? "mobile-nav-item active" : "mobile-nav-item"}><Video {...mobileIconProps} /><span>Videos</span></a>
-          {user && <a href="/dashboard" className={isActive("/dashboard") ? "mobile-nav-item active" : "mobile-nav-item"}><LayoutDashboard {...mobileIconProps} /><span>Dashboard</span></a>}
-          {user && <a href="/wallet" className={isActive("/wallet") ? "mobile-nav-item active" : "mobile-nav-item"}><Wallet {...mobileIconProps} /><span>Wallet</span></a>}
           {user && <a href="/points" className={isActive("/points") ? "mobile-nav-item active" : "mobile-nav-item"}><Coins {...mobileIconProps} /><span>Points</span></a>}
-          {user && <a href="/account" className={isActive("/account") ? "mobile-nav-item active" : "mobile-nav-item"}><UserCircle {...mobileIconProps} /><span>Account</span></a>}
+          {user && <a href="/wallet" className={isActive("/wallet") ? "mobile-nav-item active" : "mobile-nav-item"}><Wallet {...mobileIconProps} /><span>Wallet</span></a>}
+                    {user && <a href="/account" className={isActive("/account") ? "mobile-nav-item active" : "mobile-nav-item"}><UserCircle {...mobileIconProps} /><span>Account</span></a>}
           {!user && <a href="/login" className={isActive("/login") ? "mobile-nav-item active" : "mobile-nav-item"}><LogIn {...mobileIconProps} /><span>Log in</span></a>}
           {!user && <a href="/signup" className={isActive("/signup") ? "mobile-nav-item active" : "mobile-nav-item"}><UserPlus {...mobileIconProps} /><span>Sign up</span></a>}
                         </nav>
