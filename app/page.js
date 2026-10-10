@@ -60,7 +60,7 @@ export default function Home() {
         </div>
 
         <div className="hero-visual lightweight-visual" aria-label="Videa points preview">
-          <img className="hero-photo" src="https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&w=1000&q=85" alt="Person enjoying video content on a screen" />
+          <img className="hero-photo" src="https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&w=800&q=70" alt="Person enjoying video content on a screen" fetchPriority="high" decoding="async" />
           <div className="orbit orbit-one" />
           <div className="orbit orbit-two" />
           <div className="watch-card">
@@ -117,7 +117,7 @@ export default function Home() {
           {filteredVideos.map((video) => (
             <a className="video-card interactive-card" href="/videos" key={video.title}>
               <div className="video-thumb">
-                <img className="video-thumb-image" src={video.tag === "Travel" ? "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80" : video.tag === "Lifestyle" ? "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" : "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"} alt={`${video.tag} video preview`} loading="lazy" />
+                <img className="video-thumb-image" src={video.tag === "Travel" ? "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80" : video.tag === "Lifestyle" ? "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" : "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"} alt={`${video.tag} video preview`} loading="lazy" decoding="async" />
                 <span><Play size={18} fill="currentColor" /></span>
                 <small>{video.tag}</small>
               </div>
