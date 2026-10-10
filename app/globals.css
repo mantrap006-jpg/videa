@@ -3197,3 +3197,17 @@ body:has(.mh-redesign) > main > .mh-redesign {
 @media(prefers-reduced-motion:reduce){
   .mh-category-card,.mh-category-card>img,.mh-redesign .mh-steps-v2 article,.mh-redesign .mh-hero-art>img{transition:none}
 }
+
+
+/* Center the mobile bottom bar and size its columns to the four signed-in tabs. */
+@media (max-width: 900px) {
+  .mobile-bottom-nav {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    width: min(390px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    border-radius: 16px 16px 0 0 !important;
+  }
+}
