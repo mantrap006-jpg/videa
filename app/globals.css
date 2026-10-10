@@ -2650,18 +2650,12 @@ th, td { padding: 8px 10px; }
 }
 
 
-/* The dedicated /mobile-home route is for phones only. */
-@media (min-width:769px) {
-  .mh-redesign { display:none !important; }
-}
-
-
-/* Keep the old desktop homepage off-screen on phones while redirecting to /mobile-home. */
+/* The mobile-first landing page now serves as the main homepage on every screen size. */
 @media (max-width:768px) { .home { display:none !important; } }
 
 
 /* Footer cleanup: keep one footer on the dedicated mobile landing page. */
-body.mobile-home-route > .footer { display:none !important; }
+body:has(.mh-redesign) > .footer { display:none !important; }
 .footer {
   display:flex;
   flex-wrap:wrap;
