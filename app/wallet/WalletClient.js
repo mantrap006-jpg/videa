@@ -97,6 +97,19 @@ export default function WalletClient() {
         <div className="card wallet-balance-card wallet-money"><span><Wallet size={16}/> Available value</span><strong>{(wallet?.balanceRwf || 0).toLocaleString()} <small>RWF</small></strong><small>1 point = 1 RWF</small></div>
       </div>
 
+      {data?.wallet?.role === "creator" && (
+        <form className="card wallet-deposit-form" onSubmit={deposit}>
+          <div className="eyebrow"><ArrowUpFromLine size={15}/> CREATOR DEPOSIT</div>
+          <h2>Deposit for your creator account</h2>
+          <p className="muted">Enter the mobile-money payment details. An admin will verify the payment before approving it.</p>
+          <label>Amount (RWF)<input type="number" min="100" max="10000000" step="1" required value={depositAmount} onChange={e=>setDepositAmount(e.target.value)} /></label>
+          <label>Mobile money network<select value={depositNetwork} onChange={e=>setDepositNetwork(e.target.value)}><option>MTN MoMo</option><option>Airtel Money</option></select></label>
+          <label>Payment phone number<input required value={depositPhone} onChange={e=>setDepositPhone(e.target.value)} placeholder="e.g. 078..." autoComplete="tel" /></label>
+          <label>Sender name shown on payment<input required value={senderName} onChange={e=>setSenderName(e.target.value)} maxLength={120} /></label>
+          <button className="button wallet-submit" disabled={depositSubmitting}>{depositSubmitting ? "Submitting…" : "Submit deposit for verification"}</button>
+        </form>
+      )}
+
       <div className="wallet-columns">
         <form className="card wallet-withdraw-form" onSubmit={withdraw}>
           <div className="eyebrow"><ArrowDownToLine size={15}/> WITHDRAW</div><h2>Request a payout</h2>
