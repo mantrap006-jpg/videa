@@ -35,7 +35,7 @@ export default function Navigation({ children, user }) {
         >
           {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
         </button>
-      )
+      )}
 
       <nav
         id={navigationId}
