@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
-import { LogOut, LogIn, UserPlus } from "lucide-react";
+import { LogOut, UserRound, UserPlus } from "lucide-react";
 
 export default function Navigation({ children, user }) {
   const [open, setOpen] = useState(false);
@@ -27,7 +27,7 @@ export default function Navigation({ children, user }) {
       ) : (
         <div className="nav-auth-actions" aria-label="Account actions">
           <a href="/login" className="nav-auth-icon nav-auth-login" aria-label="Log in" title="Log in">
-            <LogIn size={20} aria-hidden="true" />
+            <UserRound size={20} aria-hidden="true" />
           </a>
           <a href="/signup" className="nav-auth-icon nav-auth-signup" aria-label="Create account" title="Create account">
             <UserPlus size={20} aria-hidden="true" />
