@@ -12,6 +12,8 @@ const mobileIconProps = { size: 19, strokeWidth: 1.9 };
 
 export default function SiteHeader({ user }) {
   const pathname = usePathname();
+  if (pathname === "/mobile-home") return null;
+
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const isActive = (href) => pathname === href || (href !== "/" && pathname.startsWith(href + "/"));
 
