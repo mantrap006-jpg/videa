@@ -1,11 +1,22 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Menu, X } from "lucide-react";
 
 export default function Navigation({ children }) {
   const [open, setOpen] = useState(false);
   const navigationId = useId();
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    function closeOnEscape(event) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [open]);
 
   return (
     <>
@@ -17,7 +28,7 @@ export default function Navigation({ children }) {
         aria-controls={navigationId}
         onClick={() => setOpen((value) => !value)}
       >
-        {open ? <X size={21} aria-hidden="true" /> : <Menu size={21} aria-hidden="true" />}
+        {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
       </button>
 
       <nav
