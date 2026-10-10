@@ -1,3 +1,4 @@
+import MobileOnlyGuard from "./MobileOnlyGuard";
 import Video from "@/models/Video";
 import { connectDB } from "@/lib/mongodb";
 import {
