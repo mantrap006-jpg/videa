@@ -87,7 +87,7 @@ export default function WalletClient() {
   return (
     <section className="wallet-page">
       <div className="wallet-hero">
-        <div><div className="eyebrow"><Wallet size={15}/> YOUR WALLET</div><h1>Manage your Videa wallet</h1><p>Deposit RWF, earn points, and request a mobile-money withdrawal.</p></div>
+        <div><div className="eyebrow"><Wallet size={15}/> YOUR WALLET</div><h1>Manage your Videa wallet</h1><p>Track your rewards and request a mobile-money withdrawal.</p></div>
         <button type="button" className="button secondary wallet-refresh" onClick={load}><RefreshCw size={16}/> Refresh</button>
       </div>
       {error && <p className="error wallet-message">{error}</p>}
@@ -96,25 +96,6 @@ export default function WalletClient() {
         <div className="card wallet-balance-card"><span><Coins size={16}/> Available points</span><strong>{(wallet?.points || 0).toLocaleString()}</strong><small>Pending deposits do not count until approved</small></div>
         <div className="card wallet-balance-card wallet-money"><span><Wallet size={16}/> Available value</span><strong>{(wallet?.balanceRwf || 0).toLocaleString()} <small>RWF</small></strong><small>1 point = 1 RWF</small></div>
       </div>
-
-      <form className="card wallet-withdraw-form wallet-deposit-form" onSubmit={deposit}>
-        <div className="eyebrow"><ArrowUpFromLine size={15}/> DEPOSIT</div><h2>Deposit to your wallet</h2>
-        <p className="muted">Pay using mobile money, then submit the sender name shown on your payment receipt. An admin will verify the payment before points are added.</p>
-        <div className="payment-number wallet-payment-number">
-          <span>Pay Videa using {paymentSettings.paymentNetwork || "mobile money"}</span>
-          <strong>{paymentSettings.ussdNumber || "Payment number not configured"}</strong>
-          <small>Send your deposit first, then submit the same amount below.</small>
-        </div>
-        <div className="wallet-deposit-fields">
-          <label>Deposit amount (RWF)<input type="number" min="100" max="10000000" step="1" required value={depositAmount} onChange={e=>setDepositAmount(e.target.value)} /></label>
-          <label>Mobile money network<select value={depositNetwork} onChange={e=>setDepositNetwork(e.target.value)}><option>MTN MoMo</option><option>Airtel Money</option><option>Other</option></select></label>
-          <label>Payment phone number<input required value={depositPhone} onChange={e=>setDepositPhone(e.target.value)} placeholder="e.g. 078..." autoComplete="tel" /></label>
-          <label>Sender name<input required value={senderName} onChange={e=>setSenderName(e.target.value)} placeholder="Name shown on the payment receipt" maxLength={120} autoComplete="name" /></label>
-        </div>
-        <div className="wallet-amount-preview"><span>Points after approval</span><strong>{(Number(depositAmount) || 0).toLocaleString()} points</strong></div>
-        <button className="button wallet-submit" disabled={depositSubmitting || !Number.isSafeInteger(Number(depositAmount)) || Number(depositAmount) < 100 || !depositPhone.trim() || !senderName.trim()}>{depositSubmitting ? "Submitting…" : "Submit deposit for verification"}</button>
-        <div className="wallet-security"><ShieldCheck size={16}/> Never submit a payment reference for a payment you did not make. Admin approval is required.</div>
-      </form>
 
       <div className="wallet-columns">
         <form className="card wallet-withdraw-form" onSubmit={withdraw}>
@@ -128,23 +109,6 @@ export default function WalletClient() {
           <div className="wallet-security"><ShieldCheck size={16}/> Every request is checked and reviewed by Videa admin.</div>
         </form>
         <div className="card wallet-history">
-          <div className="wallet-section-title"><div><div className="eyebrow">DEPOSIT HISTORY</div><h2>Deposits</h2></div><Clock3 size={20}/></div>
-          {!data?.deposits?.length ? (
-            <p className="muted">No deposit requests yet.</p>
-          ) : (
-            data.deposits.map((item) => (
-              <div className="wallet-history-row" key={item.id}>
-                <div>
-                  <strong>{item.amountRwf.toLocaleString()} RWF · +{item.points.toLocaleString()} pts</strong>
-                  <span>{item.network} · {item.phone}</span>
-                  <small>Sender: {item.senderName || "Not recorded"}</small>
-                  <small>{new Date(item.createdAt).toLocaleString()}</small>
-                  {item.adminNote && <small>{item.adminNote}</small>}
-                </div>
-                <span className={"admin-status " + item.status}>{item.status}</span>
-              </div>
-            ))
-          )}
           <div className="wallet-section-title">
             <div>
               <div className="eyebrow">PAYOUT HISTORY</div>
