@@ -22,7 +22,7 @@ export default function SiteHeader({ user }) {
       </a>
 
       {!isAdminRoute && (
-        <Navigation>
+        <Navigation user={user}>
           {user ? (
             <>
               <a href="/videos"><Video {...iconProps} /> Videos</a>
@@ -49,7 +49,7 @@ export default function SiteHeader({ user }) {
         </Navigation>
       )}
 
-      {!isAdminRoute && (
+      {user && !isAdminRoute && (
         <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
           <a href="/videos" className={isActive("/videos") ? "mobile-nav-item active" : "mobile-nav-item"}><Video {...mobileIconProps} /><span>Videos</span></a>
           {user && <a href="/dashboard" className={isActive("/dashboard") ? "mobile-nav-item active" : "mobile-nav-item"}><LayoutDashboard {...mobileIconProps} /><span>Dashboard</span></a>}
