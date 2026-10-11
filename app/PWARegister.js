@@ -31,7 +31,6 @@ export default function PWARegister() {
     window.addEventListener("beforeinstallprompt", onBeforeInstall);
     window.addEventListener("appinstalled", onInstalled);
 
-    // Detect an app that was already installed before this page loaded.
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       window.matchMedia("(display-mode: fullscreen)").matches ||
@@ -67,6 +66,7 @@ export default function PWARegister() {
     <>
       <button
         type="button"
+        className="pwa-install-button"
         onClick={install}
         aria-label="Install Videa app"
         style={{
