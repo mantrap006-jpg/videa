@@ -37,9 +37,9 @@ export const metadata = {
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Videa" },
   themeColor: "#17052a",
   icons: {
-    icon: "/videa-icon.svg?v=4",
-    shortcut: "/videa-icon.svg?v=4",
-    apple: "/videa-icon.svg?v=4"
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png"
   }
 };
 export const dynamic = "force-dynamic";
