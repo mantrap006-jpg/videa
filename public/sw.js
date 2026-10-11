@@ -1,7 +1,7 @@
-const CACHE_NAME = "videa-shell-v2";
+const CACHE_NAME = "videa-shell-v3";
 const OFFLINE_URL = "/offline.html";
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll([OFFLINE_URL, "/videa-icon.svg?v=2"])));
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll([OFFLINE_URL, "/videa-icon.svg?v=3"])));
   self.skipWaiting();
 });
 self.addEventListener("activate", (event) => {
