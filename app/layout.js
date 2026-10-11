@@ -35,13 +35,17 @@ export const metadata = {
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Videa" },
-  themeColor: "#17052a",
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
     apple: "/favicon.png"
   }
 };
+
+export const viewport = {
+  themeColor: "#17052a"
+};
+
 export const dynamic = "force-dynamic";
 
 async function getNavigationUser() {

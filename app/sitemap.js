@@ -1,11 +1,10 @@
-import type { MetadataRoute } from "next";
-
 const SITE_URL = "https://videapro.site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default function sitemap() {
   return [
     {
       url: SITE_URL,
+      lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 1,
     },
