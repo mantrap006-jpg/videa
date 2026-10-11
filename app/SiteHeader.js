@@ -19,6 +19,7 @@ export default function SiteHeader({ user }) {
   const homeHref = user ? "/points" : "/";
 
   return (
+    <>
     <header className="topbar">
       <a href={homeHref} className="brand" aria-label={user ? "Videa points" : "Videa home"}>
         <img src="/logo.svg" alt="VIDEA" width="154" height="40" />
@@ -52,6 +53,8 @@ export default function SiteHeader({ user }) {
         </Navigation>
       )}
 
+    </header>
+
       {user && !isAdminRoute && (
         <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
           <a href="/videos" className={isActive("/videos") ? "mobile-nav-item active" : "mobile-nav-item"}><Video {...mobileIconProps} /><span>Videos</span></a>
@@ -60,6 +63,6 @@ export default function SiteHeader({ user }) {
           <a href="/account" className={isActive("/account") ? "mobile-nav-item active" : "mobile-nav-item"}><UserCircle {...mobileIconProps} /><span>Account</span></a>
         </nav>
       )}
-    </header>
+    </>
   );
 }
