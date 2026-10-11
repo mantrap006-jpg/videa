@@ -12,7 +12,7 @@ export const metadata = {
   manifest: "/manifest.webmanifest",
   applicationName: "Videa",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Videa" },
-  themeColor: "#635bff",
+  themeColor: "#17052a",
   icons: {
     icon: "/favicon.png",
     shortcut: "/favicon.png",
@@ -41,6 +41,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+        <style>{`body:has(.videa-loading) .footer { display: none !important; }`}</style>
         <SiteHeader user={user} />
         <main>{children}</main>
         <PWARegister />
