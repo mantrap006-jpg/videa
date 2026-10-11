@@ -201,6 +201,22 @@ export async function POST(request) {
     await User.findByIdAndUpdate(session.sub, { $inc: { points: pointsToAward } });
     await Earning.create({ userId: session.sub, videoId, points: pointsToAward });
 
+    // Start a fresh watch cycle for this same video. The atomic rewarded=true
+    // claim above prevents concurrent heartbeats from issuing the same reward.
+    await WatchProgress.updateOne(
+      { _id: claimed._id, rewarded: true },
+      {
+        $set: {
+          rewarded: false,
+          rewardedAt: null,
+          watchedPercent: 0,
+          watchedSeconds: 0,
+          lastPlayerTime: currentTime,
+          lastHeartbeatAt: now
+        }
+      }
+    );
+
     return NextResponse.json({
       rewarded: true,
       points: pointsToAward,
