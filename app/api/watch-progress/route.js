@@ -141,7 +141,33 @@ export async function POST(request) {
     );
 
     if (progress.rewarded) {
-      const previousEarning = await Earning.findOne({ userId: session.sub, videoId }).select("points").lean();
+      // Compatibility for records created before repeat rewards were enabled:
+      // once the claim is no longer in-flight, let the user start another cycle.
+      const rewardAgeMs = progress.rewardedAt ? now.getTime() - new Date(progress.rewardedAt).getTime() : Infinity;
+      if (rewardAgeMs > 15000) {
+        await WatchProgress.updateOne(
+          { _id: progress._id, rewarded: true },
+          {
+            $set: {
+              rewarded: false,
+              rewardedAt: null,
+              watchedPercent: 0,
+              watchedSeconds: 0,
+              lastPlayerTime: currentTime,
+              lastHeartbeatAt: now
+            }
+          }
+        );
+        return NextResponse.json({
+          rewarded: false,
+          watchedPercent: 0,
+          watchedSeconds: 0,
+          durationSeconds: video.durationSeconds,
+          required: requiredPercent,
+          message: "Your previous reward is saved. Keep watching to earn again."
+        });
+      }
+      const previousEarning = await Earning.findOne({ userId: session.sub, videoId }).sort({ createdAt: -1 }).select("points").lean();
       return NextResponse.json({
         rewarded: true,
         points: previousEarning?.points ?? calculatedReward,
@@ -149,7 +175,7 @@ export async function POST(request) {
         watchedSeconds: progress.watchedSeconds || 0,
         durationSeconds: video.durationSeconds,
         required: requiredPercent,
-        message: "Reward already claimed for this video."
+        message: "Reward received. Keep watching to earn again after another complete watch cycle."
       });
     }
 
