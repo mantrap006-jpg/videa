@@ -16,10 +16,11 @@ export default function SiteHeader({ user }) {
 
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const isActive = (href) => pathname === href || (href !== "/" && pathname.startsWith(href + "/"));
+  const homeHref = user ? "/points" : "/";
 
   return (
     <header className="topbar">
-      <a href="/" className="brand" aria-label="Videa home">
+      <a href={homeHref} className="brand" aria-label={user ? "Videa points" : "Videa home"}>
         <img src="/logo.svg" alt="VIDEA" width="154" height="40" />
       </a>
 
@@ -54,12 +55,10 @@ export default function SiteHeader({ user }) {
       {user && !isAdminRoute && (
         <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
           <a href="/videos" className={isActive("/videos") ? "mobile-nav-item active" : "mobile-nav-item"}><Video {...mobileIconProps} /><span>Videos</span></a>
-          {user && <a href="/points" className={isActive("/points") ? "mobile-nav-item active" : "mobile-nav-item"}><Coins {...mobileIconProps} /><span>Points</span></a>}
-          {user && <a href="/wallet" className={isActive("/wallet") ? "mobile-nav-item active" : "mobile-nav-item"}><Wallet {...mobileIconProps} /><span>Wallet</span></a>}
-                    {user && <a href="/account" className={isActive("/account") ? "mobile-nav-item active" : "mobile-nav-item"}><UserCircle {...mobileIconProps} /><span>Account</span></a>}
-          {!user && <a href="/login" className={isActive("/login") ? "mobile-nav-item active" : "mobile-nav-item"}><LogIn {...mobileIconProps} /><span>Log in</span></a>}
-          {!user && <a href="/signup" className={isActive("/signup") ? "mobile-nav-item active" : "mobile-nav-item"}><UserPlus {...mobileIconProps} /><span>Sign up</span></a>}
-                        </nav>
+          <a href="/points" className={isActive("/points") ? "mobile-nav-item active" : "mobile-nav-item"}><Coins {...mobileIconProps} /><span>Points</span></a>
+          <a href="/wallet" className={isActive("/wallet") ? "mobile-nav-item active" : "mobile-nav-item"}><Wallet {...mobileIconProps} /><span>Wallet</span></a>
+          <a href="/account" className={isActive("/account") ? "mobile-nav-item active" : "mobile-nav-item"}><UserCircle {...mobileIconProps} /><span>Account</span></a>
+        </nav>
       )}
     </header>
   );
