@@ -99,7 +99,11 @@ export default async function VideosPage({ searchParams }) {
       <div className="grid video-library videos-library">
         {videos.map(v => (
           <article className="card library-card videos-library-card" key={v._id.toString()}>
-            <div className="videos-thumb-wrap"><img className="library-thumb" src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" /><span className="videos-play-badge">▶</span><span className="videos-approved-badge">APPROVED</span></div>
+            <a className="videos-thumb-wrap videos-thumb-link" href={`/watch/${v._id}`} aria-label={`Watch ${v.title}`}>
+              <img className="library-thumb" src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`} alt={`Thumbnail for ${v.title}`} loading="lazy" decoding="async" />
+              <span className="videos-play-badge" aria-hidden="true">▶</span>
+              <span className="videos-approved-badge">APPROVED</span>
+            </a>
             <div className="library-content">
               <h3>{v.title}</h3>
               <p>{v.description || "Approved Videa content."}</p>
