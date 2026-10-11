@@ -1,1 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="#635bff"/><path d="M104 148h72l80 194 80-194h72L287 382h-62z" fill="#fff"/><circle cx="388" cy="124" r="24" fill="#8ff0d0"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07112f"/><stop offset=".55" stop-color="#10115a"/><stop offset="1" stop-color="#26083e"/></linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#00e5ff"/><stop offset=".48" stop-color="#5757ff"/><stop offset="1" stop-color="#ff28a8"/></linearGradient>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#00eaff"/><stop offset=".48" stop-color="#2478ff"/><stop offset="1" stop-color="#c52bff"/></linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe34f"/><stop offset=".5" stop-color="#ff8a28"/><stop offset="1" stop-color="#ff2d9b"/></linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="10"/></filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="13" y="13" width="486" height="486" rx="100" fill="none" stroke="url(#edge)" stroke-width="10"/>
+  <circle cx="256" cy="244" r="142" fill="#167bff" opacity=".18" filter="url(#glow)"/>
+  <path d="M105 145h76l75 180 75-180h76L284 376q-28 47-56 0z" fill="url(#mark)"/>
+  <path d="M294 201l82 48-82 48z" fill="#fff" stroke="#fff" stroke-linejoin="round" stroke-width="8"/>
+  <path d="M337 120l57-17M353 145l72-21" stroke="url(#warm)" stroke-width="13" stroke-linecap="round"/>
+  <circle cx="399" cy="365" r="8" fill="#00eaff"/><circle cx="426" cy="365" r="8" fill="#ff36b7"/>
+</svg>
