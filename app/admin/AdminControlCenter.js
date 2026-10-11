@@ -111,6 +111,15 @@ export default function AdminControlCenter() {
     }
   }
 
+  function selectMobileTab(nextTab) {
+    setTab(nextTab);
+    setQuery("");
+    // The fixed menu stays at the bottom; move the selected panel into view.
+    window.requestAnimationFrame(() => {
+      document.querySelector(".control-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
   const filteredUsers = useMemo(() => (data?.users || []).filter((user) =>
     [user.name, user.email, user.role, user.status].join(" ").toLowerCase().includes(query.toLowerCase())
   ), [data, query]);
@@ -121,11 +130,11 @@ export default function AdminControlCenter() {
   return (
     <section className="control-center">
       <nav className="admin-mobile-menu" aria-label="Admin mobile navigation">
-        <button type="button" className={tab === "overview" ? "active" : ""} onClick={() => { setTab("overview"); setQuery(""); }}><LayoutDashboard size={18}/><span>Home</span></button>
-        <button type="button" className={tab === "users" ? "active" : ""} onClick={() => { setTab("users"); setQuery(""); }}><Users size={18}/><span>Users</span></button>
-        <button type="button" className={tab === "videos" ? "active" : ""} onClick={() => { setTab("videos"); setQuery(""); }}><Film size={18}/><span>Videos</span></button>
-        <button type="button" className={tab === "reviews" ? "active" : ""} onClick={() => { setTab("reviews"); setQuery(""); }}><Eye size={18}/><span>Reviews</span></button>
-        <button type="button" className={tab === "settings" ? "active" : ""} onClick={() => { setTab("settings"); setQuery(""); }}><Settings size={18}/><span>Settings</span></button>
+        <button type="button" className={tab === "overview" ? "active" : ""} onClick={() => selectMobileTab("overview")}><LayoutDashboard size={18}/><span>Home</span></button>
+        <button type="button" className={tab === "users" ? "active" : ""} onClick={() => selectMobileTab("users")}><Users size={18}/><span>Users</span></button>
+        <button type="button" className={tab === "videos" ? "active" : ""} onClick={() => selectMobileTab("videos")}><Film size={18}/><span>Videos</span></button>
+        <button type="button" className={tab === "reviews" ? "active" : ""} onClick={() => selectMobileTab("reviews")}><Eye size={18}/><span>Reviews</span></button>
+        <button type="button" className={tab === "settings" ? "active" : ""} onClick={() => selectMobileTab("settings")}><Settings size={18}/><span>Settings</span></button>
         <button type="button" onClick={() => document.getElementById("admin-finance")?.scrollIntoView({ behavior: "smooth", block: "start" })}><CreditCard size={18}/><span>Finance</span></button>
       </nav>
       <div className="control-center-head">
