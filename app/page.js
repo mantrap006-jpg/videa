@@ -1,3 +1,7 @@
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import jwt from "jsonwebtoken";
+import User from "@/models/User";
 import Video from "@/models/Video";
 import { connectDB } from "@/lib/mongodb";
 import {
@@ -13,6 +17,21 @@ export const metadata = {
 };
 
 export default async function MobileHomePage() {
+  try {
+    const token = (await cookies()).get("videa_token")?.value;
+    if (token && process.env.JWT_SECRET) {
+      const session = jwt.verify(token, process.env.JWT_SECRET);
+      if (session?.sub) {
+        await connectDB();
+        const user = await User.findById(session.sub).select("role").lean();
+        if (user) redirect(user.role === "admin" ? "/admin" : "/points");
+      }
+    }
+  } catch (error) {
+    if (error?.digest?.startsWith("NEXT_REDIRECT")) throw error;
+    // Invalid or expired sessions should still be able to see the public home page.
+  }
+
   let videos = [];
   try {
     await connectDB();
