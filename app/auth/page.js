@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Eye, Megaphone, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, Eye, Megaphone, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function AuthPage() {
   const router = useRouter();
@@ -61,6 +61,7 @@ export default function AuthPage() {
 
   return (
     <section className="auth-page">
+      <a href="/" className="auth-back-home"><ArrowLeft size={16} /> Back to home</a>
       <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive"
         onLoad={() => setGoogleReady(true)}
         onError={() => setMessage("Google sign-in could not load. Check your internet connection and try again.")}
