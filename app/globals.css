@@ -3413,3 +3413,9 @@ body:has(.mh-redesign) > main > .mh-redesign {
   body:has(.admin-mobile-menu) .admin-finance-anchor { scroll-margin-bottom:100px; }
   body:has(.admin-mobile-menu) .footer { padding-bottom:100px; }
 }
+
+
+/* Keep the floating PWA install button on desktop only. */
+@media (max-width: 767px) {
+  .pwa-install-button { display: none !important; }
+}
