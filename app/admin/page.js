@@ -45,5 +45,5 @@ export default async function AdminPage() {
     senderName: item.senderName || "", transactionReference: item.transactionReference, status: item.status, adminNote: item.adminNote || "",
     createdAt: item.createdAt?.toISOString() || null, reviewedAt: item.reviewedAt?.toISOString() || null
   }));
-  return <><AdminControlCenter /><AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} initialDeposits={initialDeposits} /></>;
+  return <><AdminControlCenter /><div id="admin-finance" className="admin-finance-anchor"><AdminFinance initialPayments={initialPayments} initialWithdrawals={initialWithdrawals} initialDeposits={initialDeposits} /></div></>;
 }
