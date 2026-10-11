@@ -6,18 +6,18 @@
   "start_url": "/videos",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0b1020",
-  "theme_color": "#635bff",
+  "background_color": "#07112f",
+  "theme_color": "#10115a",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/videa-icon.svg",
+      "src": "/videa-icon.svg?v=2",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/videa-icon.svg",
+      "src": "/videa-icon.svg?v=2",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
