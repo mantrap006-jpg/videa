@@ -3310,3 +3310,89 @@ body:has(.mh-redesign) > main > .mh-redesign {
     cursor: pointer;
   }
 }
+
+
+
+/* Mobile video library: show the thumbnail first, then readable video details. */
+@media (max-width: 650px) {
+  .videos-library {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 14px;
+  }
+  .videos-library-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    border-radius: 16px;
+  }
+  .videos-library-card .videos-thumb-wrap {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    width: 100%;
+  }
+  .videos-library-card .videos-thumb-wrap .library-thumb {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .videos-library-card .library-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 14px;
+  }
+  .videos-library-card .library-content h3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0 0 7px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .videos-library-card .library-content p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 0;
+    margin: 0 0 8px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .videos-library-card .videos-card-label {
+    margin-top: 7px;
+    font-size: 8px;
+  }
+  .videos-library-card .library-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 9px 0 10px;
+    font-size: 11px;
+  }
+  .videos-library-card .library-meta strong,
+  .videos-library-card .library-meta span {
+    min-height: 29px;
+    padding: 6px 9px;
+    font-size: 11px;
+  }
+  .videos-youtube-views {
+    margin: 0 0 11px;
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  .videos-youtube-views > span:first-child {
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
+  }
+  .videos-watch-button {
+    min-height: 40px;
+    padding: 10px 13px;
+    font-size: 12px;
+  }
+}
