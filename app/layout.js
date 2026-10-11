@@ -7,7 +7,7 @@ import SiteHeader from "./SiteHeader";
 import PWARegister from "./PWARegister";
 
 export const metadata = {
-  metadataBase: new URL("https://videa-khaki.vercel.app"),
+  metadataBase: new URL("https://videapro.site"),
   title: {
     default: "Videa — Watch, Discover & Earn",
     template: "%s | Videa"
@@ -17,7 +17,7 @@ export const metadata = {
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    url: "https://videa-khaki.vercel.app/",
+    url: "https://videapro.site/",
     siteName: "Videa",
     title: "Videa — Watch, Discover & Earn",
     description: "Discover videos, complete eligible watches, and track your points with Videa.",
