@@ -12,8 +12,8 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Videa | Watch, Discover, Earn",
-  description: "Discover videos, complete eligible views, and track your Videa rewards."
+  title: "Watch, Discover & Earn",
+  description: "Discover videos, meet watch targets, and track your Videa points."
 };
 
 export default async function MobileHomePage() {
