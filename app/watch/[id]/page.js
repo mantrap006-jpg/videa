@@ -187,6 +187,10 @@ export default function WatchPage() {
           setRewarded(true);
           setMessage(data.message || `Reward received: +${data.points} points`);
         } else {
+          // The server resets progress after each reward so the user can earn
+          // again by completing another verified watch cycle.
+          rewardedRef.current = false;
+          setRewarded(false);
           setMessage(data.message || "Videa is securely verifying your watch progress.");
         }
       } catch {
