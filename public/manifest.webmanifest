@@ -6,11 +6,11 @@
   "start_url": "/videos",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#087cff",
-  "theme_color": "#3155ff",
+  "background_color": "#050408",
+  "theme_color": "#17052a",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "/videa-icon.svg?v=3", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "/videa-icon.svg?v=3", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    { "src": "/videa-icon.svg?v=4", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/videa-icon.svg?v=4", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }
