@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Eye, Megaphone, ShieldCheck, Sparkles } from "lucide-react";
@@ -14,6 +14,24 @@ export default function AuthPage() {
   const [googleReady, setGoogleReady] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    let cancelled = false;
+    async function redirectIfSignedIn() {
+      try {
+        const response = await fetch("/api/account", { cache: "no-store" });
+        if (!response.ok || cancelled) return;
+        const data = await response.json();
+        if (!cancelled && data.user) {
+          router.replace(data.user.role === "admin" ? "/admin" : "/points");
+        }
+      } catch {
+        // If account status cannot be checked, leave the sign-in form available.
+      }
+    }
+    redirectIfSignedIn();
+    return () => { cancelled = true; };
+  }, [router]);
 
   const startGoogleAuthorization = () => {
     if (!googleReady || !googleClientId || !window.google?.accounts?.oauth2) {
