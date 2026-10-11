@@ -7,10 +7,33 @@ import SiteHeader from "./SiteHeader";
 import PWARegister from "./PWARegister";
 
 export const metadata = {
-  title: "Videa — Watch & Earn",
-  description: "Watch approved videos and earn points.",
-  manifest: "/manifest.webmanifest",
+  metadataBase: new URL("https://videa-khaki.vercel.app"),
+  title: {
+    default: "Videa — Watch, Discover & Earn",
+    template: "%s | Videa"
+  },
+  description: "Discover videos, complete eligible watches, and track your points with Videa.",
   applicationName: "Videa",
+  alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "https://videa-khaki.vercel.app/",
+    siteName: "Videa",
+    title: "Videa — Watch, Discover & Earn",
+    description: "Discover videos, complete eligible watches, and track your points with Videa.",
+    locale: "en_US"
+  },
+  twitter: {
+    card: "summary",
+    title: "Videa — Watch, Discover & Earn",
+    description: "Discover videos, complete eligible watches, and track your points with Videa."
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 }
+  },
+  manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Videa" },
   themeColor: "#17052a",
   icons: {
