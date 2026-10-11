@@ -3284,3 +3284,29 @@ body:has(.mh-redesign) > main > .mh-redesign {
 .spinner-container {
   margin-inline: auto;
 }
+
+
+/* Keep the signed-in mobile navigation outside the sticky header stacking context
+   and ensure each tab receives taps on touch devices. */
+@media (max-width: 900px) {
+  .mobile-bottom-nav {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    width: min(390px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    margin-inline: auto !important;
+    transform: none !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    z-index: 99999 !important;
+  }
+  .mobile-bottom-nav .mobile-nav-item {
+    position: relative !important;
+    z-index: 1 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+}
