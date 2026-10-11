@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Activity, AlertTriangle, CheckCircle2, Eye, Film, PauseCircle,
-  PlayCircle, RefreshCw, Search, ShieldAlert, Users, Settings, Save
+  PlayCircle, RefreshCw, Search, ShieldAlert, Users, Settings, Save, LayoutDashboard, CreditCard
 } from "lucide-react";
 
 const number = (value) => Number(value || 0).toLocaleString();
@@ -120,6 +120,14 @@ export default function AdminControlCenter() {
 
   return (
     <section className="control-center">
+      <nav className="admin-mobile-menu" aria-label="Admin mobile navigation">
+        <button type="button" className={tab === "overview" ? "active" : ""} onClick={() => { setTab("overview"); setQuery(""); }}><LayoutDashboard size={18}/><span>Home</span></button>
+        <button type="button" className={tab === "users" ? "active" : ""} onClick={() => { setTab("users"); setQuery(""); }}><Users size={18}/><span>Users</span></button>
+        <button type="button" className={tab === "videos" ? "active" : ""} onClick={() => { setTab("videos"); setQuery(""); }}><Film size={18}/><span>Videos</span></button>
+        <button type="button" className={tab === "reviews" ? "active" : ""} onClick={() => { setTab("reviews"); setQuery(""); }}><Eye size={18}/><span>Reviews</span></button>
+        <button type="button" className={tab === "settings" ? "active" : ""} onClick={() => { setTab("settings"); setQuery(""); }}><Settings size={18}/><span>Settings</span></button>
+        <button type="button" onClick={() => document.getElementById("admin-finance")?.scrollIntoView({ behavior: "smooth", block: "start" })}><CreditCard size={18}/><span>Finance</span></button>
+      </nav>
       <div className="control-center-head">
         <div>
           <div className="eyebrow">VIDEA ADMINISTRATION</div>
