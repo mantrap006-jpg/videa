@@ -72,11 +72,29 @@ export async function POST(request) {
       );
     }
 
+    const normalizedTitle = String(youtubeDetails.title || "").trim().toLocaleLowerCase().replace(/\s+/g, " ");
+    const existingVideo = await Video.findOne({
+      $or: [
+        { youtubeId },
+        { titleKey: normalizedTitle },
+        { $expr: { $eq: [{ $toLower: "$title" }, normalizedTitle] } }
+      ]
+    }).select("_id title youtubeId").lean();
+
+    if (existingVideo) {
+      const sameTitle = String(existingVideo.title || "").trim().toLocaleLowerCase() === normalizedTitle;
+      return NextResponse.json(
+        { error: sameTitle ? "A video with this title already exists in Videa." : "This YouTube video has already been added." },
+        { status: 409 }
+      );
+    }
+
     const verifiedDurationSeconds = youtubeDetails.durationSeconds;
     const rewardPoints = Math.max(1, Math.floor((verifiedDurationSeconds / 60) * rate));
 
     const video = await Video.create({
       title: youtubeDetails.title,
+      titleKey: normalizedTitle,
       youtubeUrl: youtubeUrl.trim(),
       youtubeId,
       channelId: youtubeDetails.channelId || "",
@@ -102,6 +120,9 @@ export async function POST(request) {
       { status: 201 }
     );
   } catch (e) {
+    if (e?.code === 11000) {
+      return NextResponse.json({ error: "A video with this title already exists in Videa." }, { status: 409 });
+    }
     console.error("Creator video submission failed:", e);
     return NextResponse.json(
       { error: "Could not submit video.", detail: e.message },
