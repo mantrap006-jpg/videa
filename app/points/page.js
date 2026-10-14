@@ -20,10 +20,11 @@ export default async function PointsPage() {
   const user = await User.findById(session.sub).select("points").lean();
   if (!user) redirect("/login");
 
-  const [recent, totals, watchedCount] = await Promise.all([
+  const [recent, totals, watchedCount, recommendations] = await Promise.all([
     Earning.find({ userId: session.sub }).sort({ createdAt: -1 }).limit(30).populate("videoId", "title").lean(),
     Earning.aggregate([{ $match: { userId: user._id } }, { $group: { _id: null, total: { $sum: "$points" }, rewards: { $sum: 1 } } }]),
-    WatchProgress.countDocuments({ userId: session.sub, watchedPercent: { $gt: 0 } })
+    WatchProgress.countDocuments({ userId: session.sub, watchedPercent: { $gt: 0 } }),
+    Video.find({ active: true }).select("title description youtubeId rewardPoints minimumWatchPercent").sort({ rewardPoints: -1, createdAt: -1 }).limit(3).lean()
   ]);
   const totalEarned = totals[0]?.total ?? 0;
   const rewards = totals[0]?.rewards ?? 0;
@@ -40,6 +41,10 @@ export default async function PointsPage() {
         <div className="card stat-card points-stat"><span className="points-stat-icon">✧</span><span>Rewards received</span><strong>{Number(rewards).toLocaleString()}</strong><small>Successful reward entries</small></div>
         <div className="card stat-card points-stat"><span className="points-stat-icon">▶</span><span>Videos watched</span><strong>{Number(watchedCount).toLocaleString()}</strong><small>Videos with saved progress</small></div>
       </div>
+      <section className="points-recommendations">
+        <div className="section-heading compact"><div><div className="eyebrow">PICKED FOR YOU</div><h2>Recommended videos</h2><p>Explore approved videos with rewards worth checking out.</p></div><a className="points-see-all" href="/videos">View library →</a></div>
+        {recommendations.length ? <div className="points-recommendation-grid">{recommendations.map((video) => <article className="card points-recommendation-card" key={video._id.toString()}><a className="points-recommendation-thumb" href={`/watch/${video._id}`} aria-label={`Watch ${video.title}`}><img src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" /><span>▶</span></a><div className="points-recommendation-content"><h3>{video.title}</h3><p>{video.description || "Approved Videa content."}</p><div className="points-recommendation-meta"><strong>+{Number(video.rewardPoints || 0).toLocaleString()} points</strong><span>Watch {video.minimumWatchPercent}%</span></div><a className="button points-recommendation-action" href={`/watch/${video._id}`}>Watch & earn →</a></div></article>)}</div> : <div className="card points-recommendations-empty"><h3>New recommendations are coming</h3><p>Approved videos will appear here when they are available.</p><a className="button" href="/videos">Browse video library</a></div>}
+      </section>
       <div className="card points-history-card">
         <div className="section-heading compact"><div><div className="eyebrow">POINTS HISTORY</div><h2>Recent rewards</h2></div></div>
         {recent.length === 0 ? <div className="empty-state"><h3>Your rewards start here</h3><p>Watch approved videos and eligible rewards will appear here.</p><a className="button" href="/videos">Browse videos</a></div> : (
