@@ -73,23 +73,6 @@ export default async function VideosPage({ searchParams }) {
 
   return (
     <section className="videos-page">
-      <div className="videos-hero">
-        <div className="videos-hero-copy">
-          <div className="eyebrow">YOUR NEXT FAVORITE VIDEO</div>
-          <h1>Watch. Discover.<br /><span>Earn points.</span></h1>
-          <p>Explore approved videos, find a topic you love, and earn points when you complete the required watch percentage.</p>
-          <div className="videos-hero-pills"><span>✦ Approved videos</span><span>◉ Clear rewards</span><span>▶ Watch at your pace</span></div>
-        </div>
-        <div className="videos-hero-art" aria-hidden="true"><div className="videos-art-orbit"></div><div className="videos-art-play">▶</div><div className="videos-art-points">✦ Points await</div><div className="videos-art-caption">DISCOVER SOMETHING NEW</div></div>
-      </div>
-      <div className="section-heading videos-section-heading">
-        <div>
-          <div className="eyebrow">VIDEO LIBRARY</div>
-          <h2>Find your next watch.</h2>
-          <p>Pick a video, follow its watch requirement, and collect eligible rewards.</p>
-        </div>
-      </div>
-
       <div className="videos-toolbar"><div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> approved videos <span>•</span> page {page}</div><form className="videos-sort" action="/videos"><input type="hidden" name="q" value={q} /><label htmlFor="videos-sort">Sort by</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Recently added</option><option value="reward">Highest points</option></select><button className="button" type="submit">Apply</button></form></div>
       <form className="search-bar videos-search" action="/videos">
         <input name="q" defaultValue={q} placeholder="Search videos..." aria-label="Search videos" />
