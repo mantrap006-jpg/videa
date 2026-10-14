@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const VideoSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
+    titleKey: { type: String, trim: true },
     youtubeUrl: { type: String, required: true, trim: true },
     youtubeId: { type: String, required: true, trim: true },
     channelId: { type: String, default: "", trim: true, index: true },
@@ -18,5 +19,8 @@ const VideoSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Unique normalized title for creator submissions; sparse permits older records without titleKey.
+VideoSchema.index({ titleKey: 1 }, { unique: true, sparse: true, name: "unique_normalized_video_title" });
 
 export default mongoose.models.Video || mongoose.model("Video", VideoSchema);
