@@ -73,38 +73,41 @@ export default async function VideosPage({ searchParams }) {
 
   return (
     <section className="videos-page">
-      <header className="library-intro">
-        <div className="library-intro-copy">
-          <div className="library-kicker"><span className="library-kicker-dot" /> THE VIDEA COLLECTION</div>
-          <h1>Good videos.<br /><span>Real rewards.</span></h1>
-          <p>Discover creator videos, check the reward before you watch, and earn points when you meet the viewing requirement.</p>
-          <div className="library-intro-stats"><span><strong>{totalVideos.toLocaleString()}</strong> approved videos</span><i /><span><strong>Watch</strong> at your pace</span></div>
+      <div className="videos-hero">
+        <div className="videos-hero-copy">
+          <div className="eyebrow">YOUR NEXT FAVORITE VIDEO</div>
+          <h1>Watch. Discover.<br /><span>Earn points.</span></h1>
+          <p>Explore approved videos, find a topic you love, and earn points when you complete the required watch percentage.</p>
+          <div className="videos-hero-pills"><span>✦ Approved videos</span><span>◉ Clear rewards</span><span>▶ Watch at your pace</span></div>
         </div>
-        <div className="library-intro-art" aria-hidden="true"><div className="library-art-ring library-art-ring-one" /><div className="library-art-ring library-art-ring-two" /><div className="library-art-play">▶</div><span className="library-art-chip">WATCH <b>+</b> EARN</span><span className="library-art-index">V / 01</span></div>
-      </header>
-      <div className="library-section-title">
-        <div><span className="library-section-kicker">EXPLORE</span><h2>Browse the library</h2></div>
-        <span className="library-section-note">Fresh finds · Worth your time</span>
+        <div className="videos-hero-art" aria-hidden="true"><div className="videos-art-orbit"></div><div className="videos-art-play">▶</div><div className="videos-art-points">✦ Points await</div><div className="videos-art-caption">DISCOVER SOMETHING NEW</div></div>
+      </div>
+      <div className="section-heading videos-section-heading">
+        <div>
+          <div className="eyebrow">VIDEO LIBRARY</div>
+          <h2>Find your next watch.</h2>
+          <p>Pick a video, follow its watch requirement, and collect eligible rewards.</p>
+        </div>
       </div>
 
-      <div className="videos-toolbar library-toolbar"><div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> results <span>•</span> page {page}</div><form className="videos-sort" action="/videos"><input type="hidden" name="q" value={q} /><label htmlFor="videos-sort">ORDER</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Recently added</option><option value="reward">Highest points</option></select><button className="button" type="submit">Sort ↗</button></form></div>
-      <form className="search-bar videos-search library-search" action="/videos">
+      <div className="videos-toolbar"><div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> approved videos <span>•</span> page {page}</div><form className="videos-sort" action="/videos"><input type="hidden" name="q" value={q} /><label htmlFor="videos-sort">Sort by</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Recently added</option><option value="reward">Highest points</option></select><button className="button" type="submit">Apply</button></form></div>
+      <form className="search-bar videos-search" action="/videos">
         <input name="q" defaultValue={q} placeholder="Search videos..." aria-label="Search videos" />
-        <button className="button" type="submit"><span aria-hidden="true">⌕</span> Search</button>
+        <button className="button" type="submit">Search</button>
       </form>
 
-      <div className="grid video-library videos-library library-editorial-grid">
+      <div className="grid video-library videos-library">
         {videos.map(v => (
-          <article className="card library-card videos-library-card library-editorial-card" key={v._id.toString()}>
+          <article className="card library-card videos-library-card" key={v._id.toString()}>
             <a className="videos-thumb-wrap videos-thumb-link" href={`/watch/${v._id}`} aria-label={`Watch ${v.title}`}>
               <img className="library-thumb" src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`} alt={`Thumbnail for ${v.title}`} loading="lazy" decoding="async" />
               <span className="videos-play-badge" aria-hidden="true">▶</span>
-              <span className="videos-approved-badge">✓ APPROVED</span><span className="library-number">{String(v._id).slice(-3).toUpperCase()}</span>
+              <span className="videos-approved-badge">APPROVED</span>
             </a>
             <div className="library-content">
               <h3>{v.title}</h3>
               <p>{v.description || "Approved Videa content."}</p>
-              <div className="videos-card-label">VIDEA ORIGINALS <span>•</span> WATCH &amp; EARN</div><div className="library-meta">
+              <div className="videos-card-label">V I D E A&nbsp; • &nbsp;WATCH & EARN</div><div className="library-meta">
                 <strong>+{v.rewardPoints} points</strong>
                 <span>Watch {v.minimumWatchPercent}%</span>
               </div>
