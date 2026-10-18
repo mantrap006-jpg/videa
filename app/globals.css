@@ -3597,3 +3597,123 @@ body:has(.mh-redesign) > main > .mh-redesign {
     line-height: 1.2;
   }
 }
+
+
+/* Watch page: larger player and clearer, easier-to-scan layout */
+.watch-page {
+  width: 100%;
+  max-width: 1600px;
+  padding-left: clamp(12px, 2.4vw, 36px);
+  padding-right: clamp(12px, 2.4vw, 36px);
+}
+.watch-page-header {
+  gap: 16px;
+  margin-bottom: clamp(16px, 2vw, 26px);
+}
+.watch-page-header h1 {
+  font-size: clamp(30px, 4vw, 54px);
+  line-height: 1.08;
+  letter-spacing: -.045em;
+}
+.watch-layout {
+  grid-template-columns: minmax(0, 2.15fr) minmax(300px, .8fr);
+  gap: clamp(14px, 2vw, 26px);
+}
+.watch-main-column,
+.watch-sidebar {
+  min-width: 0;
+}
+.watch-player-card {
+  width: 100%;
+  min-width: 0;
+  border-radius: 18px;
+}
+.watch-player-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+}
+.watch-player-frame > div {
+  min-height: 0;
+}
+.watch-player-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.watch-video-details {
+  padding: clamp(16px, 2vw, 26px);
+}
+.watch-video-title-row h2 {
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.watch-sidebar {
+  gap: 14px;
+}
+@media (min-width: 1200px) {
+  .watch-layout {
+    grid-template-columns: minmax(0, 2.35fr) minmax(320px, .78fr);
+  }
+  .watch-player-frame {
+    max-height: calc(100vh - 190px);
+  }
+}
+@media (max-width: 900px) {
+  .watch-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .watch-main-column,
+  .watch-sidebar {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .watch-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .watch-page {
+    padding: 16px 10px 40px;
+  }
+  .watch-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .watch-page-header h1 {
+    font-size: clamp(28px, 8vw, 38px);
+    letter-spacing: -.04em;
+    margin-bottom: 8px;
+  }
+  .watch-page-header p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .watch-live-pill {
+    padding: 8px 10px;
+  }
+  .watch-layout {
+    gap: 14px;
+  }
+  .watch-player-card {
+    border-radius: 12px;
+  }
+  .watch-player-frame {
+    aspect-ratio: 16 / 9;
+  }
+  .watch-locked-player {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    padding: 16px 12px;
+  }
+  .watch-video-details {
+    padding: 15px;
+  }
+  .watch-video-title-row {
+    gap: 10px;
+  }
+  .watch-sidebar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
