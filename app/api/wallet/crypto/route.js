@@ -87,8 +87,6 @@ export async function POST(request) {
         amount: Number(amountUsd),
         currency: "USD",
         order_id: externalReference,
-        success_url: origin + "/wallet?crypto=return",
-        cancel_url: origin + "/wallet?crypto=cancel",
         metadata: {
           product: "videa_wallet_topup",
           userId: user._id.toString(),
