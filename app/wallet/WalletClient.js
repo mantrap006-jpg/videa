@@ -41,10 +41,10 @@ export default function WalletClient() {
   async function load() {
     setLoading(true);
     try {
-      const res = await fetch("/api/wallet", { cache: "no-store" });
+      const res = await fetch("/api/wallet", { cache: "no-store", signal: AbortSignal.timeout(15000) });
       const result = await readJsonResponse(res, "Could not load wallet");
       setData(result);
-      const settingsResponse = await fetch("/api/payment-settings", { cache: "no-store" });
+      const settingsResponse = await fetch("/api/payment-settings", { cache: "no-store", signal: AbortSignal.timeout(10000) });
       if (settingsResponse.ok) setPaymentSettings(await readJsonResponse(settingsResponse, "Could not load payment settings"));
     } catch (e) { setError(e.message); }
     finally { setLoading(false); }
