@@ -75,7 +75,6 @@ export async function POST(request) {
   });
 
   try {
-    const origin = (process.env.APP_BASE_URL || "https://videapro.site").replace(/\/$/, "");
     const response = await fetch("https://flowpay.network/v1/charges", {
       method: "POST",
       headers: {
