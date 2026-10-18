@@ -3717,3 +3717,63 @@ body:has(.mh-redesign) > main > .mh-redesign {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+
+/* Mobile-first immersive video viewing: minimize chrome around the player */
+@media (max-width: 600px) {
+  .watch-page {
+    max-width: none;
+    padding: 8px 0 28px;
+  }
+  .watch-page-header {
+    padding: 0 12px;
+    margin-bottom: 10px;
+    gap: 7px;
+  }
+  .watch-page-header h1 {
+    font-size: clamp(24px, 7vw, 32px);
+    margin-bottom: 5px;
+  }
+  .watch-page-header p {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .watch-live-pill {
+    font-size: 9px;
+    padding: 6px 9px;
+  }
+  .watch-layout {
+    gap: 12px;
+  }
+  .watch-main-column {
+    gap: 12px;
+  }
+  .watch-player-card {
+    width: 100%;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+  .watch-player-frame {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 0;
+  }
+  .watch-player-frame > div,
+  .watch-player-frame iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+  .watch-locked-player {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    padding: 12px;
+  }
+  .watch-video-details {
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 14px;
+  }
+}
