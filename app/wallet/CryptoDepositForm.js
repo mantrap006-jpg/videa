@@ -36,7 +36,7 @@ export default function CryptoDepositForm() {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not start checkout.");
-      setMessage("Opening secure USDC checkout…");
+      setMessage("Opening secure crypto checkout…");
       window.location.assign(result.checkoutUrl);
     } catch (e) { setError(e.message || "Could not start checkout."); }
     finally { setBusy(false); }
@@ -62,7 +62,7 @@ export default function CryptoDepositForm() {
       {payments.length > 0 && <div className="crypto-payment-history">
         <div className="wallet-section-title"><h3>Crypto payment history</h3><button type="button" className="button secondary" onClick={loadPayments}><RefreshCw size={14}/> Refresh</button></div>
         {payments.map(item=><div className="wallet-history-row" key={item.id}>
-          <div><strong>${{Number(item.amountUsd).toFixed(2)}} USD · {Number(item.points).toLocaleString()} points</strong><span>{new Date(item.createdAt).toLocaleString()}</span></div>
+          <div><strong>${Number(item.amountUsd).toFixed(2)} USD · {Number(item.points).toLocaleString()} points</strong><span>{new Date(item.createdAt).toLocaleString()}</span></div>
           <span className={"admin-status " + (item.status === "paid" ? "approved" : item.status === "failed" ? "rejected" : "pending")}>{item.status}</span>
         </div>)}
       </div>}
