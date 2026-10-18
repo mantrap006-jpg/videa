@@ -1,13 +1,13 @@
-const CACHE_NAME = "videa-shell-v5";
+const CACHE_NAME = "videa-shell-v6";
 const OFFLINE_URL = "/offline.html";
+const ICON_URL = "/favicon.png";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      // Do not make the whole service-worker install fail if an optional asset is unavailable.
       const results = await Promise.allSettled([
         cache.add(OFFLINE_URL),
-        cache.add("/videa-icon.svg?v=5")
+        cache.add(ICON_URL)
       ]);
       if (results.every((result) => result.status === "rejected")) {
         throw new Error("Videa offline assets could not be cached");
@@ -46,7 +46,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.pathname.startsWith("/_next/static/") || url.pathname === "/videa-icon.svg") {
+  if (url.pathname.startsWith("/_next/static/") || url.pathname === ICON_URL) {
     event.respondWith(
       caches.match(request).then(async (cached) => {
         if (cached) return cached;
