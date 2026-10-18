@@ -15,7 +15,10 @@ export default function CryptoDepositForm() {
     try {
       const response = await fetch("/api/wallet/crypto", { cache: "no-store" });
       const result = await response.json();
-      if (response.ok) setPayments(result.payments || []);
+      if (response.ok) {
+        setPayments(result.payments || []);
+        if (Number.isSafeInteger(result.rateRwfPerUsdc) && result.rateRwfPerUsdc > 0) setRate(result.rateRwfPerUsdc);
+      }
     } catch {}
   }
   useEffect(() => { loadPayments(); }, []);
