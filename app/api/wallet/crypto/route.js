@@ -69,7 +69,7 @@ export async function POST(request) {
     externalReference,
     amountUsd,
     points,
-    rateRwfPerUsdc: rate,
+    rateRwfPerUsd: rate,
     providerMode: "live",
     status: "pending"
   });
