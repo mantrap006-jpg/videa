@@ -11,58 +11,57 @@ export default async function VideosPage({ searchParams }) {
   const page = Number.isFinite(rawPage) ? Math.max(1, Math.min(rawPage, 100000)) : 1;
   const sort = params?.sort === "reward" ? "reward" : "newest";
   const pageSize = 18;
-
   const filter = { active: true };
-  if (q) {
-    filter.$or = [
-      { title: { $regex: q, $options: "i" } },
-      { description: { $regex: q, $options: "i" } }
-    ];
-  }
+  if (q) filter.$or = [
+    { title: { $regex: q, $options: "i" } },
+    { description: { $regex: q, $options: "i" } }
+  ];
 
-  const [records, totalVideos] = await Promise.all([
-    Video.find(filter)
-    .select("title description youtubeId rewardPoints minimumWatchPercent createdAt")
-    .sort(sort === "reward" ? { rewardPoints: -1, createdAt: -1 } : { createdAt: -1 })
-    .skip((page - 1) * pageSize)
-    .limit(pageSize + 1)
-    .lean(),
+  const [allRecords, totalVideos] = await Promise.all([
+    Video.find(filter).select("title description youtubeId rewardPoints minimumWatchPercent createdAt").lean(),
     Video.countDocuments(filter)
   ]);
-  const hasNextPage = records.length > pageSize;
-  const videos = records.slice(0, pageSize);
 
-  // Fetch public YouTube view counts on the server so the API key is never exposed
-  // to browsers. Counts are cached briefly to avoid unnecessary API requests.
+  // Use YouTube's original publication date, not the date a video was added to Videa.
   const youtubeApiKey = process.env.YOUTUBE_API_KEY;
-  if (youtubeApiKey && videos.length) {
+  const publishedDates = new Map();
+  const viewCounts = new Map();
+  if (youtubeApiKey && allRecords.length) {
     try {
-      const ids = [...new Set(videos.map((video) => video.youtubeId).filter(Boolean))];
-      const viewCounts = new Map();
+      const ids = [...new Set(allRecords.map((video) => video.youtubeId).filter(Boolean))];
       for (let i = 0; i < ids.length; i += 50) {
-        const batch = ids.slice(i, i + 50);
         const url = new URL("https://www.googleapis.com/youtube/v3/videos");
-        url.searchParams.set("part", "statistics");
-        url.searchParams.set("id", batch.join(","));
+        url.searchParams.set("part", "snippet,statistics");
+        url.searchParams.set("id", ids.slice(i, i + 50).join(","));
         url.searchParams.set("key", youtubeApiKey);
         const response = await fetch(url, { next: { revalidate: 300 } });
         if (!response.ok) continue;
         const data = await response.json();
         for (const item of data.items || []) {
+          if (item.snippet?.publishedAt) publishedDates.set(item.id, Date.parse(item.snippet.publishedAt) || 0);
           const count = Number(item.statistics?.viewCount);
           if (Number.isFinite(count)) viewCounts.set(item.id, count);
         }
       }
-      for (const video of videos) {
-        video.youtubeViews = viewCounts.has(video.youtubeId) ? viewCounts.get(video.youtubeId) : null;
-      }
     } catch (error) {
-      console.error("Unable to load YouTube view counts:", error);
-      for (const video of videos) video.youtubeViews = null;
+      console.error("Unable to load YouTube video metadata:", error);
     }
-  } else {
-    for (const video of videos) video.youtubeViews = null;
   }
+
+  const sortedRecords = [...allRecords].sort((a, b) => {
+    if (sort === "reward") {
+      return Number(b.rewardPoints || 0) - Number(a.rewardPoints || 0)
+        || (publishedDates.get(b.youtubeId) || 0) - (publishedDates.get(a.youtubeId) || 0);
+    }
+    return (publishedDates.get(b.youtubeId) || 0) - (publishedDates.get(a.youtubeId) || 0);
+  });
+  const start = (page - 1) * pageSize;
+  const videos = sortedRecords.slice(start, start + pageSize).map((video) => ({
+    ...video,
+    youtubeViews: viewCounts.has(video.youtubeId) ? viewCounts.get(video.youtubeId) : null,
+    youtubePublishedAt: publishedDates.get(video.youtubeId) || null
+  }));
+  const hasNextPage = start + pageSize < totalVideos;
   const pageHref = (nextPage) => {
     const query = new URLSearchParams();
     if (q) query.set("q", q);
@@ -73,12 +72,11 @@ export default async function VideosPage({ searchParams }) {
 
   return (
     <section className="videos-page">
-      <div className="videos-toolbar"><div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> approved videos <span>•</span> page {page}</div><form className="videos-sort" action="/videos"><input type="hidden" name="q" value={q} /><label htmlFor="videos-sort">Sort by</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Recently added</option><option value="reward">Highest points</option></select><button className="button" type="submit">Apply</button></form></div>
+      <div className="videos-toolbar"><div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> approved videos <span>•</span> page {page}</div><form className="videos-sort" action="/videos"><input type="hidden" name="q" value={q} /><label htmlFor="videos-sort">Sort by</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Recently uploaded on YouTube</option><option value="reward">Highest points</option></select><button className="button" type="submit">Apply</button></form></div>
       <form className="search-bar videos-search" action="/videos">
         <input name="q" defaultValue={q} placeholder="Search videos..." aria-label="Search videos" />
         <button className="button" type="submit">Search</button>
       </form>
-
       <div className="grid video-library videos-library">
         {videos.map(v => (
           <article className="card library-card videos-library-card" key={v._id.toString()}>
@@ -94,6 +92,7 @@ export default async function VideosPage({ searchParams }) {
                 <strong>+{v.rewardPoints} points</strong>
                 <span>Watch {v.minimumWatchPercent}%</span>
               </div>
+              {v.youtubePublishedAt ? <div className="videos-youtube-views">Uploaded on YouTube {new Date(v.youtubePublishedAt).toLocaleDateString()}</div> : null}
               <div className="videos-youtube-views" aria-label="YouTube video views">
                 <span aria-hidden="true">▶</span>
                 <span>{v.youtubeViews === null ? "YouTube views unavailable" : `${v.youtubeViews.toLocaleString()} YouTube views`}</span>
@@ -103,21 +102,8 @@ export default async function VideosPage({ searchParams }) {
           </article>
         ))}
       </div>
-
-      {(page > 1 || hasNextPage) && (
-        <div className="library-pagination" aria-label="Video library pagination">
-          {page > 1 ? <a href={pageHref(page - 1)}>← Previous</a> : <span />}
-          <span>Page {page}</span>
-          {hasNextPage ? <a href={pageHref(page + 1)}>Next →</a> : <span />}
-        </div>
-      )}
-
-      {videos.length === 0 && (
-        <div className="card">
-          <h3>No videos found</h3>
-          <p>{q ? "Try a different search." : "New videos will appear here when an administrator adds them."}</p>
-        </div>
-      )}
+      {(page > 1 || hasNextPage) && <div className="library-pagination" aria-label="Video library pagination">{page > 1 ? <a href={pageHref(page - 1)}>← Previous</a> : <span />}<span>Page {page}</span>{hasNextPage ? <a href={pageHref(page + 1)}>Next →</a> : <span />}</div>}
+      {videos.length === 0 && <div className="card"><h3>No videos found</h3><p>{q ? "Try a different search." : "New videos will appear here when an administrator adds them."}</p></div>}
     </section>
   );
 }
