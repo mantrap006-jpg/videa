@@ -10,6 +10,7 @@ const number = (value) => Number(value || 0).toLocaleString();
 
 export default function AdminControlCenter() {
   const [data, setData] = useState(null);
+  const [visitorAnalytics, setVisitorAnalytics] = useState(null);
   const [tab, setTab] = useState("overview");
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState("");
@@ -31,6 +32,9 @@ export default function AdminControlCenter() {
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not load control center.");
       setData(result);
+      const analyticsResponse = await fetch("/api/admin/analytics/visitors", { cache: "no-store" });
+      const analyticsResult = await analyticsResponse.json();
+      if (analyticsResponse.ok) setVisitorAnalytics(analyticsResult);
       const settingsResponse = await fetch("/api/admin/settings", { cache: "no-store" });
       const settings = await settingsResponse.json();
       if (settingsResponse.ok) {
@@ -161,6 +165,30 @@ export default function AdminControlCenter() {
             <article className="card control-stat"><span><Activity size={16}/> Rewards in 24 hours</span><strong>{number(data.stats.rewards24h)}</strong><small>{number(data.stats.pointsIssued24h)} points issued</small></article>
             <article className="card control-stat"><span><ShieldAlert size={16}/> Pending reviews</span><strong>{number(data.stats.pendingDeposits + data.stats.pendingWithdrawals + data.stats.pendingSubscriptions)}</strong><small>Deposits, withdrawals, subscriptions</small></article>
           </div>
+
+          <section className="card visitor-analytics-card">
+            <div className="control-card-title">
+              <div><div className="eyebrow">WEBSITE TRAFFIC</div><h2>Daily visitors</h2><p>Unique browsers recorded per UTC day · last 30 days</p></div>
+              <Activity size={20}/>
+            </div>
+            <div className="visitor-analytics-summary">
+              <div><span>Today</span><strong>{number(visitorAnalytics?.today)}</strong></div>
+              <div><span>Yesterday</span><strong>{number(visitorAnalytics?.yesterday)}</strong></div>
+              <div><span>30-day total</span><strong>{number(visitorAnalytics?.total30d)}</strong></div>
+            </div>
+            <div className="visitor-chart" role="img" aria-label="Daily unique visitors over the last 30 days">
+              {(visitorAnalytics?.daily || []).map((item) => {
+                const max = Math.max(1, ...(visitorAnalytics?.daily || []).map((entry) => entry.visitors));
+                const height = Math.max(3, Math.round((item.visitors / max) * 100));
+                return <div className="visitor-chart-column" key={item.day} title={item.day + ": " + item.visitors + " visitors"}>
+                  <span className="visitor-chart-bar" style={{ height: height + "%" }} />
+                  <small>{item.day.slice(8)}</small>
+                </div>;
+              })}
+              {!visitorAnalytics && <p className="control-hint">Loading visitor analytics…</p>}
+            </div>
+            <p className="control-hint">Counts are based on a browser identifier stored on the visitor’s device. People who clear storage or use another browser/device may be counted again. This is not a count of page views.</p>
+          </section>
 
           <div className="control-stat-grid control-finance-grid">
             <article className="card control-stat"><span>Creator revenue · 30 days</span><strong>{number(data.stats.revenueRwf30d)} <small>RWF</small></strong><small>Approved subscription payments</small></article>
