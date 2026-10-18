@@ -3494,3 +3494,59 @@ body:has(.mh-redesign) > main > .mh-redesign {
  .visitor-chart { gap:2px;height:125px; }
  .visitor-chart-column small { font-size:7px; }
 }
+
+
+/* Responsive locked-video access panel */
+.watch-locked-player {
+  width: 100%;
+  min-width: 0;
+  min-height: clamp(260px, 38vw, 430px);
+  padding: clamp(18px, 4vw, 36px);
+  aspect-ratio: 16 / 9;
+  overflow-wrap: anywhere;
+}
+.watch-locked-player .watch-lock-icon {
+  flex: 0 0 auto;
+  width: clamp(48px, 6vw, 64px);
+  height: clamp(48px, 6vw, 64px);
+  margin-bottom: clamp(12px, 2.5vw, 20px);
+  border-radius: clamp(14px, 2vw, 20px);
+}
+.watch-locked-player .eyebrow {
+  font-size: clamp(9px, 1.5vw, 11px);
+  letter-spacing: .14em;
+}
+.watch-locked-player h2 {
+  max-width: 100%;
+  font-size: clamp(21px, 4vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+.watch-locked-player p {
+  width: 100%;
+  max-width: 470px;
+  font-size: clamp(12px, 1.7vw, 14px);
+  line-height: 1.65;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .watch-locked-player {
+    aspect-ratio: auto;
+    min-height: 260px;
+    padding: 24px 16px;
+  }
+  .watch-locked-player p {
+    max-width: 36rem;
+  }
+}
+@media (max-width: 360px) {
+  .watch-locked-player {
+    min-height: 240px;
+    padding: 20px 12px;
+  }
+  .watch-locked-player h2 {
+    font-size: 21px;
+  }
+}
