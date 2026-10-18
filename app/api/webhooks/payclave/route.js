@@ -9,12 +9,16 @@ import CryptoWebhookEvent from "@/models/CryptoWebhookEvent";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-function validSignature(rawBody, signatureHeader, timestampHeader, secret) {
-  if (!rawBody || !signatureHeader || !timestampHeader || !secret) return false;
-  const timestamp = Number(timestampHeader);
+function validSignature(rawBody, signatureHeader, secret) {
+  if (!rawBody || !signatureHeader || !secret) return false;
+  const parts = signatureHeader.split(",").map(part => part.trim());
+  const timestampPart = parts.find(part => part.startsWith("t="));
+  const timestampText = timestampPart ? timestampPart.slice(2) : "";
+  if (!/^\\d+$/.test(timestampText)) return false;
+  const timestamp = Number(timestampText);
   if (!Number.isFinite(timestamp) || Math.abs(Date.now() / 1000 - timestamp) > 300) return false;
-  const expected = createHmac("sha256", secret).update(String(timestampHeader) + "." + rawBody, "utf8").digest("hex");
-  const candidates = signatureHeader.split(",").map(part => part.trim()).filter(part => part.startsWith("v1=")).map(part => part.slice(3));
+  const expected = createHmac("sha256", secret).update(timestampText + "." + rawBody, "utf8").digest("hex");
+  const candidates = parts.filter(part => part.startsWith("v1=")).map(part => part.slice(3));
   return candidates.some(candidate => {
     if (!/^[a-f0-9]{64}$/i.test(candidate)) return false;
     const actualBuffer = Buffer.from(candidate, "hex");
@@ -32,8 +36,7 @@ export async function POST(request) {
 
   const rawBody = await request.text();
   const signature = request.headers.get("X-Payclave-Signature") || "";
-  const timestamp = request.headers.get("X-Payclave-Timestamp") || "";
-  if (!validSignature(rawBody, signature, timestamp, secret)) {
+  if (!validSignature(rawBody, signature, secret)) {
     return NextResponse.json({ error: "Invalid webhook signature." }, { status: 401 });
   }
 
