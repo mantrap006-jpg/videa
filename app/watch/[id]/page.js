@@ -46,6 +46,7 @@ export default function WatchPage() {
 
   useEffect(() => {
     let cancelled = false;
+    let leaseTimer = null;
     const sessionId = window.crypto?.randomUUID
       ? window.crypto.randomUUID()
       : "watch-" + Date.now() + "-" + Math.random().toString(36).slice(2);
@@ -67,6 +68,23 @@ export default function WatchPage() {
       }
       setWatchSessionStatus("active");
       setWatchSessionMessage("This account is secured for one active watch page.");
+      leaseTimer = window.setInterval(async () => {
+        try {
+          const leaseResponse = await fetch("/api/watch-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId })
+          });
+          const leaseData = await leaseResponse.json();
+          if (!leaseResponse.ok && !cancelled) {
+            setWatchSessionStatus(leaseResponse.status === 409 ? "blocked" : "error");
+            setWatchSessionMessage(leaseData.error || "Your watch session could not be renewed.");
+            window.clearInterval(leaseTimer);
+          }
+        } catch {
+          // The server-side lease expires automatically if this tab goes offline.
+        }
+      }, 10000);
     }).catch(() => {
       if (!cancelled) {
         setWatchSessionStatus("error");
@@ -76,6 +94,7 @@ export default function WatchPage() {
 
     return () => {
       cancelled = true;
+      if (leaseTimer) window.clearInterval(leaseTimer);
       fetch("/api/watch-session", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
