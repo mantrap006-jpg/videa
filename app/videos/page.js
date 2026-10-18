@@ -92,7 +92,6 @@ export default async function VideosPage({ searchParams }) {
                 <strong>+{v.rewardPoints} points</strong>
                 <span>Watch {v.minimumWatchPercent}%</span>
               </div>
-              {v.youtubePublishedAt ? <div className="videos-youtube-views">Uploaded on YouTube {new Date(v.youtubePublishedAt).toLocaleDateString()}</div> : null}
               <div className="videos-youtube-views" aria-label="YouTube video views">
                 <span aria-hidden="true">▶</span>
                 <span>{v.youtubeViews === null ? "YouTube views unavailable" : `${v.youtubeViews.toLocaleString()} YouTube views`}</span>
