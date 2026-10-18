@@ -17,7 +17,7 @@ export default function CryptoDepositForm() {
       const result = await response.json();
       if (response.ok) {
         setPayments(result.payments || []);
-        if (Number.isSafeInteger(result.rateRwfPerUsdc) && result.rateRwfPerUsdc > 0) setRate(result.rateRwfPerUsdc);
+        if (Number.isSafeInteger(result.rateRwfPerUsd) && result.rateRwfPerUsd > 0) setRate(result.rateRwfPerUsd);
       }
     } catch {}
   }
@@ -44,11 +44,11 @@ export default function CryptoDepositForm() {
 
   return (
     <div className="card wallet-deposit-form crypto-deposit-form">
-      <div className="eyebrow"><Coins size={15}/> GLOBAL PAYMENTS · USDC</div>
-      <h2>Deposit with USDC</h2>
-      <p className="muted">Pay with USD Coin through secure hosted checkout on Polygon. Videa adds points only after the provider confirms payment.</p>
+      <div className="eyebrow"><Coins size={15}/> GLOBAL PAYMENTS · CRYPTO</div>
+      <h2>Deposit with crypto</h2>
+      <p className="muted">Pay in USD value through FlowPay hosted checkout and choose one of its supported cryptocurrencies. Videa adds points only after a signed payment event is verified against the provider charge.</p>
       <form onSubmit={startCheckout}>
-        <label>Amount (USDC)
+        <label>Amount (USD)
           <input type="number" min="1" max="1000000" step="0.01" required value={amount} onChange={e=>setAmount(e.target.value)} />
         </label>
         {estimatedPoints !== null && <div className="wallet-amount-preview"><span>Estimated wallet credit</span><strong>{estimatedPoints.toLocaleString()} points</strong></div>}
@@ -58,11 +58,11 @@ export default function CryptoDepositForm() {
           {busy ? "Preparing checkout…" : <>Continue to secure checkout <ExternalLink size={15}/></>}
         </button>
       </form>
-      <div className="wallet-security"><ShieldCheck size={16}/> Never send crypto directly to an address shown in chat. Checkout and payment confirmation are handled securely.</div>
+      <div className="wallet-security"><ShieldCheck size={16}/> FlowPay is a custodial provider: completed payments settle to your FlowPay merchant balance. Review its withdrawal and custody terms before accepting live funds.</div>
       {payments.length > 0 && <div className="crypto-payment-history">
-        <div className="wallet-section-title"><h3>USDC payment history</h3><button type="button" className="button secondary" onClick={loadPayments}><RefreshCw size={14}/> Refresh</button></div>
+        <div className="wallet-section-title"><h3>Crypto payment history</h3><button type="button" className="button secondary" onClick={loadPayments}><RefreshCw size={14}/> Refresh</button></div>
         {payments.map(item=><div className="wallet-history-row" key={item.id}>
-          <div><strong>{Number(item.amountUsdc).toFixed(2)} USDC · {Number(item.points).toLocaleString()} points</strong><span>{new Date(item.createdAt).toLocaleString()}</span></div>
+          <div><strong>${{Number(item.amountUsd).toFixed(2)}} USD · {Number(item.points).toLocaleString()} points</strong><span>{new Date(item.createdAt).toLocaleString()}</span></div>
           <span className={"admin-status " + (item.status === "paid" ? "approved" : item.status === "failed" ? "rejected" : "pending")}>{item.status}</span>
         </div>)}
       </div>}
