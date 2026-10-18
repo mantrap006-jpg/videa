@@ -61,6 +61,11 @@ export default function WatchPage() {
     }).then(async response => {
       const data = await response.json();
       if (cancelled) return;
+      if (response.status === 401) {
+        const next = encodeURIComponent(window.location.pathname + window.location.search);
+        window.location.replace("/auth?mode=login&next=" + next);
+        return;
+      }
       if (!response.ok) {
         setWatchSessionStatus(response.status === 409 ? "blocked" : "error");
         setWatchSessionMessage(data.error || "Could not secure this watch session.");
