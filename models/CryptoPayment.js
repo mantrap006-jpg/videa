@@ -13,7 +13,7 @@ const CryptoPaymentSchema = new mongoose.Schema({
   providerMode: { type: String, enum: ["test", "live"], required: true },
   creditedAt: { type: Date, default: null },
   paidAt: { type: Date, default: null },
-  providerEventId: { type: String, default: "" }
+  providerEventId: { type: String, default: undefined }
 }, { timestamps: true });
 
 CryptoPaymentSchema.index({ providerEventId: 1 }, { unique: true, sparse: true });
