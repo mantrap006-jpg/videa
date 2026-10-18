@@ -3550,3 +3550,50 @@ body:has(.mh-redesign) > main > .mh-redesign {
     font-size: 21px;
   }
 }
+
+
+/* Keep the subscription verification card visible and readable on mobile */
+.watch-subscription-card,
+.watch-reward-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+.watch-subscription-card > *,
+.watch-reward-card > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.watch-subscription-card .watch-privacy-note,
+.watch-subscription-card .watch-verified-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .watch-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .watch-main-column,
+  .watch-sidebar {
+    width: 100%;
+    min-width: 0;
+    grid-column: 1 / -1;
+  }
+  .watch-sidebar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+  .watch-subscription-card,
+  .watch-reward-card {
+    padding: clamp(16px, 4.5vw, 23px);
+  }
+  .watch-subscription-card h2 {
+    font-size: clamp(21px, 6vw, 25px);
+    line-height: 1.2;
+  }
+}
