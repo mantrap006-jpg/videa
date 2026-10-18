@@ -11,7 +11,6 @@ Set these in Vercel Project Settings → Environment Variables:
 - `FLOWPAY_API_KEY`: server-side FlowPay API key. Prefer a payments-scoped key that cannot withdraw funds.
 - `FLOWPAY_WEBHOOK_SECRET`: webhook signing secret returned when creating the FlowPay merchant.
 - `CRYPTO_USD_RWF_RATE`: integer RWF point value for 1 USD of checkout value. For example, 1,400 means a $1 charge credits 1,400 points. This is an example policy value, not a live FX quote; choose and update your rate yourself.
-- `APP_BASE_URL`: canonical HTTPS site URL, normally `https://videapro.site`.
 
 Never prefix provider secrets with `NEXT_PUBLIC_` or commit real values. Redeploy after changing environment variables. No API credentials are stored in the repository.
 
