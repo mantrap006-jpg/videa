@@ -10,7 +10,9 @@ const CryptoPaymentSchema = new mongoose.Schema({
   // Retained for compatibility with historical Payclave records.
   amountUsdc: { type: String, default: undefined },
   points: { type: Number, required: true, min: 1 },
-  rateRwfPerUsdc: { type: Number, required: true, min: 1 },
+  rateRwfPerUsd: { type: Number, default: undefined, min: 1 },
+  // Legacy rate field for historical Payclave records.
+  rateRwfPerUsdc: { type: Number, default: undefined, min: 1 },
   status: { type: String, enum: ["pending", "paid", "failed"], default: "pending", index: true },
   providerMode: { type: String, enum: ["test", "live"], required: true },
   creditedAt: { type: Date, default: null },
