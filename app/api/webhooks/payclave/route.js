@@ -44,7 +44,7 @@ export async function POST(request) {
   }
   if (event.mode !== expectedMode) return new Response(null, { status: 204 });
   if (event.type !== "invoice.paid") return new Response(null, { status: 204 });
-  if (event.data.test === true) return new Response(null, { status: 204 });
+  if (expectedMode !== "live" || event.data.test === true) return new Response(null, { status: 204 });
 
   const data = event.data;
   const reference = String(data.externalReference || "");
