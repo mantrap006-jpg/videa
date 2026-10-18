@@ -6,7 +6,9 @@ const CryptoPaymentSchema = new mongoose.Schema({
   invoiceId: { type: String, default: "", index: true },
   checkoutId: { type: String, default: "" },
   checkoutUrl: { type: String, default: "" },
-  amountUsdc: { type: String, required: true },
+  amountUsd: { type: String, default: undefined },
+  // Retained for compatibility with historical Payclave records.
+  amountUsdc: { type: String, default: undefined },
   points: { type: Number, required: true, min: 1 },
   rateRwfPerUsdc: { type: Number, required: true, min: 1 },
   status: { type: String, enum: ["pending", "paid", "failed"], default: "pending", index: true },
