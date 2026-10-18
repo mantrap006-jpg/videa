@@ -119,7 +119,7 @@ export async function POST(request) {
     }
 
     let progress = await WatchProgress.findOne({ userId: session.sub, videoId });
-    const now = new Date();
+    const progressNow = new Date();
 
     if (!progress) {
       try {
@@ -129,7 +129,7 @@ export async function POST(request) {
           watchedPercent: 0,
           watchedSeconds: 0,
           lastPlayerTime: currentTime,
-          lastHeartbeatAt: now,
+          lastHeartbeatAt: progressNow,
           rewarded: false
         });
       } catch (error) {
@@ -138,7 +138,7 @@ export async function POST(request) {
       }
     } else {
       const previousHeartbeat = progress.lastHeartbeatAt ? new Date(progress.lastHeartbeatAt).getTime() : 0;
-      const elapsed = previousHeartbeat ? Math.max(0, Math.min(8, (now.getTime() - previousHeartbeat) / 1000)) : 0;
+      const elapsed = previousHeartbeat ? Math.max(0, Math.min(8, (progressNow.getTime() - previousHeartbeat) / 1000)) : 0;
       const playerDelta = currentTime - Number(progress.lastPlayerTime || 0);
 
       // Count only time that elapsed on the server while the player was playing
@@ -172,7 +172,7 @@ export async function POST(request) {
     if (progress.rewarded) {
       // Compatibility for records created before repeat rewards were enabled:
       // once the claim is no longer in-flight, let the user start another cycle.
-      const rewardAgeMs = progress.rewardedAt ? now.getTime() - new Date(progress.rewardedAt).getTime() : Infinity;
+      const rewardAgeMs = progress.rewardedAt ? progressNow.getTime() - new Date(progress.rewardedAt).getTime() : Infinity;
       if (rewardAgeMs > 15000) {
         await WatchProgress.updateOne(
           { _id: progress._id, rewarded: true },
@@ -183,7 +183,7 @@ export async function POST(request) {
               watchedPercent: 0,
               watchedSeconds: 0,
               lastPlayerTime: currentTime,
-              lastHeartbeatAt: now
+              lastHeartbeatAt: progressNow
             }
           }
         );
@@ -221,7 +221,7 @@ export async function POST(request) {
 
     // Rwanda is UTC+2 year-round; reset daily earning limits at local midnight.
     const kigaliOffsetMs = 2 * 60 * 60 * 1000;
-    const dayStart = new Date(Math.floor((now.getTime() + kigaliOffsetMs) / 86400000) * 86400000 - kigaliOffsetMs);
+    const dayStart = new Date(Math.floor((progressNow.getTime() + kigaliOffsetMs) / 86400000) * 86400000 - kigaliOffsetMs);
     const dailyEarnings = await Earning.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(session.sub), createdAt: { $gte: dayStart } } },
       { $group: { _id: null, count: { $sum: 1 }, points: { $sum: "$points" } } }
@@ -245,7 +245,7 @@ export async function POST(request) {
     const pointsToAward = Math.min(calculatedReward, remainingPoints);
     const claimed = await WatchProgress.findOneAndUpdate(
       { _id: progress._id, rewarded: false },
-      { $set: { rewarded: true, rewardedAt: now, watchedPercent } },
+      { $set: { rewarded: true, rewardedAt: progressNow, watchedPercent } },
       { new: true }
     );
     if (!claimed) {
@@ -267,7 +267,7 @@ export async function POST(request) {
           watchedPercent: 0,
           watchedSeconds: 0,
           lastPlayerTime: currentTime,
-          lastHeartbeatAt: now
+          lastHeartbeatAt: progressNow
         }
       }
     );
