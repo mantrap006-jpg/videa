@@ -16,7 +16,7 @@ function validSignature(rawBody, signatureHeader, timestampHeader, secret) {
   const timestamp = Number(timestampHeader);
   if (!Number.isFinite(timestamp) || Math.abs(Date.now() / 1000 - timestamp) > 600) return false;
 
-  const expected = "sha256=" + createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
+  const expected = "sha256=" + createHmac("sha256", secret).update(rawBody).digest("hex");
   const expectedBuffer = Buffer.from(expected, "utf8");
   const actualBuffer = Buffer.from(signatureHeader, "utf8");
   return expectedBuffer.length === actualBuffer.length && timingSafeEqual(expectedBuffer, actualBuffer);
@@ -32,7 +32,7 @@ export async function POST(request) {
   const apiKey = process.env.FLOWPAY_API_KEY;
   if (!secret || !apiKey) return NextResponse.json({ error: "Webhook is not configured." }, { status: 503 });
 
-  const rawBody = await request.text();
+  const rawBody = Buffer.from(await request.arrayBuffer());
   const signature = request.headers.get("X-Webhook-Signature") || "";
   const timestamp = request.headers.get("X-Webhook-Timestamp") || "";
   if (!validSignature(rawBody, signature, timestamp, secret)) {
@@ -40,7 +40,7 @@ export async function POST(request) {
   }
 
   let event;
-  try { event = JSON.parse(rawBody); } catch { return NextResponse.json({ error: "Invalid event body." }, { status: 400 }); }
+  try { event = JSON.parse(rawBody.toString("utf8")); } catch { return NextResponse.json({ error: "Invalid event body." }, { status: 400 }); }
   if (!event || typeof event !== "object" || typeof event.event !== "string") {
     return NextResponse.json({ error: "Invalid event." }, { status: 400 });
   }
