@@ -20,10 +20,13 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { videoId } = body;
+    const { videoId, watchSessionId } = body;
     const isPlaying = body.isPlaying === true;
     const currentTime = Number(body.currentTime);
 
+    if (typeof watchSessionId !== "string" || !/^[a-zA-Z0-9-]{16,100}$/.test(watchSessionId)) {
+      return NextResponse.json({ error: "This watch session is invalid. Reload the watch page.", sessionConflict: true }, { status: 409 });
+    }
     if (!mongoose.isValidObjectId(videoId)) {
       return NextResponse.json({ error: "Invalid video." }, { status: 400 });
     }
@@ -32,6 +35,32 @@ export async function POST(request) {
     }
 
     await connectDB();
+
+    // Enforce one active watch page per account across browsers and devices.
+    // The lease is refreshed by each heartbeat and expires after 30 seconds offline.
+    const now = new Date();
+    const staleBefore = new Date(now.getTime() - 30 * 1000);
+    const watchLease = await User.findOneAndUpdate(
+      {
+        _id: session.sub,
+        $or: [
+          { activeWatchSessionId: watchSessionId },
+          { activeWatchSessionId: { $exists: false } },
+          { activeWatchSessionId: null },
+          { activeWatchLastSeenAt: { $lt: staleBefore } },
+          { activeWatchLastSeenAt: { $exists: false } }
+        ]
+      },
+      { $set: { activeWatchSessionId: watchSessionId, activeWatchLastSeenAt: now } },
+      { new: true, projection: { _id: 1 } }
+    ).lean();
+    if (!watchLease) {
+      return NextResponse.json({
+        error: "Another watch page is active on this account. Close it before watching here.",
+        sessionConflict: true
+      }, { status: 409 });
+    }
+
     const video = await Video.findOne({ _id: videoId, active: true });
     if (!video) return NextResponse.json({ error: "Video not found." }, { status: 404 });
 
