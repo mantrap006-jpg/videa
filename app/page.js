@@ -163,10 +163,7 @@ export default async function MobileHomePage() {
         </section>
       </main>
 
-      <footer className="mh-footer">
-        <span>© {new Date().getFullYear()} Videa</span>
-        <div><a href="/videos">Videos</a><a href="/login">Log in</a><a href="/signup">Sign up</a></div>
-      </footer>
+      <footer className="footer">© 2026 Videa. Watch responsibly. Earn transparently.<div className="footer-legal"><a href="/privacy">Privacy Policy</a><a href="/terms">Terms of Service</a></div></footer>
     </div>
   );
 }
