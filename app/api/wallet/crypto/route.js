@@ -22,7 +22,7 @@ export async function GET(request) {
       .sort({ createdAt: -1 }).limit(20)
       .select("externalReference amountUsdc points status createdAt paidAt checkoutUrl providerMode")
       .lean();
-    return NextResponse.json({ payments: items.map(item => ({
+    return NextResponse.json({ rateRwfPerUsdc: Number(process.env.USDC_RWF_RATE) || null, payments: items.map(item => ({
       id: item._id.toString(), reference: item.externalReference, amountUsdc: item.amountUsdc,
       points: item.points, status: item.status, createdAt: item.createdAt,
       paidAt: item.paidAt, checkoutUrl: item.status === "pending" ? item.checkoutUrl : ""
@@ -95,18 +95,29 @@ export async function POST(request) {
 
     const checkout = result.data;
     const token = String(checkout.tokenSymbol || checkout.currencyCode || "").toUpperCase();
-    if (token && token !== "USDC") {
+    if (token !== "USDC") {
       await CryptoPayment.updateOne({ _id: payment._id }, { $set: { status: "failed" } });
       console.error("Payclave merchant settlement token is not USDC.");
       return NextResponse.json({ error: "USDC is not enabled for this checkout account. Please contact Videa support." }, { status: 503 });
     }
 
+    let checkoutUrl;
+    try {
+      checkoutUrl = new URL(checkout.checkoutUrl);
+      if (checkoutUrl.protocol !== "https:" || !["payclave.com", "www.payclave.com"].includes(checkoutUrl.hostname)) {
+        throw new Error("Invalid provider checkout URL");
+      }
+    } catch {
+      await CryptoPayment.updateOne({ _id: payment._id }, { $set: { status: "failed" } });
+      console.error("Payclave returned an invalid checkout URL.");
+      return NextResponse.json({ error: "The payment provider returned an invalid checkout link." }, { status: 502 });
+    }
     await CryptoPayment.updateOne({ _id: payment._id }, { $set: {
       invoiceId: String(checkout.invoiceId || ""),
       checkoutId: String(checkout.checkoutId || ""),
-      checkoutUrl: checkout.checkoutUrl
+      checkoutUrl: checkoutUrl.toString()
     } });
-    return NextResponse.json({ checkoutUrl: checkout.checkoutUrl, amountUsdc, points }, { status: 201 });
+    return NextResponse.json({ checkoutUrl: checkoutUrl.toString(), amountUsdc, points }, { status: 201 });
   } catch (error) {
     await CryptoPayment.updateOne({ _id: payment._id, status: "pending" }, { $set: { status: "failed" } }).catch(() => {});
     console.error("Payclave checkout request failed:", error?.name || "unknown_error");
