@@ -2,18 +2,22 @@
 
 import { useEffect, useState } from "react";
 import Script from "next/script";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye, Megaphone, ShieldCheck, Sparkles } from "lucide-react";
 
 export default function AuthPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [mode, setMode] = useState(searchParams.get("mode") === "signup" ? "signup" : "login");
+  const [mode, setMode] = useState("login");
   const [role, setRole] = useState("viewer");
   const [message, setMessage] = useState("");
   const [googleReady, setGoogleReady] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setMode(params.get("mode") === "signup" ? "signup" : "login");
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
