@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Wallet, ArrowDownToLine, ArrowUpFromLine, Clock3, Coins, RefreshCw, ShieldCheck } from "lucide-react";
-import CryptoDepositForm from "./CryptoDepositForm";
 
 async function readJsonResponse(response, fallbackMessage) {
   const responseText = await response.text();
@@ -110,7 +109,6 @@ export default function WalletClient() {
           <button className="button wallet-submit" disabled={depositSubmitting}>{depositSubmitting ? "Submitting…" : "Submit deposit for verification"}</button>
         </form>
       )}
-      {data?.wallet?.role === "creator" && <CryptoDepositForm />}
 
       <div className="wallet-columns">
         <form className="card wallet-withdraw-form" onSubmit={withdraw}>
