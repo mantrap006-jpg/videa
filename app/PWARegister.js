@@ -4,32 +4,42 @@ import { useEffect } from "react";
 
 export default function PWARegister() {
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
+    if (!("serviceWorker" in navigator) || !window.isSecureContext) return;
 
-    let cancelled = false;
+    let disposed = false;
+    let registrationPromise = null;
 
-    const register = async () => {
-      try {
-        const registration = await navigator.serviceWorker.register("/sw.js", {
+    const register = () => {
+      if (disposed || !navigator.onLine || registrationPromise) {
+        return registrationPromise;
+      }
+
+      registrationPromise = navigator.serviceWorker
+        .register("/sw.js", {
           scope: "/",
           updateViaCache: "none"
+        })
+        .catch((error) => {
+          if (!disposed) {
+            console.error(
+              `Videa service worker registration failed for ${window.location.origin}/sw.js:`,
+              error
+            );
+          }
+        })
+        .finally(() => {
+          registrationPromise = null;
         });
-        if (cancelled) return;
-        await registration.update().catch(() => {});
-      } catch (error) {
-        console.error("Videa service worker registration failed:", error);
-      }
+
+      return registrationPromise;
     };
 
-    if (document.readyState === "complete") {
-      void register();
-    } else {
-      window.addEventListener("load", register, { once: true });
-    }
+    void register();
+    window.addEventListener("online", register);
 
     return () => {
-      cancelled = true;
-      window.removeEventListener("load", register);
+      disposed = true;
+      window.removeEventListener("online", register);
     };
   }, []);
 
