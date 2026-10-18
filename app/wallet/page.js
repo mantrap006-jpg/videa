@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function WalletPage() {
   const token = (await cookies()).get("videa_token")?.value;
-  if (!token || !process.env.JWT_SECRET) redirect("/login");
+  if (!token || !process.env.JWT_SECRET) redirect("/auth?mode=login");
   try {
     const session = jwt.verify(token, process.env.JWT_SECRET);
     if (!session?.sub) redirect("/login");
