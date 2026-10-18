@@ -106,25 +106,22 @@ export default function AuthPage() {
             <h3>{mode === "signup" ? "Create your account" : "Log in to Videa"}</h3>
             <p>Continue with Google and approve the requested YouTube read-only permission for automatic subscription checks.</p>
           </div>
-          <label className="auth-account-type">
+          {mode === "signup" && <label className="auth-account-type">
             Account type
             <select value={role} onChange={event => setRole(event.target.value)}>
               <option value="viewer">Viewer — watch &amp; earn</option>
               <option value="creator">Creator — upload &amp; promote videos</option>
             </select>
-            {mode === "login" && <small className="muted">Existing accounts keep their saved account type.</small>}
-          </label>
+          </label>}
           {googleClientId ? <>
             <button type="button" className="button auth-google-button" onClick={startGoogleAuthorization} disabled={!googleReady || googleLoading}>
               {googleLoading ? "Connecting to Google…" : mode === "signup" ? "Create account with Google" : "Continue with Google"}
             </button>
-            <p className="muted auth-google-status" role="status">This requests basic profile information and YouTube read-only access. Google will ask you to approve the permissions.</p>
           </> : <div className="auth-google-missing" role="alert">
             <strong>Google sign-in needs setup</strong>
             <p>The site administrator must configure NEXT_PUBLIC_GOOGLE_CLIENT_ID in Vercel before accounts can be created or accessed.</p>
           </div>}
           {message && <p className="error" role="alert">{message}</p>}
-          <p className="auth-google-terms">By continuing, you agree to use Videa in accordance with its terms and policies. YouTube read-only access checks whether you subscribe to a creator's channel; Videa does not subscribe or change your YouTube account.</p>
           <div className="auth-switch muted">
             {mode === "signup" ? "Already have an account?" : "New to Videa?"}{" "}
             <button type="button" onClick={() => { setMode(mode === "signup" ? "login" : "signup"); setMessage(""); }}>
