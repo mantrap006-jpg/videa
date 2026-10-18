@@ -37,9 +37,53 @@ export default function WatchPage() {
   const [subscriptionStatus, setSubscriptionStatus] = useState("loading");
   const [subscriptionMessage, setSubscriptionMessage] = useState("Detecting the video's YouTube channel...");
   const [verifyingSubscription, setVerifyingSubscription] = useState(false);
+  const [watchSessionStatus, setWatchSessionStatus] = useState("checking");
+  const [watchSessionMessage, setWatchSessionMessage] = useState("Securing your watch session...");
+  const watchSessionIdRef = useRef(null);
   const playerHost = useRef(null);
   const rewardedRef = useRef(false);
   const verifyingRef = useRef(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const sessionId = window.crypto?.randomUUID
+      ? window.crypto.randomUUID()
+      : "watch-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+    watchSessionIdRef.current = sessionId;
+    setWatchSessionStatus("checking");
+    setWatchSessionMessage("Securing your watch session...");
+
+    fetch("/api/watch-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId })
+    }).then(async response => {
+      const data = await response.json();
+      if (cancelled) return;
+      if (!response.ok) {
+        setWatchSessionStatus(response.status === 409 ? "blocked" : "error");
+        setWatchSessionMessage(data.error || "Could not secure this watch session.");
+        return;
+      }
+      setWatchSessionStatus("active");
+      setWatchSessionMessage("This account is secured for one active watch page.");
+    }).catch(() => {
+      if (!cancelled) {
+        setWatchSessionStatus("error");
+        setWatchSessionMessage("Could not connect to the watch-session security check. Refresh and try again.");
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      fetch("/api/watch-session", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+        keepalive: true
+      }).catch(() => {});
+    };
+  }, [id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -149,7 +193,7 @@ export default function WatchPage() {
   }, [verifySubscription]);
 
   useEffect(() => {
-    if (!video || !id || subscriptionStatus !== "verified" || !playerHost.current) return;
+    if (!video || !id || subscriptionStatus !== "verified" || watchSessionStatus !== "active" || !playerHost.current) return;
     let disposed = false;
     let player = null;
     let heartbeatTimer = null;
@@ -165,11 +209,18 @@ export default function WatchPage() {
         const response = await fetch("/api/watch-progress", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ videoId: id, isPlaying, currentTime })
+          body: JSON.stringify({ videoId: id, isPlaying, currentTime, watchSessionId: watchSessionIdRef.current })
         });
         const data = await response.json();
         if (disposed) return;
         if (!response.ok) {
+          if (data.sessionConflict) {
+            setWatchSessionStatus("blocked");
+            setWatchSessionMessage(data.error || "Another watch page is active on this account.");
+            setPlaying(false);
+            try { player?.pauseVideo?.(); } catch {}
+            return;
+          }
           if (data.subscriptionRequired) {
             setSubscriptionStatus("needs-check");
             setSubscriptionMessage("Please verify your YouTube subscription again before earning.");
@@ -268,7 +319,7 @@ export default function WatchPage() {
       if (apiTimeoutTimer) window.clearTimeout(apiTimeoutTimer);
       try { player?.destroy?.(); } catch {}
     };
-  }, [video, id, subscriptionStatus]);
+  }, [video, id, subscriptionStatus, watchSessionStatus]);
 
   if (!video) {
     return <main className="watch-page"><div className="watch-loading card"><span className="watch-spinner" /><h2>Preparing your watch room</h2><p>{message}</p></div></main>;
@@ -291,14 +342,14 @@ export default function WatchPage() {
       <div className="watch-layout">
         <section className="watch-main-column">
           <article className="watch-player-card card">
-            {verified ? (
+            {verified && watchSessionStatus === "active" ? (
               <div className="watch-player-frame"><div ref={playerHost} title={video.title} /></div>
             ) : (
               <div className="watch-locked-player">
                 <div className="watch-lock-icon">▶</div>
                 <span className="eyebrow">WATCH ACCESS</span>
-                <h2>Unlock this video</h2>
-                <p>Open this creator's YouTube channel, subscribe if you haven't already, then return here and verify your subscription to unlock the video.</p>
+                <h2>{watchSessionStatus !== "active" ? "Watch session unavailable" : "Unlock this video"}</h2>
+                <p>{watchSessionStatus !== "active" ? watchSessionMessage : "Open this creator's YouTube channel, subscribe if you haven't already, then return here and verify your subscription to unlock the video."}</p>
               </div>
             )}
             <div className="watch-video-details">
@@ -307,7 +358,7 @@ export default function WatchPage() {
                   <span className="watch-content-label">FEATURED VIDEO</span>
                   <h2>{video.title}</h2>
                 </div>
-                <span className={verified ? "watch-status-badge ready" : "watch-status-badge"}>{verified ? "Ready to watch" : "Locked"}</span>
+                <span className={verified && watchSessionStatus === "active" ? "watch-status-badge ready" : "watch-status-badge"}>{verified && watchSessionStatus === "active" ? "Ready to watch" : watchSessionStatus === "active" ? "Locked" : "Session blocked"}</span>
               </div>
               {video.description ? <p className="watch-description">{video.description}</p> : null}
               <div className="watch-channel-row">
@@ -328,7 +379,7 @@ export default function WatchPage() {
             </div>
             <div className="watch-progress-track" role="progressbar" aria-valuenow={percent} aria-valuemin="0" aria-valuemax="100" aria-label="Verified watch progress"><span style={{ width: percent + "%" }} /></div>
             <div className="watch-progress-meta"><span>{formatTime(watchedSeconds)} watched{video.durationSeconds > 0 ? ` / ${formatTime(video.durationSeconds)}` : ""}</span><span>{video.minimumWatchPercent}% required</span></div>
-            <div className="watch-feedback" role="status"><span className={playing ? "watch-feedback-dot active" : "watch-feedback-dot"} />{verified && playing ? "Playing — watch time is being checked by the server." : message}</div>
+            <div className="watch-feedback" role="status"><span className={playing ? "watch-feedback-dot active" : "watch-feedback-dot"} />{watchSessionStatus !== "active" ? watchSessionMessage : verified && playing ? "Playing — watch time is being checked by the server." : message}</div>
             {videoEnded && <p className="watch-finished-note">Video finished. Your verified progress has been updated.</p>}
           </section>
         </section>
