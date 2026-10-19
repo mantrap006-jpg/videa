@@ -80,19 +80,37 @@ export async function POST(request) {
   }
 
   const now = new Date();
-  const currentExpiry =
-    existingUser.subscription?.status === "active" && existingUser.subscription?.expiresAt
-      ? new Date(existingUser.subscription.expiresAt)
-      : null;
+  const subscriptionIsActive =
+    existingUser.subscription?.status === "active" &&
+    (!existingUser.subscription?.expiresAt || new Date(existingUser.subscription.expiresAt) > now);
+
+  if (subscriptionIsActive && existingUser.subscription?.plan === plan.id) {
+    return NextResponse.json({
+      error: "This is already your current plan. You cannot purchase the same plan again while it is active.",
+      code: "PLAN_ALREADY_ACTIVE",
+      currentPlan: existingUser.subscription.plan,
+      expiresAt: existingUser.subscription.expiresAt || null
+    }, { status: 409 });
+  }
+
   // Every successful purchase starts a fresh access period from the purchase time.
-  // This prevents a renewal from carrying an old countdown forward.
+  // The database condition below also prevents concurrent duplicate purchases.
   const expiresAt = new Date(now);
   expiresAt.setDate(expiresAt.getDate() + plan.days);
 
-  // Points are credited only after a deposit is approved. One point equals one RWF
-  // for subscription pricing; no mobile-money transfer is initiated here.
+  // Points are credited only after a deposit is approved. One point equals one RWF.
+  // The same-plan condition is part of the atomic update to close request races.
   const updatedUser = await User.findOneAndUpdate(
-    { _id: session.sub, role: "creator", points: { $gte: plan.amountRwf } },
+    {
+      _id: session.sub,
+      role: "creator",
+      points: { $gte: plan.amountRwf },
+      $or: [
+        { "subscription.status": { $ne: "active" } },
+        { "subscription.expiresAt": { $lte: now } },
+        { "subscription.plan": { $ne: plan.id } }
+      ]
+    },
     {
       $inc: { points: -plan.amountRwf },
       $set: {
@@ -105,10 +123,24 @@ export async function POST(request) {
   ).select("points subscription").lean();
 
   if (!updatedUser) {
+    // Refresh from the database to distinguish a duplicate request from low balance.
+    const latestUser = await User.findById(session.sub).select("points subscription").lean();
+    const latestSubscriptionActive = latestUser?.subscription?.status === "active" &&
+      (!latestUser.subscription?.expiresAt || new Date(latestUser.subscription.expiresAt) > new Date());
+
+    if (latestSubscriptionActive && latestUser.subscription?.plan === plan.id) {
+      return NextResponse.json({
+        error: "This is already your current plan. You cannot purchase the same plan again while it is active.",
+        code: "PLAN_ALREADY_ACTIVE",
+        currentPlan: latestUser.subscription.plan,
+        expiresAt: latestUser.subscription.expiresAt || null
+      }, { status: 409 });
+    }
+
     return NextResponse.json({
       error: `You need ${plan.amountRwf.toLocaleString()} points for this plan. Please deposit and wait for admin approval first.`,
       requiredPoints: plan.amountRwf,
-      availablePoints: Number(existingUser.points || 0)
+      availablePoints: Number(latestUser?.points || 0)
     }, { status: 400 });
   }
 
