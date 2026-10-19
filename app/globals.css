@@ -4201,3 +4201,23 @@ body { min-height: 100vh; min-height: 100svh; padding-top: env(safe-area-inset-t
     margin: 0 10px 10px !important;
   }
 }
+
+
+/* Make the mobile logout icon clearly red */
+@media screen and (max-width: 768px) {
+  header.topbar > .nav-toggle-logout {
+    color: #ff4d5e !important;
+    border-color: rgba(255, 77, 94, .42) !important;
+    background: rgba(255, 77, 94, .10) !important;
+    box-shadow: 0 0 0 1px rgba(255, 77, 94, .06) !important;
+  }
+  header.topbar > .nav-toggle-logout svg {
+    color: #ff4d5e !important;
+    stroke: currentColor !important;
+  }
+  header.topbar > .nav-toggle-logout:active,
+  header.topbar > .nav-toggle-logout:hover {
+    color: #ff7380 !important;
+    background: rgba(255, 77, 94, .18) !important;
+  }
+}
