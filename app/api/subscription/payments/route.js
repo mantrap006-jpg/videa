@@ -26,7 +26,7 @@ const PLANS = {
   annual: {
     id: "annual",
     name: "Pro Creator",
-    amountRwf: 100000,
+    amountRwf: 50000,
     days: 30,
     videoLimit: 50,
     maxVideoMinutes: 30
