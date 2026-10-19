@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Activity, AlertTriangle, CheckCircle2, Eye, Film, PauseCircle,
-  PlayCircle, RefreshCw, Search, ShieldAlert, Users, Settings, Save, LayoutDashboard, CreditCard
+  PlayCircle, RefreshCw, Search, ShieldAlert, Users, Settings, Save, LayoutDashboard, CreditCard, LogOut, ExternalLink
 } from "lucide-react";
 
 const number = (value) => Number(value || 0).toLocaleString();
@@ -133,6 +133,17 @@ export default function AdminControlCenter() {
 
   return (
     <section className="control-center">
+      <header className="admin-topbar">
+        <a href="/admin" className="admin-topbar-brand" aria-label="Videa admin home">
+          <img src="/logo.svg" alt="VIDEA" />
+          <span><strong>Admin Console</strong><small>Platform management</small></span>
+        </a>
+        <div className="admin-topbar-actions">
+          <span className="admin-topbar-status"><i /> Admin workspace</span>
+          <a href="/" className="admin-topbar-site" target="_blank" rel="noreferrer"><ExternalLink size={15} /> View site</a>
+          <a href="/api/auth/logout" className="admin-topbar-logout"><LogOut size={15} /> Log out</a>
+        </div>
+      </header>
       <nav className="admin-mobile-menu" aria-label="Admin mobile navigation">
         <button type="button" className={tab === "overview" ? "active" : ""} onClick={() => selectMobileTab("overview")}><LayoutDashboard size={18}/><span>Home</span></button>
         <button type="button" className={tab === "users" ? "active" : ""} onClick={() => selectMobileTab("users")}><Users size={18}/><span>Users</span></button>
