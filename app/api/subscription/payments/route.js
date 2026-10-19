@@ -10,7 +10,7 @@ const PLANS = {
   monthly: {
     id: "monthly",
     name: "Starter Creator",
-    amountRwf: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 12000),
+    amountRwf: 12000,
     days: 30,
     videoLimit: 5,
     maxVideoMinutes: 10
@@ -18,7 +18,7 @@ const PLANS = {
   quarterly: {
     id: "quarterly",
     name: "Growth Creator",
-    amountRwf: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 30000),
+    amountRwf: 30000,
     days: 30,
     videoLimit: 15,
     maxVideoMinutes: 20
@@ -26,7 +26,7 @@ const PLANS = {
   annual: {
     id: "annual",
     name: "Pro Creator",
-    amountRwf: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 100000),
+    amountRwf: 100000,
     days: 30,
     videoLimit: 50,
     maxVideoMinutes: 30
