@@ -55,16 +55,18 @@ export async function POST(request) {
     return NextResponse.json({ error: "Enter a valid phone number and mobile money network." }, { status: 400 });
   }
 
-  await connectDB();
-  const user = await User.findOneAndUpdate(
+  let pointsDeducted = false;
+  try {
+    await connectDB();
+    const user = await User.findOneAndUpdate(
     { _id: session.sub, points: { $gte: points } },
     { $inc: { points: -points } },
     { new: true }
   ).select("points").lean();
 
-  if (!user) return NextResponse.json({ error: "Insufficient points for this withdrawal." }, { status: 400 });
+    if (!user) return NextResponse.json({ error: "Insufficient points for this withdrawal." }, { status: 400 });
+    pointsDeducted = true;
 
-  try {
     const withdrawal = await Withdrawal.create({
       user: session.sub, points, amountRwf: points * POINTS_TO_RWF,
       phone, network, status: "pending"
@@ -73,8 +75,18 @@ export async function POST(request) {
       withdrawal: { id: withdrawal._id.toString(), points, amountRwf: withdrawal.amountRwf, status: withdrawal.status },
       wallet: { points: user.points, balanceRwf: user.points * POINTS_TO_RWF }
     }, { status: 201 });
-  } catch {
-    await User.updateOne({ _id: session.sub }, { $inc: { points } });
-    return NextResponse.json({ error: "Could not create withdrawal request. Your points were returned." }, { status: 500 });
+  } catch (error) {
+    console.error("Wallet withdrawal POST failed:", error);
+    if (pointsDeducted) {
+      try {
+        await User.updateOne({ _id: session.sub }, { $inc: { points } });
+      } catch (refundError) {
+        console.error("Wallet withdrawal refund failed:", refundError);
+      }
+    }
+    return NextResponse.json({ error: pointsDeducted
+      ? "Could not create the withdrawal request. If your balance changed, refresh your wallet to verify the refund."
+      : "Could not process your withdrawal request. Please try again shortly."
+    }, { status: 500 });
   }
 }
