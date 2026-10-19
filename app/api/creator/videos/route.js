@@ -5,6 +5,12 @@ import { connectDB } from "@/lib/mongodb";
 import { getActiveUserFromRequest } from "@/lib/auth";
 import { extractYouTubeId, getYouTubeVideoDetails } from "@/lib/youtube";
 
+const CREATOR_PLAN_LIMITS = {
+  monthly: { videoLimit: 5, maxVideoMinutes: 10 },
+  quarterly: { videoLimit: 15, maxVideoMinutes: 20 },
+  annual: { videoLimit: 50, maxVideoMinutes: 30 }
+};
+
 export async function POST(request) {
   try {
     const session = await getActiveUserFromRequest(request);
@@ -27,6 +33,25 @@ export async function POST(request) {
         { error: "An active creator subscription is required before submitting videos." },
         { status: 402 }
       );
+    }
+
+    const planLimits = user.role === "admin"
+      ? null
+      : CREATOR_PLAN_LIMITS[user.subscription?.plan];
+
+    if (user.role !== "admin" && !planLimits) {
+      return NextResponse.json({ error: "Your active subscription plan is not recognized. Please contact support." }, { status: 403 });
+    }
+
+    if (planLimits) {
+      const currentVideoCount = await Video.countDocuments({ creator: user._id });
+      if (currentVideoCount >= planLimits.videoLimit) {
+        return NextResponse.json({
+          error: `Your plan allows up to ${planLimits.videoLimit} videos. Remove an existing video or upgrade your plan.`,
+          videoLimit: planLimits.videoLimit,
+          currentVideoCount
+        }, { status: 403 });
+      }
     }
 
     let body;
@@ -90,9 +115,17 @@ export async function POST(request) {
     }
 
     const verifiedDurationSeconds = youtubeDetails.durationSeconds;
+    if (planLimits && verifiedDurationSeconds > planLimits.maxVideoMinutes * 60) {
+      return NextResponse.json({
+        error: `Your plan allows videos up to ${planLimits.maxVideoMinutes} minutes. This video is ${Math.ceil(verifiedDurationSeconds / 60)} minutes long.`,
+        maxVideoMinutes: planLimits.maxVideoMinutes,
+        durationSeconds: verifiedDurationSeconds
+      }, { status: 400 });
+    }
     const rewardPoints = Math.max(1, Math.floor((verifiedDurationSeconds / 60) * rate));
 
     const video = await Video.create({
+      creator: user.role === "admin" ? undefined : user._id,
       title: youtubeDetails.title,
       titleKey: normalizedTitle,
       youtubeUrl: youtubeUrl.trim(),
