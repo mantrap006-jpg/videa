@@ -4371,3 +4371,31 @@ body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .footer {
     max-width: 100%;
   }
 }
+
+
+/* Final mobile homepage footer placement: fill the visible phone viewport. */
+@media screen and (max-width: 600px) {
+  html:has(.mobile-home.mh-redesign),
+  body:has(.mobile-home.mh-redesign) {
+    min-height: 100%;
+    min-height: 100dvh;
+  }
+  body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign {
+    display: flex !important;
+    flex-direction: column !important;
+    min-height: 100dvh !important;
+    padding-bottom: 0 !important;
+  }
+  body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .mh-main {
+    flex: 1 0 auto !important;
+  }
+  body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .footer {
+    position: relative;
+    flex: 0 0 auto !important;
+    margin-top: auto !important;
+    margin-bottom: 0 !important;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    min-height: 0;
+    line-height: 1.4;
+  }
+}
