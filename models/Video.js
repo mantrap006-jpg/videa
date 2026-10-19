@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const VideoSchema = new mongoose.Schema(
   {
+    creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null, index: true },
     title: { type: String, required: true, trim: true },
     titleKey: { type: String, trim: true },
     youtubeUrl: { type: String, required: true, trim: true },
