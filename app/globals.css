@@ -4076,3 +4076,42 @@ body { min-height: 100vh; min-height: 100svh; padding-top: env(safe-area-inset-t
     background: linear-gradient(110deg,#7868ff,#5d50ee) !important;
   }
 }
+
+
+/* Expandable description on the watch page */
+.watch-description-wrap {
+  position: relative;
+  min-width: 0;
+}
+.watch-description-wrap:not(.is-expanded) .watch-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.watch-description {
+  margin: 10px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.watch-description-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  margin-top: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #a99aff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.watch-description-toggle:hover {
+  color: #c4baff;
+  text-decoration: underline;
+}
