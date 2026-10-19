@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Coins, Megaphone, Play, Sparkles, UploadCloud, CheckCircle2, LockKeyhole } from "lucide-react";
 
 export default function CreatorClient({ subscriptionActive = false, subscriptionExpiresAt = null }) {
@@ -13,6 +13,11 @@ export default function CreatorClient({ subscriptionActive = false, subscription
   const [message, setMessage] = useState("");
   const [metadataStatus, setMetadataStatus] = useState("");
   const [loadingMetadata, setLoadingMetadata] = useState(false);
+  const messageRef = useRef(null);
+
+  useEffect(() => {
+    if (message.includes("successfully")) messageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [message]);
 
   async function fetchYouTubeDetails() {
     const url = form.youtubeUrl.trim();
@@ -175,7 +180,7 @@ export default function CreatorClient({ subscriptionActive = false, subscription
           </button>
 
           {message && (
-            <p className={message.includes("successfully") ? "success" : "error"} role="status">
+            <p ref={messageRef} className={message.includes("successfully") ? "success" : "error"} role="status" tabIndex={-1}>
               {message}
             </p>
           )}
