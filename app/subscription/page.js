@@ -31,7 +31,7 @@ export default async function SubscriptionPage() {
     {
       id: "monthly",
       name: "Starter Creator",
-      price: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 12000),
+      price: 12000,
       days: 30,
       videoLimit: 5,
       maxVideoMinutes: 10,
@@ -42,7 +42,7 @@ export default async function SubscriptionPage() {
     {
       id: "quarterly",
       name: "Growth Creator",
-      price: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 30000),
+      price: 30000,
       days: 30,
       videoLimit: 15,
       maxVideoMinutes: 20,
@@ -53,7 +53,7 @@ export default async function SubscriptionPage() {
     {
       id: "annual",
       name: "Pro Creator",
-      price: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 100000),
+      price: 100000,
       days: 30,
       videoLimit: 50,
       maxVideoMinutes: 30,
