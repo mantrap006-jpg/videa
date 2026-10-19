@@ -4053,3 +4053,26 @@ body { min-height: 100vh; min-height: 100svh; padding-top: env(safe-area-inset-t
   header.topbar > .nav-auth-actions { gap: 4px !important; }
   header.topbar > .nav-auth-actions > a.nav-auth-icon { padding: 0 5px !important; gap: 3px !important; font-size: 9px !important; }
 }
+
+
+/* Match mobile account button colors to the desktop header */
+@media screen and (max-width: 768px) {
+  header.topbar > .nav-auth-actions > a.nav-auth-login {
+    color: #f5f7ff !important;
+    background: rgba(255,255,255,.045) !important;
+    border: 1px solid rgba(255,255,255,.16) !important;
+    box-shadow: none !important;
+  }
+  header.topbar > .nav-auth-actions > a.nav-auth-signup {
+    color: #fff !important;
+    background: linear-gradient(110deg,#8879ff,#6655f5) !important;
+    border: 1px solid transparent !important;
+    box-shadow: 0 4px 12px rgba(109,93,252,.22) !important;
+  }
+  header.topbar > .nav-auth-actions > a.nav-auth-login:active {
+    background: rgba(255,255,255,.1) !important;
+  }
+  header.topbar > .nav-auth-actions > a.nav-auth-signup:active {
+    background: linear-gradient(110deg,#7868ff,#5d50ee) !important;
+  }
+}
