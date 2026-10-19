@@ -18,6 +18,26 @@ const slides = [
   {
     src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
     alt: "People discovering digital content together"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=85",
+    alt: "Cinema auditorium and movie entertainment"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=85",
+    alt: "Live concert with a crowd enjoying music"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=85",
+    alt: "Concert stage lights and live music performance"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&w=1200&q=85",
+    alt: "Festival crowd sharing a live event experience"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=85",
+    alt: "Gaming and esports event"
   }
 ];
 
