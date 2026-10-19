@@ -3822,3 +3822,45 @@ body { min-height: 100vh; min-height: 100svh; padding-top: env(safe-area-inset-t
 .mh-slide-indicators span.is-active { width: 22px; background: #fff; }
 @media (prefers-reduced-motion: reduce) { .mh-hero-slide, .mh-slide-indicators span { transition: none; } }
 @media (max-width: 600px) { .mh-slide-indicators { right: 11px; bottom: 11px; } }
+
+
+/* Compact, clearly labeled mobile sign-in actions */
+.nav-auth-actions {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.nav-auth-icon {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.13);
+  background: rgba(255,255,255,.045);
+  color: #f5f7ff;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+.nav-auth-icon svg { flex: 0 0 auto; }
+.nav-auth-icon:hover { background: rgba(255,255,255,.1); }
+.nav-auth-signup { background: linear-gradient(110deg,#8879ff,#6655f5); border-color: transparent; }
+@media (max-width: 768px) {
+  .topbar { gap: 8px; }
+  .nav-auth-actions { display: flex; }
+  .topbar .nav-links { display: none !important; }
+  .topbar .nav-toggle:not(.nav-toggle-logout) { display: none !important; }
+  .nav-auth-icon { padding: 0 9px; }
+}
+@media (max-width: 380px) {
+  .nav-auth-actions { gap: 5px; }
+  .nav-auth-icon { min-height: 34px; padding: 0 7px; gap: 4px; font-size: 11px; }
+  .nav-auth-icon svg { width: 16px; height: 16px; }
+}
