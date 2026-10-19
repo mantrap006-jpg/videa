@@ -44,10 +44,10 @@ export async function POST(request) {
     }
 
     if (planLimits) {
-      const currentVideoCount = await Video.countDocuments({ creator: user._id });
+      const currentVideoCount = await Video.countDocuments({ creator: user._id, active: true });
       if (currentVideoCount >= planLimits.videoLimit) {
         return NextResponse.json({
-          error: `Your plan allows up to ${planLimits.videoLimit} videos. Remove an existing video or upgrade your plan.`,
+          error: `Your plan allows up to ${planLimits.videoLimit} active video promotions. Deactivate an existing promotion or upgrade your plan.`,
           videoLimit: planLimits.videoLimit,
           currentVideoCount
         }, { status: 403 });
