@@ -53,7 +53,7 @@ export default async function SubscriptionPage() {
     {
       id: "annual",
       name: "Pro Creator",
-      price: 100000,
+      price: 50000,
       days: 30,
       videoLimit: 50,
       maxVideoMinutes: 30,
