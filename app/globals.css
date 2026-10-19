@@ -4415,3 +4415,52 @@ body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .footer {
 .subscription-plan-current .subscription-submit-button:disabled{opacity:.9;background:rgba(116,91,193,.24);border:1px solid rgba(168,159,255,.35);color:#d4ccff}
 .subscription-plan-popular svg{margin-right:4px}
 @media(max-width:640px){.current-plan-banner{padding:12px}.current-plan-summary>strong{font-size:16px}}
+
+
+/* Responsive creator bottom bar: five equally sized tabs without clipping. */
+@media (max-width: 900px) {
+  .mobile-bottom-nav.creator-bottom-nav {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    width: min(460px, calc(100vw - 16px)) !important;
+    max-width: calc(100vw - 16px) !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    padding-bottom: calc(5px + env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing: border-box !important;
+  }
+  .mobile-bottom-nav.creator-bottom-nav .mobile-nav-item {
+    min-width: 0 !important;
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+    gap: 4px !important;
+    font-size: clamp(8px, 2.3vw, 10px) !important;
+  }
+  .mobile-bottom-nav.creator-bottom-nav .mobile-nav-item span {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+  }
+}
+@media (max-width: 360px) {
+  .mobile-bottom-nav.creator-bottom-nav {
+    width: calc(100vw - 10px) !important;
+    max-width: calc(100vw - 10px) !important;
+    border-radius: 10px 10px 0 0 !important;
+  }
+  .mobile-bottom-nav.creator-bottom-nav .mobile-nav-item {
+    font-size: 8px !important;
+    gap: 3px !important;
+  }
+  .mobile-bottom-nav.creator-bottom-nav .mobile-nav-item svg {
+    width: 17px !important;
+    height: 17px !important;
+    flex-basis: 17px !important;
+  }
+}
