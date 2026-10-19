@@ -42,6 +42,7 @@ export default function WatchPage() {
   const [watchSessionMessage, setWatchSessionMessage] = useState("Securing your watch session...");
   const watchSessionIdRef = useRef(null);
   const playerHost = useRef(null);
+  const subscriptionCardRef = useRef(null);
   const rewardedRef = useRef(false);
   const verifyingRef = useRef(false);
 
@@ -156,6 +157,14 @@ export default function WatchPage() {
     if (id) loadVideo();
     return () => { cancelled = true; };
   }, [id]);
+
+  useEffect(() => {
+    if (!["needs-check", "not-subscribed", "login-required"].includes(subscriptionStatus)) return;
+    const scrollTimer = window.setTimeout(() => {
+      subscriptionCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 250);
+    return () => window.clearTimeout(scrollTimer);
+  }, [subscriptionStatus, id]);
 
   const verifySubscription = useCallback(async (accessToken) => {
     const response = await fetch("/api/youtube-subscription", {
@@ -425,7 +434,7 @@ export default function WatchPage() {
         </section>
 
         <aside className="watch-sidebar">
-          <section className="watch-subscription-card card">
+          <section ref={subscriptionCardRef} id="watch-subscription-check" className="watch-subscription-card card">
             <div className="watch-card-icon">✓</div>
             <span className="eyebrow">STEP 1 · CHANNEL CHECK</span>
             <h2>{verified ? "You're all set" : needsSubscribe ? "Subscribe to unlock" : "Check your subscription"}</h2>
