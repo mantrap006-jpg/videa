@@ -4328,3 +4328,46 @@ body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .footer {
   margin-top: auto !important;
   width: 100%;
 }
+
+
+/* Mobile footer alignment and safe-area spacing for the public homepage. */
+@media screen and (max-width: 600px) {
+  html:has(.mobile-home.mh-redesign),
+  body:has(.mobile-home.mh-redesign) {
+    width: 100%;
+    min-height: 100%;
+  }
+  body:has(.mobile-home.mh-redesign) > main {
+    min-height: 100svh;
+    min-height: 100dvh;
+  }
+  body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign {
+    width: 100%;
+    min-height: 100svh;
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .mh-main {
+    flex: 1 0 auto;
+    min-height: 0;
+  }
+  body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .footer {
+    flex-shrink: 0;
+    margin-top: auto !important;
+    padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+  body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .footer .footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 16px;
+    max-width: 100%;
+  }
+}
