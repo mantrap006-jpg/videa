@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Wallet, ArrowDownToLine, ArrowUpFromLine, Clock3, Coins, RefreshCw, ShieldCheck } from "lucide-react";
 
 async function readJsonResponse(response, fallbackMessage) {
@@ -37,6 +37,11 @@ export default function WalletClient() {
   const [depositSubmitting, setDepositSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const successMessageRef = useRef(null);
+
+  useEffect(() => {
+    if (message) successMessageRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [message]);
 
   async function load() {
     setLoading(true);
@@ -91,7 +96,7 @@ export default function WalletClient() {
         <button type="button" className="button secondary wallet-refresh" onClick={load}><RefreshCw size={16}/> Refresh</button>
       </div>
       {error && <p className="error wallet-message">{error}</p>}
-      {message && <p className="success wallet-message">{message}</p>}
+      {message && <p ref={successMessageRef} className="success wallet-message" role="status" tabIndex={-1}>{message}</p>}
       <div className="wallet-balance-grid">
         <div className="card wallet-balance-card"><span><Coins size={16}/> Available points</span><strong>{(wallet?.points || 0).toLocaleString()}</strong><small>Pending deposits do not count until approved</small></div>
         <div className="card wallet-balance-card wallet-money"><span><Wallet size={16}/> Available value</span><strong>{(wallet?.balanceRwf || 0).toLocaleString()} <small>RWF</small></strong><small>1 point = 1 RWF</small></div>
