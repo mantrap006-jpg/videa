@@ -46,15 +46,7 @@ export default async function MobileHomePage() {
 
   return (
     <div className="mobile-home mh-redesign">
-      <header className="mh-topbar">
-        <a href="/" className="mh-brand" aria-label="Videa home">
-          <img src="/logo.svg" alt="VIDEA" width="100" height="28" />
-        </a>
-        <div className="mh-header-actions">
-          <a href="/login" className="mh-login">Log in</a>
-          <a href="/signup" className="mh-header-join">Join free <ArrowRight size={15} /></a>
-        </div>
-      </header>
+
 
       <main className="mh-main">
         <section className="mh-hero-v2">
