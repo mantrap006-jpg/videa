@@ -115,6 +115,29 @@ export default function AdminControlCenter() {
     }
   }
 
+  async function backfillVideosToFirstCreator() {
+    const confirmed = window.confirm("This will assign EVERY existing Videa video to the earliest registered creator and set that creator's subscription to inactive. Other users and balances will not be changed. Continue?");
+    if (!confirmed) return;
+    setBusy("backfill-first-creator");
+    setMessage("");
+    setError("");
+    try {
+      const response = await fetch("/api/admin/maintenance/backfill-first-creator", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Database backfill failed.");
+      setMessage(`Backfill complete: ${result.videosMatchedToCreatorAfter} videos assigned to ${result.creator.name} (${result.creator.email}); subscription is now inactive and requires upgrade.`);
+      await load();
+    } catch (e) {
+      setError(e.message || "Database backfill failed.");
+    } finally {
+      setBusy("");
+    }
+  }
+
   function selectMobileTab(nextTab) {
     setTab(nextTab);
     setQuery("");
@@ -147,9 +170,14 @@ export default function AdminControlCenter() {
           <h1>Control center</h1>
           <p>Monitor platform activity, manage accounts, and moderate videos.</p>
         </div>
-        <button type="button" className="button control-refresh" onClick={load} disabled={busy !== ""}>
-          <RefreshCw size={16} /> Refresh
-        </button>
+        <div className="control-head-actions">
+          <button type="button" className="button" onClick={backfillVideosToFirstCreator} disabled={busy !== ""}>
+            {busy === "backfill-first-creator" ? "Updating database…" : "Backfill videos + expire first creator"}
+          </button>
+          <button type="button" className="button control-refresh" onClick={load} disabled={busy !== ""}>
+            <RefreshCw size={16} /> Refresh
+          </button>
+        </div>
       </div>
 
       {error && <p className="control-message error" role="alert">{error}</p>}
