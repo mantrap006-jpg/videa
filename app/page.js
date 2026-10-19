@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import Video from "@/models/Video";
+import HeroImageCarousel from "./HeroImageCarousel";
 import { connectDB } from "@/lib/mongodb";
 import {
   ArrowRight, Play, Sparkles, ShieldCheck, Coins, Clapperboard,
@@ -61,12 +62,7 @@ export default async function MobileHomePage() {
             <div className="mh-hero-note"><ShieldCheck size={15} /> Watch progress and rewards are verified by Videa.</div>
           </div>
           <div className="mh-hero-art">
-            <img
-              src="https://images.unsplash.com/photo-1492619375914-88005aa9e8fb?auto=format&fit=crop&w=1000&q=85"
-              alt="Camera and creative video production equipment"
-              fetchPriority="high"
-            />
-            <div className="mh-art-shade" />
+            <HeroImageCarousel />
             <div className="mh-art-label"><span className="mh-live-dot" /> MADE FOR VIDEO LOVERS</div>
             <div className="mh-floating-reward">
               <span className="mh-floating-icon"><Coins size={19} /></span>
