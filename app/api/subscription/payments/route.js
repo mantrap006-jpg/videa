@@ -9,21 +9,27 @@ export const dynamic = "force-dynamic";
 const PLANS = {
   monthly: {
     id: "monthly",
-    name: "Monthly Creator",
-    amountRwf: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 5000),
-    days: 30
+    name: "Starter Creator",
+    amountRwf: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 12000),
+    days: 30,
+    videoLimit: 5,
+    maxVideoMinutes: 10
   },
   quarterly: {
     id: "quarterly",
-    name: "Quarterly Creator",
-    amountRwf: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 13500),
-    days: 90
+    name: "Growth Creator",
+    amountRwf: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 30000),
+    days: 30,
+    videoLimit: 15,
+    maxVideoMinutes: 20
   },
   annual: {
     id: "annual",
-    name: "Annual Creator",
-    amountRwf: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 50000),
-    days: 365
+    name: "Pro Creator",
+    amountRwf: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 100000),
+    days: 30,
+    videoLimit: 50,
+    maxVideoMinutes: 30
   }
 };
 
