@@ -26,11 +26,13 @@ export default function Navigation({ children, user }) {
         </a>
       ) : (
         <div className="nav-auth-actions" aria-label="Account actions">
-          <a href="/login" className="nav-auth-icon nav-auth-login" aria-label="Log in" title="Log in">
-            <UserRound size={20} aria-hidden="true" />
+          <a href="/login" className="nav-auth-icon nav-auth-login" aria-label="Sign In" title="Sign In">
+            <UserRound size={18} aria-hidden="true" />
+            <span>Sign In</span>
           </a>
-          <a href="/signup" className="nav-auth-icon nav-auth-signup" aria-label="Create account" title="Create account">
-            <UserPlus size={20} aria-hidden="true" />
+          <a href="/signup" className="nav-auth-icon nav-auth-signup" aria-label="Join Now" title="Join Now">
+            <UserPlus size={18} aria-hidden="true" />
+            <span>Join Now</span>
           </a>
         </div>
       )}
