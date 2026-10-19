@@ -282,6 +282,7 @@ export async function POST(request) {
       message: `Reward received: +${pointsToAward} points`
     });
   } catch (error) {
-    return NextResponse.json({ error: "Could not save watch progress." }, { status: 500 });
+    console.error("Watch progress POST failed:", error);
+    return NextResponse.json({ error: "Could not save watch progress. Please try again shortly." }, { status: 500 });
   }
 }
