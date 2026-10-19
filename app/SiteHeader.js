@@ -58,6 +58,9 @@ export default function SiteHeader({ user }) {
         <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
           <a href="/videos" className={isActive("/videos") ? "mobile-nav-item active" : "mobile-nav-item"}><Video {...mobileIconProps} /><span>Videos</span></a>
           <a href="/points" className={isActive("/points") ? "mobile-nav-item active" : "mobile-nav-item"}><Coins {...mobileIconProps} /><span>Points</span></a>
+          {user.role === "creator" && (
+            <a href="/creator" className={isActive("/creator") ? "mobile-nav-item active" : "mobile-nav-item"}><Megaphone {...mobileIconProps} /><span>Creator</span></a>
+          )}
           <a href="/wallet" className={isActive("/wallet") ? "mobile-nav-item active" : "mobile-nav-item"}><Wallet {...mobileIconProps} /><span>Wallet</span></a>
           <a href="/account" className={isActive("/account") ? "mobile-nav-item active" : "mobile-nav-item"}><UserCircle {...mobileIconProps} /><span>Account</span></a>
         </nav>
