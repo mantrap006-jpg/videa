@@ -30,30 +30,36 @@ export default async function SubscriptionPage() {
   const plans = [
     {
       id: "monthly",
-      name: "Monthly Creator",
-      price: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 5000),
+      name: "Starter Creator",
+      price: Number(process.env.CREATOR_SUBSCRIPTION_PRICE_RWF || 12000),
       days: 30,
-      tagline: "A flexible way to get started",
-      description: "Great for creators who want to try Videa promotion without a long commitment.",
-      features: ["30 days of Creator access", "Submit eligible YouTube videos", "Promote content to Videa viewers", "Renew anytime with wallet points"]
+      videoLimit: 5,
+      maxVideoMinutes: 10,
+      tagline: "Start promoting your content",
+      description: "A compact campaign plan for creators getting started on Videa.",
+      features: ["30 days of Creator access", "Up to 5 active video promotions", "Maximum 10 minutes per video", "Video views and watch-progress statistics", "Renew using approved wallet points"]
     },
     {
       id: "quarterly",
-      name: "Quarterly Creator",
-      price: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 13500),
-      days: 90,
-      tagline: "More time to grow",
-      description: "For creators who want a longer campaign and fewer renewals.",
-      features: ["90 days of Creator access", "Submit eligible YouTube videos", "Promote content to Videa viewers", "Renew using wallet points"]
+      name: "Growth Creator",
+      price: Number(process.env.CREATOR_QUARTERLY_PRICE_RWF || 30000),
+      days: 30,
+      videoLimit: 15,
+      maxVideoMinutes: 20,
+      tagline: "Promote more videos",
+      description: "More upload capacity for creators running several campaigns.",
+      features: ["30 days of Creator access", "Up to 15 active video promotions", "Maximum 20 minutes per video", "Video views and watch-progress statistics", "Renew using approved wallet points"]
     },
     {
       id: "annual",
-      name: "Annual Creator",
-      price: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 50000),
-      days: 365,
-      tagline: "Best for long-term creators",
-      description: "Keep your Creator access for a full year with one points deduction.",
-      features: ["365 days of Creator access", "Submit eligible YouTube videos", "Promote content to Videa viewers", "Fewer renewal interruptions"]
+      name: "Pro Creator",
+      price: Number(process.env.CREATOR_ANNUAL_PRICE_RWF || 100000),
+      days: 30,
+      videoLimit: 50,
+      maxVideoMinutes: 30,
+      tagline: "Maximum campaign capacity",
+      description: "Higher video capacity for creators promoting content at scale.",
+      features: ["30 days of Creator access", "Up to 50 active video promotions", "Maximum 30 minutes per video", "Video views and watch-progress statistics", "Renew using approved wallet points"]
     }
   ];
 
@@ -68,7 +74,7 @@ export default async function SubscriptionPage() {
           </p>
           <div className="subscription-trust">
             <span><ShieldCheck size={16} /> Uses wallet points</span>
-            <span><Zap size={16} /> 30, 90, or 365 days</span>
+            <span><Zap size={16} /> All plans last 30 days</span>
             <span><CheckCircle2 size={16} /> Activates immediately</span>
           </div>
         </div>
