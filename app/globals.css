@@ -3977,3 +3977,79 @@ body { min-height: 100vh; min-height: 100svh; padding-top: env(safe-area-inset-t
   header.topbar .nav-auth-actions .nav-auth-icon { padding: 0 5px !important; gap: 3px; font-size: 10px !important; }
   header.topbar .nav-auth-actions .nav-auth-icon svg { width: 14px; height: 14px; flex-basis: 14px; }
 }
+
+
+/* Definitive mobile auth layout: Navigation is a flex child of .topbar */
+@media screen and (max-width: 768px) {
+  header.topbar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    justify-content: initial !important;
+    gap: 8px !important;
+    min-height: 58px !important;
+    padding: 8px 10px !important;
+    overflow: hidden !important;
+  }
+  header.topbar > .brand {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0 !important;
+    width: fit-content !important;
+    margin: 0 !important;
+  }
+  header.topbar > .brand img {
+    width: clamp(72px, 25vw, 100px) !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  header.topbar > .nav-auth-actions {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  header.topbar > .nav-auth-actions > a.nav-auth-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    position: static !important;
+    box-sizing: border-box !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 7px !important;
+    margin: 0 !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
+    border-radius: 8px !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+  header.topbar > .nav-auth-actions > a.nav-auth-icon svg {
+    display: block !important;
+    flex: 0 0 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+  }
+  header.topbar > .nav-links { display: none !important; }
+}
+@media screen and (max-width: 360px) {
+  header.topbar { grid-template-columns: minmax(0, 1fr) auto !important; gap: 5px !important; padding-left: 7px !important; padding-right: 7px !important; }
+  header.topbar > .brand img { width: 68px !important; }
+  header.topbar > .nav-auth-actions { gap: 4px !important; }
+  header.topbar > .nav-auth-actions > a.nav-auth-icon { padding: 0 5px !important; gap: 3px !important; font-size: 9px !important; }
+}
