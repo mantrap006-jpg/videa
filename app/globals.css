@@ -4159,3 +4159,45 @@ body { min-height: 100vh; min-height: 100svh; padding-top: env(safe-area-inset-t
     line-height: 1.5 !important;
   }
 }
+
+
+/* Give the YouTube player priority and more visible space on mobile */
+@media screen and (max-width: 600px) {
+  .watch-page .watch-layout,
+  .watch-page .watch-main-column {
+    width: 100%;
+    min-width: 0;
+  }
+  .watch-page .watch-player-card {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+  }
+  .watch-page .watch-player-frame {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 16 / 9 !important;
+    max-height: none !important;
+    background: #000 !important;
+  }
+  .watch-page .watch-player-frame > div,
+  .watch-page .watch-player-frame iframe {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+  .watch-page .watch-locked-player {
+    width: 100% !important;
+    min-height: 200px !important;
+    aspect-ratio: 16 / 9 !important;
+  }
+  .watch-page .watch-video-details {
+    margin: 0 10px 10px !important;
+  }
+}
