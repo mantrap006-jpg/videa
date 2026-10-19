@@ -28,6 +28,7 @@ function loadGoogleOAuth() {
 export default function WatchPage() {
   const { id } = useParams();
   const [video, setVideo] = useState(null);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [percent, setPercent] = useState(0);
   const [watchedSeconds, setWatchedSeconds] = useState(0);
   const [message, setMessage] = useState("Preparing your video...");
@@ -112,6 +113,7 @@ export default function WatchPage() {
   useEffect(() => {
     let cancelled = false;
     setVideo(null);
+    setDescriptionExpanded(false);
     setPercent(0);
     setWatchedSeconds(0);
     setRewarded(false);
@@ -384,7 +386,21 @@ export default function WatchPage() {
                 </div>
                 <span className={verified && watchSessionStatus === "active" ? "watch-status-badge ready" : "watch-status-badge"}>{verified && watchSessionStatus === "active" ? "Ready to watch" : watchSessionStatus === "active" ? "Locked" : "Session blocked"}</span>
               </div>
-              {video.description ? <p className="watch-description">{video.description}</p> : null}
+              {video.description ? (
+                <div className={`watch-description-wrap${descriptionExpanded ? " is-expanded" : ""}`}>
+                  <p className="watch-description">{video.description}</p>
+                  {video.description.length > 220 ? (
+                    <button
+                      type="button"
+                      className="watch-description-toggle"
+                      aria-expanded={descriptionExpanded}
+                      onClick={() => setDescriptionExpanded(value => !value)}
+                    >
+                      {descriptionExpanded ? "Show less ↑" : "Read more ↓"}
+                    </button>
+                  ) : null}
+                </div>
+              ) : null}
               <div className="watch-channel-row">
                 {video.channelThumbnail ? <img src={video.channelThumbnail} alt="" className="watch-channel-avatar" /> : <div className="watch-channel-avatar watch-channel-placeholder">▶</div>}
                 <div className="watch-channel-meta">
