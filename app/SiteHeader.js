@@ -46,8 +46,8 @@ export default function SiteHeader({ user }) {
           ) : (
             <>
               <a href="/videos"><Video {...iconProps} /> Videos</a>
-              <a className="nav-login" href="/login"><LogIn {...iconProps} /> Log in</a>
-              <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Create account</a>
+              <a className="nav-login" href="/login"><LogIn {...iconProps} /> Sign In</a>
+              <a className="nav-signup" href="/signup"><UserPlus {...iconProps} /> Join Now</a>
             </>
           )}
         </Navigation>
