@@ -70,6 +70,7 @@ export async function POST(request) {
     return NextResponse.json({ error: "Choose a valid subscription plan." }, { status: 400 });
   }
 
+  try {
   await connectDB();
   const existingUser = await User.findById(session.sub).select("role points subscription").lean();
   if (!existingUser) return NextResponse.json({ error: "Account not found." }, { status: 404 });
@@ -119,4 +120,8 @@ export async function POST(request) {
     wallet: { points: updatedUser.points },
     message: `${plan.name} activated using ${plan.amountRwf.toLocaleString()} points.`
   }, { status: 200 });
+  } catch (error) {
+    console.error("Subscription payment POST failed:", error);
+    return NextResponse.json({ error: "Could not activate the subscription right now. Please refresh your wallet and subscription status before trying again." }, { status: 500 });
+  }
 }
