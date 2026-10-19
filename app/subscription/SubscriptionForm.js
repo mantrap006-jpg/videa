@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 
@@ -9,6 +9,11 @@ export default function SubscriptionForm({ plans, points = 0 }) {
   const [busyPlan, setBusyPlan] = useState(null);
   const [status, setStatus] = useState(null);
   const [availablePoints, setAvailablePoints] = useState(Number(points) || 0);
+  const statusRef = useRef(null);
+
+  useEffect(() => {
+    if (status?.type === "success") statusRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [status]);
 
   async function submit(plan) {
     if (!plan || busyPlan) return;
@@ -81,7 +86,7 @@ export default function SubscriptionForm({ plans, points = 0 }) {
       </div>
 
       {status && (
-        <div className={status.type === "success" ? "form-status success" : "form-status error"} role="status">
+        <div ref={statusRef} className={status.type === "success" ? "form-status success" : "form-status error"} role="status" tabIndex={-1}>
           <div><strong>{status.message}</strong></div>
         </div>
       )}
