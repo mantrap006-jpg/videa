@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import SubscriptionPayment from "@/models/SubscriptionPayment";
+import Video from "@/models/Video";
 import { getActiveUserFromRequest } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ const PLANS = {
     id: "quarterly",
     name: "Growth Creator",
     amountRwf: 30000,
-    days: 30,
+    days: 90,
     videoLimit: 15,
     maxVideoMinutes: 20
   },
@@ -27,7 +28,7 @@ const PLANS = {
     id: "annual",
     name: "Pro Creator",
     amountRwf: 50000,
-    days: 30,
+    days: 365,
     videoLimit: 50,
     maxVideoMinutes: 30
   }
@@ -83,8 +84,9 @@ export async function POST(request) {
     existingUser.subscription?.status === "active" && existingUser.subscription?.expiresAt
       ? new Date(existingUser.subscription.expiresAt)
       : null;
-  const baseDate = currentExpiry && currentExpiry > now ? currentExpiry : now;
-  const expiresAt = new Date(baseDate);
+  // Every successful purchase starts a fresh access period from the purchase time.
+  // This prevents a renewal from carrying an old countdown forward.
+  const expiresAt = new Date(now);
   expiresAt.setDate(expiresAt.getDate() + plan.days);
 
   // Points are credited only after a deposit is approved. One point equals one RWF
@@ -109,6 +111,14 @@ export async function POST(request) {
       availablePoints: Number(existingUser.points || 0)
     }, { status: 400 });
   }
+
+  // Reset the active promotion slots after successful payment so the creator can
+  // start the new subscription period with a fresh video allowance. Existing videos
+  // remain in the database for historical statistics, but are no longer promoted.
+  await Video.updateMany(
+    { creator: session.sub, active: true },
+    { $set: { active: false } }
+  );
 
   return NextResponse.json({
     subscription: {
