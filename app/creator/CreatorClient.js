@@ -28,9 +28,10 @@ export default function CreatorClient({ subscriptionActive = false, subscription
       const res = await fetch("/api/creator/youtube-details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ youtubeUrl: url })
+        body: JSON.stringify({ youtubeUrl: url }),
+        signal: AbortSignal.timeout(15000)
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Could not retrieve YouTube details.");
       setForm(current => ({
         ...current,
@@ -39,7 +40,9 @@ export default function CreatorClient({ subscriptionActive = false, subscription
       }));
       setMetadataStatus("Title and description loaded from YouTube.");
     } catch (error) {
-      setMetadataStatus(error.message || "Could not retrieve YouTube details. Check the link and try again.");
+      setMetadataStatus(error.name === "TimeoutError" || error.name === "AbortError"
+        ? "YouTube is taking too long to respond. Please try again."
+        : (error.message || "Could not retrieve YouTube details. Check the link and try again."));
     } finally {
       setLoadingMetadata(false);
     }
@@ -61,17 +64,20 @@ export default function CreatorClient({ subscriptionActive = false, subscription
       const res = await fetch("/api/creator/videos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
+        signal: AbortSignal.timeout(20000)
       });
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       setMessage(
         res.ok
           ? "Video submitted successfully. Videa verified the video details and duration."
           : (data.error || "Could not submit video.")
       );
-    } catch {
-      setMessage("Network error. Please try again.");
+    } catch (error) {
+      setMessage(error.name === "TimeoutError" || error.name === "AbortError"
+        ? "The request took too long. Check your connection and try again."
+        : "Network error. Please try again.");
     }
   }
 
