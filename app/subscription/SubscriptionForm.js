@@ -2,9 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, LockKeyhole, Sparkles } from "lucide-react";
 
-export default function SubscriptionForm({ plans, points = 0 }) {
+export default function SubscriptionForm({
+  plans,
+  points = 0,
+  currentPlanId = null,
+  subscriptionActive = false
+}) {
   const router = useRouter();
   const [busyPlan, setBusyPlan] = useState(null);
   const [status, setStatus] = useState(null);
@@ -16,7 +21,7 @@ export default function SubscriptionForm({ plans, points = 0 }) {
   }, [status]);
 
   async function submit(plan) {
-    if (!plan || busyPlan) return;
+    if (!plan || busyPlan || (subscriptionActive && currentPlanId === plan.id)) return;
     if (availablePoints < plan.price) {
       setStatus({ type: "error", message: `You need ${(plan.price - availablePoints).toLocaleString()} more points for the ${plan.name} plan.` });
       return;
@@ -31,7 +36,10 @@ export default function SubscriptionForm({ plans, points = 0 }) {
         body: JSON.stringify({ plan: plan.id })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Could not activate subscription.");
+      if (!response.ok) {
+        if (response.status === 409) router.refresh();
+        throw new Error(data.error || "Could not activate subscription.");
+      }
 
       setAvailablePoints(Number(data.wallet?.points ?? Math.max(0, availablePoints - plan.price)));
       setStatus({ type: "success", message: data.message || `${plan.name} activated successfully.` });
@@ -51,15 +59,31 @@ export default function SubscriptionForm({ plans, points = 0 }) {
         <small>Deposits become spendable after an administrator approves them.</small>
       </div>
 
+      {subscriptionActive && currentPlanId && (
+        <div className="current-plan-banner" role="status">
+          <span className="current-plan-banner-icon"><Sparkles size={18} /></span>
+          <div>
+            <strong>Current Plan: {plans.find((plan) => plan.id === currentPlanId)?.name || currentPlanId}</strong>
+            <p>This plan is active. Its purchase button is disabled to prevent duplicate purchases. You can choose another tier if you want to upgrade.</p>
+          </div>
+        </div>
+      )}
+
       <div className="subscription-plans-grid">
         {plans.map((plan) => {
           const canAfford = availablePoints >= plan.price;
           const isBusy = busyPlan === plan.id;
+          const isCurrentPlan = subscriptionActive && currentPlanId === plan.id;
+          const buttonDisabled = Boolean(busyPlan) || isCurrentPlan || !canAfford;
           return (
-            <article key={plan.id} className={`subscription-plan-box subscription-plan-box-${plan.id}`}>
+            <article key={plan.id} className={`subscription-plan-box subscription-plan-box-${plan.id}${isCurrentPlan ? " subscription-plan-current" : ""}`}>
               <div className="subscription-plan-box-top">
                 <span className="subscription-plan-duration">{plan.days} DAYS</span>
-                {plan.id === "quarterly" && <span className="subscription-plan-popular">POPULAR</span>}
+                {isCurrentPlan ? (
+                  <span className="subscription-plan-popular"><CheckCircle2 size={13} /> CURRENT PLAN</span>
+                ) : plan.id === "quarterly" ? (
+                  <span className="subscription-plan-popular">POPULAR</span>
+                ) : null}
               </div>
               <h3>{plan.name}</h3>
               <p className="subscription-plan-tagline">{plan.tagline}</p>
@@ -75,10 +99,16 @@ export default function SubscriptionForm({ plans, points = 0 }) {
               </ul>
               <div className="subscription-plan-action">
                 <p>{plan.days} days of Creator access</p>
-                <button className="button subscription-submit-button" type="button" onClick={() => submit(plan)} disabled={Boolean(busyPlan) || !canAfford}>
-                  {isBusy ? "Activating..." : canAfford ? "Upgrade this plan" : "Not enough points"}
+                <button
+                  className="button subscription-submit-button"
+                  type="button"
+                  onClick={() => submit(plan)}
+                  disabled={buttonDisabled}
+                  aria-disabled={buttonDisabled}
+                >
+                  {isCurrentPlan ? <><LockKeyhole size={15} /> Current Plan</> : isBusy ? "Activating..." : canAfford ? "Choose this plan" : "Not enough points"}
                 </button>
-                {!canAfford && <small>You need {(plan.price - availablePoints).toLocaleString()} more points.</small>}
+                {!isCurrentPlan && !canAfford && <small>You need {(plan.price - availablePoints).toLocaleString()} more points.</small>}
               </div>
             </article>
           );
