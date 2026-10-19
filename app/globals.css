@@ -4115,3 +4115,47 @@ body { min-height: 100vh; min-height: 100svh; padding-top: env(safe-area-inset-t
   color: #c4baff;
   text-decoration: underline;
 }
+
+
+/* Mobile watch access: keep both subscription actions full-width and easy to tap */
+@media screen and (max-width: 760px) {
+  .watch-subscription-card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .watch-subscription-card .watch-subscribe-button,
+  .watch-subscription-card .watch-verify-button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 46px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 12px 14px !important;
+    white-space: normal !important;
+    text-align: center !important;
+    line-height: 1.3 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+  }
+  .watch-subscription-card .watch-subscribe-button {
+    background: linear-gradient(110deg, #8879ff, #6655f5) !important;
+    border: 1px solid transparent !important;
+    color: #fff !important;
+  }
+  .watch-subscription-card .watch-verify-button {
+    background: rgba(255,255,255,.045) !important;
+    border: 1px solid rgba(169,154,255,.48) !important;
+    color: #f7f5ff !important;
+  }
+  .watch-subscription-card .watch-privacy-note {
+    font-size: 11px !important;
+    line-height: 1.5 !important;
+  }
+}
