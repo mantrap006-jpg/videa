@@ -55,7 +55,7 @@ export default function SiteHeader({ user }) {
     </header>
 
       {user && !isAdminRoute && (
-        <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
+        <nav className={`mobile-bottom-nav${user.role === "creator" ? " creator-bottom-nav" : ""}`} aria-label="Mobile navigation">
           <a href="/videos" className={isActive("/videos") ? "mobile-nav-item active" : "mobile-nav-item"}><Video {...mobileIconProps} /><span>Videos</span></a>
           <a href="/points" className={isActive("/points") ? "mobile-nav-item active" : "mobile-nav-item"}><Coins {...mobileIconProps} /><span>Points</span></a>
           {user.role === "creator" && (
