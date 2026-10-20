@@ -42,11 +42,25 @@ export async function POST(request) {
     if (user?.googleId && user.googleId !== profile.sub) return NextResponse.json({ error: "This email is already linked to a different Google account." }, { status: 409 });
 
     if (!user) {
-      user = await User.create({
+      const selectedRole = allowedRoles.includes(role) ? role : "viewer";
+      const newUserData = {
         name: (profile.name || email.split("@")[0]).trim(), email,
         passwordHash: await bcrypt.hash(randomBytes(32).toString("hex"), 12),
-        googleId: profile.sub, role: allowedRoles.includes(role) ? role : "viewer"
-      });
+        googleId: profile.sub,
+        role: selectedRole
+      };
+      // New Creator accounts receive one free 7-day trial. Existing accounts are
+      // not re-granted a trial when they sign in again.
+      if (selectedRole === "creator") {
+        const trialExpiresAt = new Date();
+        trialExpiresAt.setDate(trialExpiresAt.getDate() + 7);
+        newUserData.subscription = {
+          plan: "free",
+          status: "active",
+          expiresAt: trialExpiresAt
+        };
+      }
+      user = await User.create(newUserData);
     } else if (!user.googleId) {
       user.googleId = profile.sub;
       if (!user.name && profile.name) user.name = profile.name;
