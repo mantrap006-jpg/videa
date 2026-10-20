@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Coins, Megaphone, Play, Sparkles, UploadCloud, CheckCircle2, LockKeyhole } from "lucide-react";
 
-export default function CreatorClient({ subscriptionActive = false, subscriptionExpiresAt = null }) {
+export default function CreatorClient({ subscriptionActive = false, subscriptionPlan = "free", subscriptionExpiresAt = null }) {
   const [form, setForm] = useState({
     title: "",
     youtubeUrl: "",
@@ -94,13 +94,13 @@ export default function CreatorClient({ subscriptionActive = false, subscription
 
         <div className="creator-plan">
           {subscriptionActive ? <CheckCircle2 size={20} /> : <LockKeyhole size={20} />}
-          <span>Creator subscription</span>
-          <strong>{subscriptionActive ? "Active" : "Required"}</strong>
+          <span>{subscriptionPlan === "free" ? "Free Creator Trial" : "Creator subscription"}</span>
+          <strong>{subscriptionActive ? (subscriptionPlan === "free" ? "Free trial active" : "Active") : "Required"}</strong>
           <small>
             {subscriptionActive
               ? subscriptionExpiresAt
                 ? `Active until ${new Date(subscriptionExpiresAt).toLocaleDateString()}`
-                : "Your creator subscription is active."
+                : (subscriptionPlan === "free" ? "Your free Creator trial is active." : "Your creator subscription is active.")
               : "Activate your subscription to submit videos."}
           </small>
           <a className="button" href="/subscription">
