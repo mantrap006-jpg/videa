@@ -6,6 +6,7 @@ import { getActiveUserFromRequest } from "@/lib/auth";
 import { extractYouTubeId, getYouTubeVideoDetails } from "@/lib/youtube";
 
 const CREATOR_PLAN_LIMITS = {
+  free: { videoLimit: 1, maxVideoMinutes: 5 },
   monthly: { videoLimit: 5, maxVideoMinutes: 10 },
   quarterly: { videoLimit: 15, maxVideoMinutes: 20 },
   annual: { videoLimit: 50, maxVideoMinutes: 30 }
