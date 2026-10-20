@@ -59,9 +59,18 @@ export default async function SubscriptionPage() {
     }
   ];
 
+  const freeTrialPlan = {
+    id: "free",
+    name: "Free Creator Trial",
+    days: 7,
+    videoLimit: 1,
+    maxVideoMinutes: 5
+  };
   const now = new Date();
   const currentPlanId = user.subscription?.plan;
-  const currentPlan = plans.find((plan) => plan.id === currentPlanId) || null;
+  const currentPlan = currentPlanId === "free"
+    ? freeTrialPlan
+    : plans.find((plan) => plan.id === currentPlanId) || null;
   const active = user.subscription?.status === "active" &&
     (!user.subscription?.expiresAt || new Date(user.subscription.expiresAt) > now);
   const displayedCurrentPlan = active ? currentPlan : null;
@@ -92,9 +101,9 @@ export default async function SubscriptionPage() {
           <strong>{user.name || "Creator"}</strong>
           {displayedCurrentPlan ? (
             <div className="current-plan-summary" aria-live="polite">
-              <span>Current Plan</span>
+              <span>{displayedCurrentPlan.id === "free" ? "FREE TRIAL" : "Current Plan"}</span>
               <strong>{displayedCurrentPlan.name}</strong>
-              <small>{displayedCurrentPlan.days} days · {displayedCurrentPlan.videoLimit} active video promotions</small>
+              <small>{displayedCurrentPlan.days} days · {displayedCurrentPlan.videoLimit} active video promotion{displayedCurrentPlan.videoLimit === 1 ? "" : "s"} · up to {displayedCurrentPlan.maxVideoMinutes} minutes per video</small>
             </div>
           ) : (
             <p>No active paid plan. Choose a plan below to activate Creator access.</p>
