@@ -34,6 +34,7 @@ export default async function CreatorPage() {
   return (
     <CreatorClient
       subscriptionActive={subscriptionActive}
+      subscriptionPlan={user.subscription?.plan || "free"}
       subscriptionExpiresAt={user.subscription?.expiresAt?.toISOString?.() || null}
     />
   );
