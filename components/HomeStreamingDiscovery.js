@@ -29,9 +29,6 @@ function VideoRow({ title, items, approved = false }) {
   ;
 }
 
-
-}
-
 export default function HomeStreamingDiscovery({ approvedVideos = [] }) {
   const [categoryVideos, setCategoryVideos] = useState({});
   const [activeCategory, setActiveCategory] = useState("Trending Now");
