@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Play, ChevronLeft, ChevronRight, Sparkles, BadgeCheck } from "lucide-react";
+import { Play, ChevronLeft, ChevronRight, Sparkles, BadgeCheck, MapPin } from "lucide-react";
 
 const CATEGORIES = [
-  { label: "Trending Now", query: "trending viral videos 2026", icon: "🔥" },
+  { label: "Trending Now", query: "trending viral videos", icon: "🔥" },
   { label: "Travel & Places", query: "travel destinations nature cinematic", icon: "🌍" },
   { label: "Gaming", query: "gaming gameplay esports", icon: "🎮" },
   { label: "Music", query: "music performances new music", icon: "🎵" },
@@ -25,45 +25,85 @@ function VideoRow({ title, items, approved = false }) {
         <div className="vstream-card-copy"><strong>{v.title}</strong><small>{v.creator || v.channelTitle || (approved ? "Videa creator" : "YouTube")} {v.rewardPoints ? ` · +${v.rewardPoints} points` : ""}</small></div>
       </a>)}
     </div>
-  </section>
-  ;
+  </section>;
 }
 
 export default function HomeStreamingDiscovery({ approvedVideos = [] }) {
   const [categoryVideos, setCategoryVideos] = useState({});
   const [activeCategory, setActiveCategory] = useState("Trending Now");
+  const [locationInfo, setLocationInfo] = useState(null);
   const featured = approvedVideos[0];
   const approved = useMemo(() => approvedVideos.map(v => ({ id: v.youtubeId, title: v.title, thumbnail: `https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`, href: `/watch/${v._id}`, rewardPoints: v.rewardPoints, creator: "Videa creator" })), [approvedVideos]);
   useEffect(() => {
     let cancelled = false;
+    async function loadLocation() {
+      try {
+        const response = await fetch("/api/location", { cache: "no-store" });
+        const data = await response.json();
+        if (!cancelled && data?.countryCode) setLocationInfo(data);
+      } catch {}
+    }
+    loadLocation();
+    return () => { cancelled = true; };
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
     async function loadCategories() {
-      const entries = await Promise.all(CATEGORIES.map(async category => {
-        try {
-          const url = new URL("/api/youtube-search", window.location.origin);
-          url.searchParams.set("q", category.query); url.searchParams.set("type", "video");
-          const res = await fetch(url); const data = await res.json();
-          return [category.label, (data.items || []).filter(item => !item.earningEligible).slice(0, 12).map(v => ({ ...v, external: true }))];
-        } catch { return [category.label, []]; }
-      }));
-      if (!cancelled) setCategoryVideos(Object.fromEntries(entries));
+      const country = locationInfo?.country || "";
+      const countryCode = locationInfo?.countryCode || "";
+      const region = locationInfo?.region || "";
+      const localized = country ? `videos trending in ${country}` : "trending viral videos";
+      const africa = country && country.toLowerCase() !== "rwanda" ? `popular videos in africa ${country}` : "popular videos in africa";
+      const groups = [
+        { label: locationInfo ? `Trending in ${country}` : "Trending Now", query: localized, regionCode: countryCode },
+        { label: "Trending in Africa", query: africa, regionCode: "RW" },
+        { label: "Explore the World", query: "global trending videos creators", regionCode: "US" },
+        ...CATEGORIES.slice(1).map(c => ({ label: c.label, query: country ? `${c.query} ${country}` : c.query, regionCode: countryCode || "US" })),
+      ];
+      try {
+        const entries = await Promise.all(groups.map(async group => {
+          try {
+            const url = new URL("/api/youtube-search", window.location.origin);
+            url.searchParams.set("q", group.query);
+            url.searchParams.set("type", "video");
+            if (group.regionCode) url.searchParams.set("regionCode", group.regionCode);
+            const res = await fetch(url);
+            const data = await res.json();
+            return [group.label, (data.items || []).filter(item => !item.earningEligible).slice(0, 12).map(v => ({ ...v, external: true }))];
+          } catch { return [group.label, []]; }
+        }));
+        if (!cancelled) setCategoryVideos(Object.fromEntries(entries));
+      } catch {}
     }
     loadCategories();
     return () => { cancelled = true; };
-  }, []);
+  }, [locationInfo]);
+  const localTitle = locationInfo ? `Trending in ${locationInfo.country}` : "Trending Now";
+  const groups = Object.keys(categoryVideos);
   const selected = categoryVideos[activeCategory] || [];
   return <section className="vstream-discovery">
+    <header className="vstream-discovery-heading">
+      <div><span className="vstream-eyebrow"><Sparkles size={14}/> PERSONALIZED DISCOVERY</span><h2>Videos you'll love, from around the world.</h2><p>Discover what’s popular near you, across Africa, and everywhere.</p></div>
+      {locationInfo && <span className="vstream-location"><MapPin size={14}/> {locationInfo.city ? `${locationInfo.city}, ${locationInfo.country}` : locationInfo.country}</span>}
+    </header>
     {featured && <section className="vstream-hero">
       <img className="vstream-hero-image" src={`https://img.youtube.com/vi/${featured.youtubeId}/maxresdefault.jpg`} alt="" fetchPriority="high"/>
       <div className="vstream-hero-shade"/>
       <div className="vstream-hero-content"><span className="vstream-eyebrow"><Sparkles size={14}/> FEATURED ON VIDEA</span><h1>{featured.title}</h1><p>{featured.description || "Discover a video selected from the Videa creator library."}</p><a className="vstream-watch" href={`/watch/${featured._id}`}><Play size={17} fill="currentColor"/> Watch & earn</a></div>
     </section>}
     <VideoRow title="Videa Approved" items={approved} approved/>
-    <VideoRow title="Trending Now" items={categoryVideos["Trending Now"]}/>
+    <VideoRow title={localTitle} items={categoryVideos[localTitle]}/>
+    <VideoRow title="Trending in Africa" items={categoryVideos["Trending in Africa"]}/>
+    <VideoRow title="Explore the World" items={categoryVideos["Explore the World"]}/>
     <div className="vstream-category-tabs" role="tablist" aria-label="Explore video categories">{CATEGORIES.map(c=><button key={c.label} role="tab" aria-selected={activeCategory===c.label} className={activeCategory===c.label?"active":""} onClick={()=>setActiveCategory(c.label)}>{c.icon} {c.label}</button>)}</div>
     <VideoRow title={activeCategory} items={selected}/>
-    {CATEGORIES.filter(c=>c.label!==activeCategory && c.label!=="Trending Now").map(c=><VideoRow key={c.label} title={c.label} items={categoryVideos[c.label]}/>)}
+    {groups.filter(name=>!["Trending in Africa","Explore the World",localTitle,activeCategory].includes(name) && CATEGORIES.some(c=>c.label===name)).map(name=><VideoRow key={name} title={name} items={categoryVideos[name]}/>)}
   <style jsx global>{`
     .vstream-discovery{display:flex;flex-direction:column;gap:26px;margin:18px 0 34px}
+    .vstream-discovery-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:15px}
+    .vstream-discovery-heading h2{font-size:clamp(23px,4vw,36px);letter-spacing:-.035em;margin:7px 0 5px}
+    .vstream-discovery-heading p{margin:0;opacity:.7;font-size:13px}
+    .vstream-location{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;background:#20152e;border:1px solid rgba(167,124,255,.28);border-radius:999px;padding:7px 10px;font-size:11px;color:#d9c7ff}
     .vstream-hero{position:relative;min-height:clamp(270px,42vw,510px);overflow:hidden;border-radius:22px;background:#120d1b;border:1px solid rgba(165,112,255,.18)}
     .vstream-hero-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
     .vstream-hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,6,12,.96) 0%,rgba(10,7,15,.75) 42%,rgba(10,7,15,.12) 100%),linear-gradient(0deg,rgba(8,6,12,.7),transparent 60%)}
@@ -94,7 +134,7 @@ export default function HomeStreamingDiscovery({ approvedVideos = [] }) {
     .vstream-category-tabs::-webkit-scrollbar{display:none}
     .vstream-category-tabs button{white-space:nowrap;background:rgba(29,20,42,.85);color:inherit;border:1px solid rgba(145,103,217,.25);padding:9px 13px;border-radius:999px;font-size:12px;cursor:pointer}
     .vstream-category-tabs button.active{background:#7442c4;border-color:#9164d8;color:#fff}
-    @media(max-width:640px){.vstream-discovery{gap:21px;margin-top:12px}.vstream-hero{border-radius:15px;min-height:290px}.vstream-hero-shade{background:linear-gradient(0deg,rgba(7,5,10,.95),rgba(7,5,10,.15) 100%)}.vstream-hero-content{padding:18px;gap:10px}.vstream-hero-content p{font-size:13px}.vstream-card{flex-basis:64vw}.vstream-controls{display:none}.vstream-row-head{margin-bottom:9px}}
+    @media(max-width:640px){.vstream-discovery{gap:21px;margin-top:12px}.vstream-discovery-heading{align-items:flex-start;flex-direction:column}.vstream-hero{border-radius:15px;min-height:290px}.vstream-hero-shade{background:linear-gradient(0deg,rgba(7,5,10,.95),rgba(7,5,10,.15) 100%)}.vstream-hero-content{padding:18px;gap:10px}.vstream-hero-content p{font-size:13px}.vstream-card{flex-basis:64vw}.vstream-controls{display:none}.vstream-row-head{margin-bottom:9px}}
     @media(prefers-reduced-motion:reduce){.vstream-thumb img,.vstream-play{transition:none}}
   `}</style>
   </section>;
