@@ -10,6 +10,7 @@ export async function GET(request) {
   const params = request.nextUrl.searchParams;
   const q = (params.get("q") || "").trim().slice(0, 120);
   const type = params.get("type") === "playlist" ? "playlist" : "video";
+  const regionCode = (params.get("regionCode") || "US").toUpperCase().slice(0, 2);
   const pageToken = params.get("pageToken") || "";
   if (!q) return NextResponse.json({ error: "Enter a search term." }, { status: 400 });
   const url = new URL("https://www.googleapis.com/youtube/v3/search");
@@ -18,7 +19,7 @@ export async function GET(request) {
   url.searchParams.set("type", type);
   url.searchParams.set("maxResults", "24");
   url.searchParams.set("safeSearch", "strict");
-  url.searchParams.set("regionCode", "US");
+  url.searchParams.set("regionCode", /^[A-Z]{2}$/.test(regionCode) ? regionCode : "US");
   if (type === "video") url.searchParams.set("videoEmbeddable", "true");
   if (pageToken) url.searchParams.set("pageToken", pageToken);
   url.searchParams.set("key", key);
