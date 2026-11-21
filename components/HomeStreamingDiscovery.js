@@ -18,7 +18,7 @@ function VideoGrid({ title, items, approved = false }) {
   return <section className="vstream-row">
     <div className="vstream-row-head"><h2>{approved && <BadgeCheck size={18} />} {title}</h2><span className="vstream-count">{items.length} videos</span></div>
     <div className="vstream-grid">
-      {items.slice(0, 6).map((v, index) => <a className="vstream-card" key={v.id} href={v.href || `https://www.youtube.com/watch?v=${v.id}`} target={v.external ? "_blank" : undefined} rel={v.external ? "noopener noreferrer" : undefined} style={{animationDelay:(index*65)+"ms"}}>
+      {items.slice(0, 6).map((v, index) => <a className="vstream-card" key={v.id} href={v.href || "/videos"} target={undefined} rel={undefined} style={{animationDelay:(index*65)+"ms"}}>
         <div className="vstream-thumb"><img src={v.thumbnail || `https://img.youtube.com/vi/${v.id}/hqdefault.jpg`} alt="" loading="lazy"/><span className="vstream-play"><Play size={18} fill="currentColor"/></span>{approved && <span className="vstream-approved">Videa Approved</span>}</div>
         <div className="vstream-card-copy"><strong>{v.title}</strong><small>{v.creator || v.channelTitle || (approved ? "Videa creator" : "YouTube")} {v.rewardPoints ? ` · +${v.rewardPoints} points` : ""}</small></div>
       </a>)}
@@ -75,7 +75,7 @@ export default function HomeStreamingDiscovery({ approvedVideos = [] }) {
             if (group.regionCode) url.searchParams.set("regionCode", group.regionCode);
             const res = await fetch(url);
             const data = await res.json();
-            return [group.label, (data.items || []).filter(item => !item.earningEligible).slice(0, 6).map(v => ({ ...v, external: true }))];
+            return [group.label, (data.items || []).filter(item => !item.earningEligible).slice(0, 6).map(v => ({ ...v, href: "/videos" }))];
           } catch { return [group.label, []]; }
         }));
         if (!cancelled) setCategoryVideos(Object.fromEntries(entries));
