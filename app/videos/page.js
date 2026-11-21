@@ -1,5 +1,4 @@
 import Video from "@/models/Video";
-import YouTubeDiscovery from "@/components/YouTubeDiscovery";
 import { connectDB } from "@/lib/mongodb";
 
 export const dynamic = "force-dynamic";
@@ -13,10 +12,17 @@ export default async function VideosPage({ searchParams }) {
   const sort = params?.sort === "reward" ? "reward" : "newest";
   const pageSize = 18;
   const filter = { active: true };
-  if (q) filter.$or = [
+  if (q) {
+    const safeQuery = q.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\  if (q) filter.$or = [
     { title: { $regex: q, $options: "i" } },
     { description: { $regex: q, $options: "i" } }
-  ];
+  ];");
+    filter.$or = [
+      { title: { $regex: safeQuery, $options: "i" } },
+      { description: { $regex: safeQuery, $options: "i" } },
+      { channelTitle: { $regex: safeQuery, $options: "i" } }
+    ];
+  }
 
   const [allRecords, totalVideos] = await Promise.all([
     Video.find(filter).select("title description youtubeId rewardPoints minimumWatchPercent createdAt").lean(),
@@ -73,11 +79,11 @@ export default async function VideosPage({ searchParams }) {
 
   return (
     <section className="videos-page">
-      <YouTubeDiscovery />
-      <div className="videos-toolbar"><div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> approved videos <span>•</span> page {page}</div><form className="videos-sort" action="/videos"><input type="hidden" name="q" value={q} /><label htmlFor="videos-sort">Sort by</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Recently uploaded on YouTube</option><option value="reward">Highest points</option></select><button className="button" type="submit">Apply</button></form></div>
-      <form className="search-bar videos-search" action="/videos">
-        <input name="q" defaultValue={q} placeholder="Search videos..." aria-label="Search videos" />
-        <button className="button" type="submit">Search</button>
+      <div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> approved videos <span>•</span> page {page}</div>
+      <form className="videos-unified-search" action="/videos" role="search">
+        <div className="videos-search-field"><span aria-hidden="true">⌕</span><input name="q" defaultValue={q} placeholder="Search videos, creators, channels..." aria-label="Search videos, creators, channels" /></div>
+        <div className="videos-search-sort"><label htmlFor="videos-sort">Sort</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Newest</option><option value="reward">Highest points</option></select></div>
+        <button className="button" type="submit">Search videos</button>
       </form>
       <div className="grid video-library videos-library">
         {videos.map(v => (
