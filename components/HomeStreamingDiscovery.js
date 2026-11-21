@@ -52,12 +52,12 @@ export default function HomeStreamingDiscovery({ approvedVideos = [] }) {
       const country = locationInfo?.country || "";
       const countryCode = locationInfo?.countryCode || "";
       const region = locationInfo?.region || "";
-      const localized = country ? `videos trending in ${country}` : "trending viral videos";
-      const africa = country && country.toLowerCase() !== "rwanda" ? `popular videos in africa ${country}` : "popular videos in africa";
+      const localized = country ? `popular songs music videos hits in ${country}` : "popular songs music videos trending hits";
+      const africa = "popular African songs music videos Afrobeat amapiano";
       const groups = [
         { label: locationInfo ? `Trending in ${country}` : "Trending Now", query: localized, regionCode: countryCode },
         { label: "Trending in Africa", query: africa, regionCode: "RW" },
-        { label: "Explore the World", query: "global trending videos creators", regionCode: "US" },
+        { label: "Explore the World", query: "global trending music songs official music videos", regionCode: "US" },
         ...CATEGORIES.slice(1).map(c => ({ label: c.label, query: country ? `${c.query} ${country}` : c.query, regionCode: countryCode || "US" })),
       ];
       try {
