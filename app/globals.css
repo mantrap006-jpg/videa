@@ -4464,3 +4464,24 @@ body:has(.mobile-home.mh-redesign) .mobile-home.mh-redesign > .footer {
     flex-basis: 17px !important;
   }
 }
+
+/* Cross-browser layout centering and responsive overflow fix */
+html, body { width:100%; max-width:100%; min-width:0; margin:0; overflow-x:clip; }
+body { min-height:100vh; }
+*, *::before, *::after { box-sizing:border-box; }
+main { width:min(100%, 1240px); max-width:1240px; min-width:0; margin-inline:auto !important; padding-inline:clamp(12px, 2.5vw, 28px) !important; }
+main > * { min-width:0; max-width:100%; }
+.topbar { width:100%; max-width:100%; min-width:0; }
+.topbar > *, nav, .nav-links { min-width:0; }
+img, video, iframe, svg, canvas { max-width:100%; }
+section, article, .card, .feature-card, .video-card, .library-card, .creator-page, .subscription-page, .wallet-page, .admin-page, .control-center, .auth-page, .auth-shell, .auth-card { min-width:0; }
+.feature-grid, .video-grid, .video-library, .lightweight-grid, .stats-grid, .admin-stats, .control-stat-grid, .control-overview-grid, .creator-grid, .creator-hero, .auth-shell, .subscription-hero, .subscription-layout, .subscription-bottom, .wallet-columns, .wallet-balance-grid, .reward-banner, .earn-calculator { grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+@media (max-width:700px) {
+  main { width:100%; padding-inline:14px !important; margin-inline:auto !important; }
+  .topbar { padding-inline:12px !important; }
+  .feature-grid, .video-grid, .video-library, .lightweight-grid, .stats-grid, .admin-stats, .control-stat-grid, .control-overview-grid, .creator-grid, .creator-hero, .auth-shell, .subscription-hero, .subscription-layout, .subscription-bottom, .wallet-columns, .wallet-balance-grid, .reward-banner, .earn-calculator { grid-template-columns:minmax(0,1fr) !important; }
+  .section-heading, .dashboard-head, .wallet-hero, .admin-head, .control-center-head { min-width:0; flex-wrap:wrap; }
+  .search-bar, .wallet-history-row, .admin-payment-card, .admin-payment-actions { min-width:0; flex-wrap:wrap; }
+  table { display:block; max-width:100%; overflow-x:auto; }
+}
+@media (min-width:701px) { main { margin-inline:auto !important; } }
