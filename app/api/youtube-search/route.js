@@ -39,6 +39,8 @@ export async function GET(request) {
         item.earningEligible = !!record;
         if (record) { item.rewardPoints = record.rewardPoints; item.minimumWatchPercent = record.minimumWatchPercent; }
       }
+      // Put videos already approved by Videa ahead of general YouTube results.
+      items.sort((a, b) => Number(b.earningEligible) - Number(a.earningEligible));
     }
     return NextResponse.json({ items, nextPageToken: data.nextPageToken || null });
   } catch (error) {
