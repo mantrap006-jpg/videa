@@ -85,7 +85,7 @@ export default function HomeStreamingDiscovery({ approvedVideos = [] }) {
     return () => { cancelled = true; };
   }, [locationInfo]);
 
-  const localTitle = locationInfo ? `Trending in ${locationInfo.country}` : "Trending Now";
+  const localTitle = "Trending Now";
   const selected = categoryVideos[activeCategory] || [];
 
   return <section className="vstream-discovery">
