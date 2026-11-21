@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import Video from "@/models/Video";
 import HeroImageCarousel from "./HeroImageCarousel";
-import HomeYouTubeSpotlight from "./HomeYouTubeSpotlight";
+import HomeStreamingDiscovery from "./HomeStreamingDiscovery";
 import { connectDB } from "@/lib/mongodb";
 import {
   ArrowRight, Play, Sparkles, ShieldCheck, Coins, Clapperboard,
@@ -79,32 +79,7 @@ export default async function MobileHomePage() {
           <div><span><Coins size={17} /></span><p><strong>Tracked points</strong><small>See activity in account</small></p></div>
         </section>
 
-        <section className="mh-discover-v2">
-          <div className="mh-section-head">
-            <div><div className="mh-section-kicker">FIND YOUR NEXT FAVORITE</div><h2>Explore what you love</h2><p>Jump into a collection and discover something new.</p></div>
-            <a href="/videos" className="mh-see-all">Browse library <ChevronRight size={16} /></a>
-          </div>
-          <div className="mh-category-grid">
-            <a className="mh-category-card mh-category-travel" href="/videos">
-              <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=75" alt="Mountain landscape" loading="lazy" decoding="async" />
-              <span className="mh-category-overlay" />
-              <span className="mh-category-copy"><small>01 / DISCOVER</small><strong>Travel & places</strong><em>See somewhere new <ArrowRight size={13} /></em></span>
-            </a>
-            <a className="mh-category-card mh-category-lifestyle" href="/videos">
-              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=75" alt="Lifestyle portrait" loading="lazy" decoding="async" />
-              <span className="mh-category-overlay" />
-              <span className="mh-category-copy"><small>02 / GET INSPIRED</small><strong>Lifestyle</strong><em>Fresh ideas daily <ArrowRight size={13} /></em></span>
-            </a>
-            <a className="mh-category-card mh-category-tech" href="/videos">
-              <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=700&q=75" alt="Technology circuit board" loading="lazy" decoding="async" />
-              <span className="mh-category-overlay" />
-              <span className="mh-category-copy"><small>03 / LEARN</small><strong>Tech & creativity</strong><em>Explore new skills <ArrowRight size={13} /></em></span>
-            </a>
-          </div>
-        </section>
-
-        <HomeYouTubeSpotlight />
-
+        <HomeStreamingDiscovery approvedVideos={videos} />
         <section className="mh-how-v2">
           <div className="mh-section-head">
             <div><div className="mh-section-kicker">SIMPLE BY DESIGN</div><h2>Three steps. One smooth flow.</h2></div>
@@ -114,34 +89,6 @@ export default async function MobileHomePage() {
             <article><span className="mh-step-number">02</span><span className="mh-step-icon"><Play size={19} /></span><h3>Choose and watch</h3><p>Pick a video and meet its displayed watch target.</p></article>
             <article><span className="mh-step-number">03</span><span className="mh-step-icon"><Zap size={19} /></span><h3>Track your points</h3><p>Check your account for eligible rewards and progress.</p></article>
           </div>
-        </section>
-
-        <section className="mh-videos mh-videos-v2">
-          <div className="mh-section-head">
-            <div><div className="mh-section-kicker">PICK YOUR NEXT VIDEO</div><h2>Fresh from Videa</h2><p>Explore the latest videos in the library.</p></div>
-            <a href="/videos" className="mh-see-all">See all <ChevronRight size={16} /></a>
-          </div>
-          {videos.length ? (
-            <div className="mh-video-list">
-              {videos.map((v) => (
-                <article className="mh-video-card" key={v._id.toString()}>
-                  <a className="mh-thumb" href={`/watch/${v._id}`} aria-label={`Watch ${v.title}`}>
-                    <img src={`https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`} alt="" loading="lazy" decoding="async" />
-                    <span><Play size={17} fill="currentColor" /></span>
-                    <small className="mh-thumb-tag">Videa pick</small>
-                  </a>
-                  <div className="mh-video-info">
-                    <h3>{v.title}</h3>
-                    <p>{v.description || "Discover this video on Videa."}</p>
-                    <div className="mh-video-meta"><strong>+{Number(v.rewardPoints || 0)} points</strong><span>{Number(v.minimumWatchPercent || 0)}% watch target</span></div>
-                    <a href={`/watch/${v._id}`} className="mh-watch">Watch video <ArrowRight size={14} /></a>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <div className="mh-empty"><span><Play size={21} /></span><strong>New videos are on the way</strong><p>Visit the video library to see what is available.</p><a href="/videos">Browse videos <ArrowRight size={15} /></a></div>
-          )}
         </section>
 
         <section className="mh-bottom-cta-v2">
