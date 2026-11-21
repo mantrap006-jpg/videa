@@ -1,4 +1,5 @@
 import Video from "@/models/Video";
+import YouTubeDiscovery from "@/components/YouTubeDiscovery";
 import { connectDB } from "@/lib/mongodb";
 
 export const dynamic = "force-dynamic";
@@ -72,6 +73,7 @@ export default async function VideosPage({ searchParams }) {
 
   return (
     <section className="videos-page">
+      <YouTubeDiscovery />
       <div className="videos-toolbar"><div className="videos-results"><strong>{totalVideos.toLocaleString()}</strong> approved videos <span>•</span> page {page}</div><form className="videos-sort" action="/videos"><input type="hidden" name="q" value={q} /><label htmlFor="videos-sort">Sort by</label><select id="videos-sort" name="sort" defaultValue={sort}><option value="newest">Recently uploaded on YouTube</option><option value="reward">Highest points</option></select><button className="button" type="submit">Apply</button></form></div>
       <form className="search-bar videos-search" action="/videos">
         <input name="q" defaultValue={q} placeholder="Search videos..." aria-label="Search videos" />
