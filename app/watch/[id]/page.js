@@ -28,6 +28,8 @@ function loadGoogleOAuth() {
 export default function WatchPage() {
   const { id } = useParams();
   const [video, setVideo] = useState(null);
+  const [playlist, setPlaylist] = useState([]);
+  const [playlistLoading, setPlaylistLoading] = useState(true);
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [percent, setPercent] = useState(0);
   const [watchedSeconds, setWatchedSeconds] = useState(0);
@@ -111,6 +113,16 @@ export default function WatchPage() {
     };
   }, [id]);
 
+  useEffect(() => {
+    let cancelled = false;
+    setPlaylistLoading(true);
+    fetch("/api/watch-playlist?current=" + encodeURIComponent(id), { cache: "no-store" })
+      .then(response => response.ok ? response.json() : Promise.reject(new Error("Playlist unavailable")))
+      .then(data => { if (!cancelled) setPlaylist(Array.isArray(data.items) ? data.items : []); })
+      .catch(() => { if (!cancelled) setPlaylist([]); })
+      .finally(() => { if (!cancelled) setPlaylistLoading(false); });
+    return () => { cancelled = true; };
+  }, [id]);
   useEffect(() => {
     let cancelled = false;
     setVideo(null);
@@ -431,7 +443,17 @@ export default function WatchPage() {
             <div className="watch-feedback" role="status"><span className={playing ? "watch-feedback-dot active" : "watch-feedback-dot"} />{watchSessionStatus !== "active" ? watchSessionMessage : verified && playing ? "Playing — watch time is being checked by the server." : message}</div>
             {videoEnded && <p className="watch-finished-note">Video finished. Your verified progress has been updated.</p>}
           </section>
-        </section>
+                  <section className="watch-playlist-card card" aria-label="Videa playlist">
+            <div className="watch-playlist-heading"><div><span className="eyebrow">KEEP WATCHING</span><h2>Playlist</h2></div><span className="watch-playlist-count">{playlist.length} videos</span></div>
+            {playlistLoading ? <div className="watch-playlist-empty">Loading videos…</div> : playlist.length ? <div className="watch-playlist-list">
+              {playlist.map((item, index) => <a key={item._id} href={`/watch/${item._id}`} className={item._id === id ? "watch-playlist-item active" : "watch-playlist-item"} aria-current={item._id === id ? "page" : undefined}>
+                <div className="watch-playlist-thumb"><img src={item.thumbnail} alt="" loading="lazy" /><span>{index + 1}</span></div>
+                <div className="watch-playlist-item-meta"><strong>{item.title}</strong><span>{item.channelTitle || "Videa creator"} · {item.duration || "Video"}</span></div>
+                {item._id === id ? <span className="watch-playlist-playing">PLAYING</span> : <span className="watch-playlist-arrow">▶</span>}
+              </a>)}
+            </div> : <div className="watch-playlist-empty">No other videos available yet.</div>}
+          </section>
+</section>
 
         <aside className="watch-sidebar">
           <section ref={subscriptionCardRef} id="watch-subscription-check" className="watch-subscription-card card">
