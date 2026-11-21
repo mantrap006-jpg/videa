@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import Video from "@/models/Video";
 import HeroImageCarousel from "./HeroImageCarousel";
+import HomeYouTubeSpotlight from "./HomeYouTubeSpotlight";
 import { connectDB } from "@/lib/mongodb";
 import {
   ArrowRight, Play, Sparkles, ShieldCheck, Coins, Clapperboard,
@@ -101,6 +102,8 @@ export default async function MobileHomePage() {
             </a>
           </div>
         </section>
+
+        <HomeYouTubeSpotlight />
 
         <section className="mh-how-v2">
           <div className="mh-section-head">
