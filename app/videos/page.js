@@ -13,17 +13,13 @@ export default async function VideosPage({ searchParams }) {
   const pageSize = 18;
   const filter = { active: true };
   if (q) {
-    const safeQuery = q.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\  if (q) filter.$or = [
-    { title: { $regex: q, $options: "i" } },
-    { description: { $regex: q, $options: "i" } }
-  ];");
+    const safeQuery = q.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
     filter.$or = [
       { title: { $regex: safeQuery, $options: "i" } },
       { description: { $regex: safeQuery, $options: "i" } },
       { channelTitle: { $regex: safeQuery, $options: "i" } }
     ];
   }
-
   const [allRecords, totalVideos] = await Promise.all([
     Video.find(filter).select("title description youtubeId rewardPoints minimumWatchPercent createdAt").lean(),
     Video.countDocuments(filter)
