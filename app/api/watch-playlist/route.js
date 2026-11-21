@@ -10,7 +10,7 @@ export async function GET(request) {
   try {
     await connectDB();
     const current = request.nextUrl.searchParams.get("current") || "";
-    const videos = await Video.find({ active: true, ...(current ? { _id: { $ne: current } } : {}) }).select("_id title youtubeId channelTitle durationSeconds createdAt").sort({ createdAt: -1 }).limit(12).lean();
+    let videos = await Video.find({ active: true }).select("_id title youtubeId channelTitle durationSeconds createdAt").sort({ createdAt: -1 }).limit(12).lean();\n    if (current && !videos.some(video => String(video._id) === current)) {\n      const currentVideo = await Video.findOne({ _id: current, active: true }).select("_id title youtubeId channelTitle durationSeconds createdAt").lean();\n      if (currentVideo) videos = [currentVideo, ...videos.slice(0, 11)];\n    }
     const items = videos.map(video => ({ _id: String(video._id), title: video.title || "Untitled video", channelTitle: video.channelTitle || "", thumbnail: `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`, duration: formatDuration(video.durationSeconds) }));
     return NextResponse.json({ items });
   } catch (error) {
