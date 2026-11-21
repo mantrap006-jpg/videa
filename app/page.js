@@ -54,8 +54,8 @@ export default async function MobileHomePage() {
         <section className="mh-hero-v2">
           <div className="mh-hero-copy">
             <div className="mh-pill"><Sparkles size={14} /> WATCH · DISCOVER · EARN</div>
-            <h1>Good videos.<br /><span>Good rewards.</span></h1>
-            <p>Find videos worth watching, meet the watch requirements, and keep track of your points in one place.</p>
+            <h1>Videos you’ll love,<br /><span>from around the world.</span></h1>
+            <p>Discover videos from your region, explore creators across Africa, and find new perspectives around the world.</p>
             <div className="mh-actions">
               <a href="/signup" className="mh-primary">Get started <ArrowRight size={17} /></a>
               <a href="/videos" className="mh-secondary"><Play size={16} /> Explore videos</a>
