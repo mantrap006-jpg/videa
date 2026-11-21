@@ -13,7 +13,7 @@ export default async function VideosPage({ searchParams }) {
   const pageSize = 18;
   const filter = { active: true };
   if (q) {
-    const safeQuery = q.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&");
+    const safeQuery = q.replace(/[^\p{L}\p{N}\s_-]/gu, "");
     filter.$or = [
       { title: { $regex: safeQuery, $options: "i" } },
       { description: { $regex: safeQuery, $options: "i" } },
