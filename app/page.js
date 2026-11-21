@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import Video from "@/models/Video";
 import HeroImageCarousel from "./HeroImageCarousel";
-import HomeStreamingDiscovery from "./HomeStreamingDiscovery";
+import HomeStreamingDiscovery from "@/components/HomeStreamingDiscovery";
 import { connectDB } from "@/lib/mongodb";
 import {
   ArrowRight, Play, Sparkles, ShieldCheck, Coins, Clapperboard,
