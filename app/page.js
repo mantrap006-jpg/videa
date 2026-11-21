@@ -14,8 +14,22 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Watch, Discover & Earn",
-  description: "Discover videos, meet watch targets, and track your Videa points."
+  title: "Video Streaming & Discovery",
+  description: "Discover trending videos, music, gaming, travel, technology, comedy, and educational content. Watch and explore online videos, then collect points for eligible viewing on Videa.",
+  keywords: ["video streaming", "video discovery", "trending videos", "online entertainment", "music videos", "gaming videos", "travel videos", "technology videos", "comedy videos", "educational videos", "Videa"],
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Videa | Video Streaming, Discovery & Entertainment",
+    description: "Discover trending videos, music, gaming, travel, technology, comedy, and educational content. Watch and explore on Videa.",
+    url: "https://videapro.site/",
+    siteName: "Videa",
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Videa | Video Streaming, Discovery & Entertainment",
+    description: "Discover trending videos, music, gaming, travel, technology, comedy, and educational content on Videa."
+  }
 };
 
 export default async function MobileHomePage() {
@@ -48,6 +62,11 @@ export default async function MobileHomePage() {
 
   return (
     <div className="mobile-home mh-redesign">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+        { "@context": "https://schema.org", "@type": "Organization", "name": "Videa", "url": "https://videapro.site/", "logo": "https://videapro.site/favicon.png" },
+        { "@context": "https://schema.org", "@type": "WebSite", "name": "Videa", "url": "https://videapro.site/", "description": "Video streaming and discovery for trending entertainment, music, gaming, travel, technology, comedy, and educational videos." },
+        { "@context": "https://schema.org", "@type": "WebPage", "name": "Videa | Video Streaming, Discovery & Entertainment", "url": "https://videapro.site/", "description": "Discover trending videos and explore entertainment, music, gaming, travel, technology, comedy, and educational content on Videa." }
+      ]) }} />
 
 
       <main className="mh-main">
